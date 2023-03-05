@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "730243418927",
+    "project_id": "easyagro-ed808",
+    "storage_bucket": "easyagro-ed808.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:730243418927:android:4bf33755db45595c5cefda",
+        "android_client_info": {
+          "package_name": "com.example.easyagro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "730243418927-euooanubh4q9mpg9rshqb5qj9qaenm9o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtXYijb9Bwbf24hZZennLwMrIqGIYVRqs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "730243418927-euooanubh4q9mpg9rshqb5qj9qaenm9o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
