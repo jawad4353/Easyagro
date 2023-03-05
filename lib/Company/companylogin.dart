@@ -8,6 +8,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:proste_bezier_curve/proste_bezier_curve.dart';
 
 import '../Database/database.dart';
+import '../forgotpassword.dart';
 import '../selection.dart';
 import '../splash.dart';
 import '../sharedpref_validations.dart';
@@ -149,7 +150,9 @@ class _companyloginState extends State<companylogin> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          TextButton(onPressed: (){}, child: Text('Forgot Password?',style: TextStyle(color: Colors.green,fontSize: 16,fontWeight: FontWeight.bold),)),
+                          TextButton(onPressed: (){
+                            Navigator.push(context, Myroute(forgotpassword(collection_name: 'company',)));
+                          }, child: Text('Forgot Password?',style: TextStyle(color: Colors.green,fontSize: 16,fontWeight: FontWeight.bold),)),
                         ],),
                       Container(
                           clipBehavior: Clip.antiAlias,

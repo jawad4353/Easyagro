@@ -5,6 +5,7 @@ import 'package:easyagro/sharedpref_validations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Company/companylogin.dart';
 import 'Dealer/dealerlogin.dart';
 import 'Farmer/farmerlogin.dart';
@@ -57,7 +58,8 @@ class _SelectionState extends State<Selection> {
                    height: 44,
                    child: ElevatedButton(style: ButtonStyle(
                        backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade900)
-                   ),onPressed: (){
+                   ),onPressed: ()  {
+
                      Navigator.pushReplacement(context, Myroute(farmerlogin()));
                    },child: Text('Continue as Farmer',style: TextStyle(fontSize: 21,color: Colors.white,fontWeight: FontWeight.bold,fontFamily: 'jd1')),),
                  ),
@@ -76,7 +78,9 @@ class _SelectionState extends State<Selection> {
                         side: MaterialStateProperty.resolveWith((states) => BorderSide(color: Colors.white)),
                         overlayColor: MaterialStateProperty.resolveWith((states) => Colors.grey),
                            backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.white)
-                       ),onPressed: (){
+                       ),onPressed: () {
+
+
                         Navigator.pushReplacement(context,  Myroute(companylogin()));
 
                         },child: Text('Company',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'jd1',fontSize: 17,color: Colors.green.shade900)),),
@@ -87,7 +91,8 @@ class _SelectionState extends State<Selection> {
                           overlayColor: MaterialStateProperty.resolveWith((states) => Colors.grey),
                           side: MaterialStateProperty.resolveWith((states) => BorderSide(color: Colors.transparent)),
                            backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.white)
-                       ),onPressed: (){
+                       ),onPressed: ()  {
+
                        Navigator.pushReplacement(context, Myroute(dealerlogin()));
                       },child: Text('  Dealer  ',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17,color: Colors.green.shade900,fontFamily: 'jd1')),),
 

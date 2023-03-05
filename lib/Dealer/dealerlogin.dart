@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:proste_bezier_curve/proste_bezier_curve.dart';
 import '../Database/database.dart';
+import '../forgotpassword.dart';
 import '../selection.dart';
 import '../sharedpref_validations.dart';
 import 'dealerregister.dart';
@@ -144,7 +145,9 @@ class _dealerloginState extends State<dealerlogin> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          TextButton(onPressed: (){}, child: Text('Forgot Password?',style: TextStyle(color: Colors.green,fontSize: 16,fontWeight: FontWeight.bold),)),
+                          TextButton(onPressed: (){
+                            Navigator.push(context, Myroute(forgotpassword(collection_name: 'dealer',)));
+                          }, child: Text('Forgot Password?',style: TextStyle(color: Colors.green,fontSize: 16,fontWeight: FontWeight.bold),)),
                         ],),
                       Container(
                           clipBehavior: Clip.antiAlias,

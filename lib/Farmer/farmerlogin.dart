@@ -153,7 +153,7 @@ class _farmerloginState extends State<farmerlogin> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                         TextButton(onPressed: (){
-                          Navigator.push(context, Myroute(forgotpassword()));
+                          Navigator.push(context, Myroute(forgotpassword(collection_name: 'farmers',)));
                         }, child: Text('Forgot Password?',style: TextStyle(color: Colors.green,fontSize: 16,fontWeight: FontWeight.bold),)),
                       ],),
                       Container(
