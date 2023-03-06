@@ -4,16 +4,20 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyagro/Company/companylogin.dart';
+import 'package:easyagro/Company/updateaccount.dart';
 import 'package:easyagro/splash.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Farmer/farmerlogin.dart';
 import '../sharedpref_validations.dart';
+import 'live_chat.dart';
 
 class companyhome extends StatefulWidget{
   @override
@@ -21,9 +25,10 @@ class companyhome extends StatefulWidget{
 }
 
 class _companyhomeState extends State<companyhome> {
-  var user_data=[],sections_list=['Products','Dealers','Orders','Add new','Delivered','Policies'],
-      images_list=['images/products.png','images/dealer.png','images/orders.png','images/add.png','images/delivery.png','images/policy.png'];
-   var index_curent=0;
+  var user_data=[],sections_list=['Products','Dealers','Orders','Add new','Delivered','Policies','Revenues','New Disease','Complains','Logout'],
+      images_list=['images/products.png','images/dealer.png','images/orders.png','images/add.png','images/delivery.png','images/policy.png','images/revenue.png','images/disease.png','images/complain.png','images/logout.png'];
+   var index_curent=0,searched_section=[],searched_images=[];
+   TextEditingController search_controller=new TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -39,11 +44,7 @@ class _companyhomeState extends State<companyhome> {
      size: 27),
          elevation: 0,
          backgroundColor: Colors.green.shade700,actions: [
-       IconButton(onPressed:(){
-         Clear_Preferences();
-         EasyLoading.showSuccess('Logout');
-         Navigator.pushReplacement(context, Myroute(companylogin()));
-       }, icon: Icon(Icons.logout,color: Colors.white,)),
+
          IconButton(onPressed: (){}, icon: Icon(Icons.notifications))
      ],),
      drawer: Drawer(
@@ -114,6 +115,13 @@ class _companyhomeState extends State<companyhome> {
          setState(() {
            index_curent=a;
          });
+         if(a==1){
+           Navigator.push(context, Myroute(update_company_account()));
+         }
+         if(a==2){
+           Navigator.push(context, Myroute(LiveChatPage()));
+         }
+
        },
        selectedItemColor: Colors.green.shade700,
        items: [
@@ -127,29 +135,48 @@ class _companyhomeState extends State<companyhome> {
      body:ListView(
        children: [
          Container(height: size.height*0.11,
-         child: Column(
+         child: Row(
          crossAxisAlignment: CrossAxisAlignment.center,
-           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+           mainAxisAlignment: MainAxisAlignment.center,
            children: [
+
            Container(
-            width: size.width*0.8,
+            width: size.width*0.7,
             child: TextField(
              cursorColor:Colors.green.shade700 ,
+              controller: search_controller,
+              onChanged: (a){
+
+                searched_section.clear();
+                searched_images.clear();
+                for(int i=0;i<sections_list.length;i++){
+                   if(sections_list[i].toUpperCase().startsWith(a.toUpperCase())){
+                     setState(() {
+                       searched_section.add(sections_list[i]);
+                       searched_images.add(images_list[i]);
+                     });
+                   }
+                }
+
+
+              },
+              inputFormatters: [  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')),],
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
-                hintText: ' Search Dealer',
+                hintText: ' Search',
                 contentPadding: EdgeInsets.zero,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.white)
+                  borderSide: BorderSide(color: Colors.green)
                 ),
               ),
             ),
-          )
+          ),
+             LottieBuilder.asset('images/seedanimation.json',height: 80,),
          ],),
          decoration: BoxDecoration(
              color: Colors.green.shade700,
@@ -160,7 +187,7 @@ class _companyhomeState extends State<companyhome> {
        Container(
          height: size.height*0.62,
 
-         child: GridView.count(
+         child: search_controller.text.isEmpty ? GridView.count(
            crossAxisCount: 3,
            padding: EdgeInsets.all(16),
            childAspectRatio: 1,
@@ -173,6 +200,12 @@ class _companyhomeState extends State<companyhome> {
                  borderRadius: BorderRadius.circular(20),
                  onTap: (){
                    print(sections_list[index]);
+                   if(sections_list[index]=='Logout'){
+                     Clear_Preferences();
+                     EasyLoading.showSuccess('Logout');
+                     Navigator.pushReplacement(context, Myroute(companylogin()));
+                     return;
+                   }
                  },
                  child: Container(
                    decoration: BoxDecoration(
@@ -192,6 +225,51 @@ class _companyhomeState extends State<companyhome> {
                        Image.asset(images_list[index], width: 50, height: 50),
                        SizedBox(height: 8),
                        Text(sections_list[index]),
+                     ],
+                   ),
+                 ),
+               );
+             },
+           ),
+         ):
+         GridView.count(
+           crossAxisCount: 3,
+           padding: EdgeInsets.all(16),
+           childAspectRatio: 1,
+           crossAxisSpacing: 10.0,
+           mainAxisSpacing: 10,
+           children: List.generate(
+             searched_section.length,
+                 (index) {
+               return InkWell(
+                 borderRadius: BorderRadius.circular(20),
+                 onTap: (){
+
+                   if(searched_section[index]=='Logout'){
+                     Clear_Preferences();
+                     EasyLoading.showSuccess('Logout');
+                     Navigator.pushReplacement(context, Myroute(companylogin()));
+                     return;
+                   }
+                 },
+                 child: Container(
+                   decoration: BoxDecoration(
+                     borderRadius: BorderRadius.circular(20),
+                     boxShadow: [
+                       BoxShadow(
+                         color: Colors.grey.withOpacity(0.1),
+                         spreadRadius: 1.0,
+                         blurRadius: 1.0,
+                         offset: Offset(0, 3), // changes position of shadow
+                       ),
+                     ],
+                   ),
+                   child: Column(
+                     mainAxisAlignment: MainAxisAlignment.center,
+                     children: [
+                       Image.asset(searched_images[index], width: 50, height: 50),
+                       SizedBox(height: 8),
+                       Text(searched_section[index]),
                      ],
                    ),
                  ),
