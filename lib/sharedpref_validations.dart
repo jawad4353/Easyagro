@@ -43,7 +43,7 @@ Future<void> UploadShop_image(foldername,image_name) async {
   PickedFile? _image=await ImagePicker.platform.pickImage(source: ImageSource.gallery);
   var storageref=_storage.ref("${foldername}/${image_name}");
   var a= new File(_image!.path);
-  EasyLoading.showProgress(0.3, status: 'Uploading image');
+  EasyLoading.show(status: 'Uploading');
   try{
     var task=storageref.putFile(a as File);
     print(task.whenComplete(() => EasyLoading.showSuccess('Uploaded')));

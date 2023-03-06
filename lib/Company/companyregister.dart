@@ -22,7 +22,7 @@ class companyresgister extends StatefulWidget{
 
 class _companyresgisterState extends State<companyresgister> {
   var hidepassword=true,Address_error,phone_error,phone_error_color=Colors.grey,Address_error_color=Colors.grey,Name_Error,Name_error_color=Colors.grey,Email_Error,Email_Error_color=Colors.grey,Password_Error,Password_Error_color=Colors.grey,Liscense_error,Liscence_Error_color=Colors.grey;
- var countrycode='+92',allvalid=false;
+ var countrycode='+92';
   TextEditingController company_controller=new TextEditingController();
   TextEditingController license_controller=new TextEditingController();
   TextEditingController address_controller=new TextEditingController();
@@ -273,10 +273,7 @@ class _companyresgisterState extends State<companyresgister> {
                               var s=Password_Validation(a);
                               Password_Error=s[0];
                               Password_Error_color=s[1];
-                              allvalid=false;
-                              if(Password_Error_color==Colors.green){
-                                allvalid=true;
-                              }
+
                             });
                           },
                           decoration: InputDecoration(
@@ -297,13 +294,40 @@ class _companyresgisterState extends State<companyresgister> {
                               prefixIcon: Icon(Icons.https,color: Colors.green,size: 28,)
                           ),
                         ),
-                        ElevatedButton(onPressed: (){
-                          if(allvalid){
-                            UploadShop_image('company_licenses','${email_controller.text}');
-                          }
-                          else{
-                            EasyLoading.showInfo('Fill above details first');
+                        ElevatedButton(onPressed: () async {
+                          var f1,f2,f3,f4,f5,duplicate_license,duplicate_email,duplicate_phone,mode;
+                          f1=Name_Validation(company_controller.text.replaceAll(' ', ''));
+                          f2=Liscense_Validate(license_controller.text);
+                          f3=Address_Validation(address_controller.text.replaceAll(' ', ''));
+                          f4=Email_Validation(email_controller.text);
+                          f5=Password_Validation(password_controller.text);
+                          SharedPreferences pref =await SharedPreferences.getInstance();
+                          mode=await pref.getString('mode');
+                          duplicate_license=await new database().Duplicate_license(license_controller.text,'company');
+                          duplicate_email=await new database().Duplicate_email(email_controller.text,'company');
+                          duplicate_phone=await new database().Duplicate_phone(countrycode+phone_controller.text,'company');
+
+                          if(company_controller.text.isEmpty || f1[1]==Colors.red ||license_controller.text.isEmpty
+                          || f2[1]==Colors.red ||duplicate_license==true ||address_controller.text.isEmpty
+                          || f3[1]==Colors.red ||email_controller.text.isEmpty ||
+                              f4[1]==Colors.red || duplicate_email==true || phone_controller.text.isEmpty
+                          || phone_controller.text.length!=10 || duplicate_phone==true || password_controller.text.isEmpty
+                          ||f5[1]==Colors.red || mode=='offline'
+
+                          ){
+                            EasyLoading.showInfo('Fill above details first!');
                             return;
+                          }
+
+                          else{
+                            try{
+                              UploadShop_image('company_licenses','${email_controller.text}');
+                            }
+                            catch(e){
+                              EasyLoading.showError('Error uploading image');
+                              return;
+                            }
+
                           }
                         }, child: Text('License photo front'),style:
                         ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade700)),),
@@ -375,6 +399,7 @@ class _companyresgisterState extends State<companyresgister> {
                                 EasyLoading.showInfo('Invalid Email');
                                 return;
                               }
+
                               if(duplicate_email==true){
                                 EasyLoading.showInfo('Already registered Email : ${email_controller.text}');
                                 return;

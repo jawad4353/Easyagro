@@ -51,6 +51,7 @@ dependencies:
   country_picker: ^2.0.19
   firebase_storage: ^11.0.14
   image_picker: ^0.8.6+4
+  flutter_svg: ^2.0.2
 
 dev_dependencies:
   flutter_test:
@@ -76,11 +77,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/icon.png
-    -  images/twitter.png
-    -  images/facebook.png
-    -  images/google.png
-    -  images/back.jpg
+    - images/
+   
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
