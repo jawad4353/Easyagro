@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:proste_bezier_curve/proste_bezier_curve.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Database/database.dart';
 import '../forgotpassword.dart';
@@ -161,8 +162,16 @@ class _companyloginState extends State<companylogin> {
                               borderRadius: BorderRadius.circular(30)
                           ),
                           child: ElevatedButton(onPressed: () async {
-                           var userexist=await new database().Login_company(license_controller.text,password_controller.text);
-                           var s=Password_Validation(password_controller.text);
+                            var mode,userexist,s;
+                            SharedPreferences pref =await SharedPreferences.getInstance();
+                            mode=await pref.getString('mode');
+                            userexist=await new database().Login_company(license_controller.text,password_controller.text);
+                            s=Password_Validation(password_controller.text);
+
+                           if(mode=='offline'){
+                             EasyLoading.showError('Not connected to Internet');
+                             return;
+                           }
                             if(license_controller.text.isEmpty){
                               EasyLoading.showInfo('License required !');
                               return;
@@ -183,6 +192,7 @@ class _companyloginState extends State<companylogin> {
                              EasyLoading.showError('Incorrect credentials! ! \nlicense : ${license_controller.text}\npassword : ${password_controller.text}');
                              return;
                            }
+
                            Set_Shared_Preference('company', license_controller.text, password_controller.text);
                            EasyLoading.showSuccess('Login Successful');
                            Navigator.pushReplacement(context, Myroute(companyhome()));

@@ -49,12 +49,16 @@ class _SplashscreenState extends State<Splashscreen> {
     Customize_Easyloading();
     var subscription = Connectivity().onConnectivityChanged.listen(( my_result) {
       if (my_result == ConnectivityResult.none){
-          ScaffoldMessenger.of(context).showSnackBar(Internetsnackbar(context, '! No Internet '));
-          Set_Mode_Sharedpref('offline');
+          setState(() {
+            ScaffoldMessenger.of(context).showSnackBar(Internetsnackbar(context, '! No Internet '));
+            Set_Mode_Sharedpref('offline');
+          });
       }
       else if(my_result==ConnectivityResult.mobile || my_result==ConnectivityResult.wifi || my_result==ConnectivityResult.ethernet ){
             // ScaffoldMessenger.of(context).showSnackBar(Internetsnackbar(context, 'Connected to Internet '));
-          Set_Mode_Sharedpref('online');
+         setState(() {
+           Set_Mode_Sharedpref('online');
+         });
       }
     });
     Check_person();

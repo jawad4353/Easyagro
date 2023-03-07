@@ -38,15 +38,20 @@ Clear_Preferences() async {
 
 
 
-Future<void> UploadShop_image(foldername,image_name) async {
+ UploadShop_image(foldername,image_name) async {
   FirebaseStorage _storage=FirebaseStorage.instance;
   PickedFile? _image=await ImagePicker.platform.pickImage(source: ImageSource.gallery);
   var storageref=_storage.ref("${foldername}/${image_name}");
+  if(_image==null){
+    EasyLoading.showError('Choose any image');
+    return false;
+  }
   var a= new File(_image!.path);
   EasyLoading.show(status: 'Uploading');
   try{
     var task=storageref.putFile(a as File);
     print(task.whenComplete(() => EasyLoading.showSuccess('Uploaded')));
+    return true;
   }
   catch(e){
     EasyLoading.showError('Image has not been Uploaded');

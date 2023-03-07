@@ -5,6 +5,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyagro/Company/companylogin.dart';
 import 'package:easyagro/Company/updateaccount.dart';
+import 'package:easyagro/Database/database.dart';
 import 'package:easyagro/splash.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,10 +26,15 @@ class companyhome extends StatefulWidget{
 }
 
 class _companyhomeState extends State<companyhome> {
-  var user_data=[],sections_list=['Products','Dealers','Orders','Add new','Delivered','Policies','Revenues','New Disease','Complains','Logout'],
-      images_list=['images/products.png','images/dealer.png','images/orders.png','images/add.png','images/delivery.png','images/policy.png','images/revenue.png','images/disease.png','images/complain.png','images/logout.png'];
+  var user_data=[],sections_list=['Products','Dealers','Orders','Add new','Delivered','Policies',
+    'Revenues','New Disease','Complains','Logout'],
+      images_list=['images/products.png','images/dealer.png','images/orders.png','images/add.png',
+        'images/delivery.png','images/policy.png','images/revenue.png','images/disease.png','images/complain.png','images/logout.png'];
+
    var index_curent=0,searched_section=[],searched_images=[];
+
    TextEditingController search_controller=new TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -116,7 +122,7 @@ class _companyhomeState extends State<companyhome> {
            index_curent=a;
          });
          if(a==1){
-           Navigator.push(context, Myroute(update_company_account()));
+           Navigator.push(context, Myroute(update_company_account(user_data: user_data,)));
          }
          if(a==2){
            Navigator.push(context, Myroute(LiveChatPage()));
@@ -286,7 +292,7 @@ class _companyhomeState extends State<companyhome> {
   }
 
   Get_current_company_details() async {
-    var license;
+    var license,a;
     SharedPreferences pref =await SharedPreferences.getInstance();
     license=await pref.getString("email");
 
@@ -305,6 +311,10 @@ class _companyhomeState extends State<companyhome> {
 
       });
     });
+print(user_data[1]);
+    a=await new database().GetImage_Firebase('company_licenses',user_data[1]);
+    user_data.add(a);
+    print(user_data[6]);
 
   }
 }

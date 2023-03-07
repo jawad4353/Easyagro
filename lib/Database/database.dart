@@ -3,8 +3,11 @@
 
 
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -141,6 +144,32 @@ Future<bool> Duplicate_email(email,collection_name) async {
   return s;
 }
 
+
+
+  Future<bool> Duplicate_email_updation(email,collection_name,license) async {
+    var s=false;
+    await FirebaseFirestore.instance.collection("${collection_name}").get().then((querySnapshot) {
+      querySnapshot.docs.forEach((result) {
+        if(result.data()['email']==email ){
+          s=true;
+          if(license==result.data()['license']){
+            s=false;
+          }
+
+        }
+
+      });
+    });
+    return s;
+  }
+
+
+
+
+
+
+
+
 Future<bool> Duplicate_phone(phone,collection_name) async {
   var s=false;
   await FirebaseFirestore.instance.collection("${collection_name}").get().then((querySnapshot) {
@@ -164,4 +193,44 @@ Update_password(newpass,email,collection_name) async {
   });
   });
 }
+
+
+
+
+
+
+  Future<String> GetImage_Firebase(foldername,imageName) async {
+    var imagePath;
+    final storage = FirebaseStorage.instance;
+    try {
+      final ref =await storage.ref().child('$foldername/$imageName');
+      imagePath = await ref.getDownloadURL();
+    } catch (e) {
+      print('Error fetching image path: $e');
+    }
+    print(imagePath);
+    return imagePath;
+  }
+
+
+
+
+  Future<void> updateImageName(String oldImageName, String newImageName) async {
+    final FirebaseStorage storage = FirebaseStorage.instance;
+    final  oldRef = storage.ref().child('${oldImageName}');
+    final newRef = storage.ref().child('${newImageName}');
+    final Directory systemTempDir = Directory.systemTemp;
+    final File tempFile = File('${systemTempDir.path}/temp.jpg');
+    if (tempFile.existsSync()) {
+      await tempFile.delete();
+    }
+    await oldRef.writeToFile(tempFile);
+    await newRef.putFile(tempFile).whenComplete(() => tempFile.delete());
+  }
+
+
+
+
+
+
 }

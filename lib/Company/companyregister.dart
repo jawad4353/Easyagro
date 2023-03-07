@@ -22,7 +22,7 @@ class companyresgister extends StatefulWidget{
 
 class _companyresgisterState extends State<companyresgister> {
   var hidepassword=true,Address_error,phone_error,phone_error_color=Colors.grey,Address_error_color=Colors.grey,Name_Error,Name_error_color=Colors.grey,Email_Error,Email_Error_color=Colors.grey,Password_Error,Password_Error_color=Colors.grey,Liscense_error,Liscence_Error_color=Colors.grey;
- var countrycode='+92';
+ var countrycode='+92',image_uploaded=false;
   TextEditingController company_controller=new TextEditingController();
   TextEditingController license_controller=new TextEditingController();
   TextEditingController address_controller=new TextEditingController();
@@ -264,6 +264,8 @@ class _companyresgisterState extends State<companyresgister> {
                           ),
 
                         ),
+
+
                         TextField(
                           controller: password_controller,
                           cursorColor: Colors.green.shade700,
@@ -315,15 +317,19 @@ class _companyresgisterState extends State<companyresgister> {
                           ||f5[1]==Colors.red || mode=='offline'
 
                           ){
-                            EasyLoading.showInfo('Fill above details first!');
+                            EasyLoading.showInfo('Fill above details  correctly first!');
                             return;
                           }
 
                           else{
                             try{
-                              UploadShop_image('company_licenses','${email_controller.text}');
+                             var s=await UploadShop_image('company_licenses','${email_controller.text}');
+                              setState(() {
+                                image_uploaded=s;
+                              });
                             }
                             catch(e){
+                              print(e);
                               EasyLoading.showError('Error uploading image');
                               return;
                             }
@@ -428,7 +434,10 @@ class _companyresgisterState extends State<companyresgister> {
                                 EasyLoading.showInfo('Offline ! Connect to internet ');
                                 return;
                               }
-
+                              if(image_uploaded==false){
+                                EasyLoading.showInfo('Upload license front photo ');
+                                return;
+                              }
                               Send_mail(company_controller.text, OTP, email_controller.text);
                               Navigator.push(context, Myroute(OTP_screen(Data: data,type: 'company',OTP: OTP,)));
 

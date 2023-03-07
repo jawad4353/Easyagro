@@ -1,6 +1,7 @@
 
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyagro/Company/companyhome.dart';
 import 'package:easyagro/Dealer/dealerhome.dart';
 import 'package:easyagro/Farmer/farmerhome.dart';
@@ -181,6 +182,43 @@ class _OTP_screenState extends State<OTP_screen> {
                               return;
                             }
                           }
+
+
+
+
+                        if(widget.type=='update_profile_company')  {
+                          if(otp_controller.text.isEmpty){
+                            EasyLoading.showInfo('Enter OTP send to ${widget.Data[2]}');
+                            return;
+                          }
+                          if(widget.OTP==otp_controller.text){
+                            await FirebaseFirestore.instance.collection("company").get().then((querySnapshot) {
+                              querySnapshot.docs.forEach((result) {
+                                if(result.data()['license']== widget.Data[0] ){
+                                  FirebaseFirestore.instance.collection('company').doc(result.id).update(
+                                      {'email':"${widget.Data[2]}",'password':'${widget.Data[4]}','name':'${widget.Data[1]}',
+                                        'address':'${widget.Data[5]}','phone':'${widget.Data[3]}'
+                                      });
+                                }
+
+                              });
+                            });
+
+                            if(widget.Data[6]!=widget.Data[1]){
+                              new database().updateImageName('company_licenses/${widget.Data[6]}','company_licenses/${widget.Data[1]}');
+                            }
+
+                            EasyLoading.showSuccess('Updated');
+                            Set_Shared_Preference('company',widget.Data[2],widget.Data[4]);
+                            Navigator.pushReplacement(context, Myroute(companyhome()));
+                            return;
+                          }
+                          else{
+                            EasyLoading.showInfo('Incorrect OTP !');
+
+                          }
+
+                        }
 
 
 
