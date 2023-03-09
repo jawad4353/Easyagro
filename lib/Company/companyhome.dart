@@ -19,6 +19,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Farmer/farmerlogin.dart';
 import '../sharedpref_validations.dart';
+import 'addproducts.dart';
 import 'live_chat.dart';
 
 class companyhome extends StatefulWidget{
@@ -211,6 +212,11 @@ class _companyhomeState extends State<companyhome> {
                      Clear_Preferences();
                      EasyLoading.showSuccess('Logout');
                      Navigator.pushReplacement(context, Myroute(companylogin()));
+                     return;
+                   }
+
+                   if(sections_list[index]=='Add new'){
+                     Navigator.push(context, Myroute(AddProductsPage()));
                      return;
                    }
                    if(sections_list[index]=='Products'){

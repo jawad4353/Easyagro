@@ -19,6 +19,7 @@ class _AllproductsState extends State<Allproducts> with SingleTickerProviderStat
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
@@ -56,10 +57,10 @@ class _AllproductsState extends State<Allproducts> with SingleTickerProviderStat
             controller:catagoty_controller ,
             tabs: [
 
-              Tab(icon: Icon(Icons.accessibility), text: 'Fertilizers'),
-              Tab(icon: Icon(Icons.medical_services_sharp), text: 'Medicines'),
-              Tab(icon: Icon(Icons.hourglass_bottom), text: 'Drops'),
-              Tab(icon: Icon(Icons.ac_unit_sharp), text: 'Spray'),
+              Tab(icon: Icon(Icons.accessibility), text: 'Pesticides'),
+              Tab(icon: Icon(Icons.hourglass_bottom), text: 'Granuale'),
+              Tab(icon: Icon(Icons.directions_ferry), text: 'Micronutrient'),
+              Tab(icon: Icon(Icons.ac_unit_sharp), text: 'Fertilizers'),
             ],
           ),
         ],),
@@ -82,45 +83,80 @@ class _AllproductsState extends State<Allproducts> with SingleTickerProviderStat
 
 
 class fertilizers extends StatelessWidget{
-  var products=[{'name':'Urea','price':'350','quantity':'500ml','image':""
+  var products=[{'name':'Pesticides','price':'350','quantity':'500ml','image':""
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwVDX3Co8ifo9987mVb8swHJ9gG9ScFeUNanbOX1QqdVuIc-JZWt1q0GAFRHgLilaaiXA&usqp=CAU"}];
 
   @override
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
-    return Center(
-      child: Container(
-        width: size.width*0.8,
-        child:  ListView(children: [
+    return Scaffold(
+      backgroundColor: Colors.black12,
 
-          Text(''),
-          SizedBox(
-            height: size.height*0.7,
-            width: size.width*0.6,
+      body:  Padding(
+        padding:  EdgeInsets.only(top: 10),
+        child: Center(
+          child: SizedBox(
+            height: size.height*0.9,
+            width: size.width*0.9,
             child: GridView.count(
               crossAxisCount: 2,
-              mainAxisSpacing: 25,
-              crossAxisSpacing: 25,
-              children: List.generate(9, (index) => Container(
-                  height:200 ,
-                  clipBehavior: Clip.antiAlias,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              children: List.generate(9, (index) {
+                final product = products[index % products.length];
+                return Container(
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [BoxShadow(color: Colors.white,spreadRadius: 3)],
-                      border: Border.all(color: Colors.green,width: 2)
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Column(children: [
-                    Container(
-                      child: Image.network('${products[0]['image']}'),
-                    ),
-                    Text('${products[0]['name']}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),)
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                          child: Image.network(
+                            '${product['image']}',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${product['name']}',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Text('Urea fertilizers completely new packaging',),
+                            Text(''),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '\R.s ${product['price']}',
+                                  style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
+                                ),
+                                Text(
+                                  '(250ml)',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ],)
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            )
 
-                  ],)
-              )),),
-          )
+          ),
+        ),
+      )
 
-        ],),
-      ),
     );
   }
 
@@ -130,6 +166,23 @@ class fertilizers extends StatelessWidget{
 
 
 
+class View_product extends StatefulWidget{
+  var productdetails=[];
+  View_product({required this.productdetails});
+  @override
+  State<View_product> createState() => _View_productState();
+}
+
+class _View_productState extends State<View_product> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: ListView(children: [
+
+      ],),
+    );
+  }
+}
 
 
 
@@ -156,39 +209,71 @@ class pesticied extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
-    return Center(
-      child: Container(
-        width: size.width*0.8,
-        color: Colors.white,
-        child:  ListView(children: [
-
-          Text(''),
-          SizedBox(
-            height: size.height*0.7,
-            width: size.width*0.6,
-            child: GridView.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 25,
-              crossAxisSpacing: 25,
-              children: List.generate(9, (index) => Container(
-                  height:200 ,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [BoxShadow(color: Colors.white,spreadRadius: 3)],
-                      border: Border.all(color: Colors.green,width: 2)
-                  ),
-                  child: Column(children: [
-                    Container(
-                      child: Image.network('${products[0]['image']}'),
+    return  Scaffold(
+      backgroundColor: Colors.black12,
+      body: Padding(
+        padding:  EdgeInsets.only(top: 10),
+        child: Center(
+          child: SizedBox(
+              height: size.height*0.9,
+              width: size.width*0.9,
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                children: List.generate(9, (index) {
+                  final product = products[index % products.length];
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    Text('${products[0]['name']}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),)
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                            child: Image.network(
+                              '${product['image']}',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${product['name']}',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text('Urea fertilizers completely new packaging',),
+                              Text(''),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '\R.s ${product['price']}',
+                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
+                                  ),
+                                  Text(
+                                    '(250ml)',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ],)
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              )
 
-                  ],)
-              )),),
-          )
-
-        ],),
+          ),
+        ),
       ),
     );
   }
@@ -207,42 +292,74 @@ class pesticied extends StatelessWidget{
 class drops extends StatelessWidget{
   var products=[{'name':'Drops','price':'350','quantity':'500ml','image':""
       "https://media.gettyimages.com/id/1248145633/photo/midsection-of-man-holding-bottle-in-farm.jpg?s=612x612&w=gi&k=20&c=cpbI7TWZlJf61kWGfhKSR4nvJWRRf6cKXKzm2Mlql1A="}];
-
   @override
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
-    return Center(
-      child: Container(
-        width: size.width*0.8,
-        child:  ListView(children: [
-
-          Text(''),
-          SizedBox(
-            height: size.height*0.7,
-            width: size.width*0.6,
-            child: GridView.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 25,
-              crossAxisSpacing: 25,
-              children: List.generate(9, (index) => Container(
-                  height:200 ,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [BoxShadow(color: Colors.white,spreadRadius: 3)],
-                      border: Border.all(color: Colors.green,width: 2)
-                  ),
-                  child: Column(children: [
-                    Container(
-                      child: Image.network('${products[0]['image']}'),
+    return  Scaffold(
+      backgroundColor: Colors.black12,
+      body: Padding(
+        padding:  EdgeInsets.only(top: 10),
+        child: Center(
+          child: SizedBox(
+              height: size.height*0.9,
+              width: size.width*0.9,
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                children: List.generate(9, (index) {
+                  final product = products[index % products.length];
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    Text('${products[0]['name']}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),)
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                            child: Image.network(
+                              '${product['image']}',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${product['name']}',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text('Urea fertilizers completely new packaging',),
+                              Text(''),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '\R.s ${product['price']}',
+                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
+                                  ),
+                                  Text(
+                                    '(500ml)',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ],)
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              )
 
-                  ],)
-              )),),
-          )
-
-        ],),
+          ),
+        ),
       ),
     );
   }
@@ -261,41 +378,75 @@ class spray extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
-    return Center(
-      child: Container(
-        width: size.width*0.8,
-        child:  ListView(children: [
-
-          Text(''),
-          SizedBox(
-            height: size.height*0.7,
-            width: size.width*0.6,
-            child: GridView.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 25,
-              crossAxisSpacing: 25,
-              children: List.generate(9, (index) => Container(
-                  height:200 ,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [BoxShadow(color: Colors.white,spreadRadius: 3)],
-                      border: Border.all(color: Colors.green,width: 2)
-                  ),
-                  child: Column(children: [
-                    Container(
-                      child: Image.network('${products[0]['image']}'),
+    return  Scaffold(
+      backgroundColor: Colors.black12,
+      body: Padding(
+        padding:  EdgeInsets.only(top: 10),
+        child: Center(
+          child: SizedBox(
+              height: size.height*0.9,
+              width: size.width*0.9,
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                children: List.generate(9, (index) {
+                  final product = products[index % products.length];
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    Text('${products[0]['name']}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),)
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                            child: Image.network(
+                              '${product['image']}',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${product['name']}',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text('Urea fertilizers completely new packaging',),
+                            Text(''),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                              Text(
+                                '\R.s ${product['price']}',
+                                style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
+                              ),
+                              Text(
+                                '(250ml)',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],)
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              )
 
-                  ],)
-              )),),
-          )
-
-        ],),
+          ),
+        ),
       ),
     );
   }
+
 
 
 }

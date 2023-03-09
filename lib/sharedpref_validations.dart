@@ -12,6 +12,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 
 Future<void> Set_Shared_Preference(user_type,email,password) async {
@@ -322,4 +323,16 @@ Future<bool> onClick(context)async{
       ),
     ],
   ))) ?? false;
+}
+
+
+
+
+
+String getUniqueProductID() {
+  var uuid = Uuid();
+  var random = Random();
+  String uniqueID = uuid.v4();
+  int randomInt = random.nextInt(100000);
+  return "PRODUCT-$uniqueID-$randomInt";
 }
