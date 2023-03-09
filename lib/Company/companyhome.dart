@@ -4,6 +4,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyagro/Company/companylogin.dart';
+import 'package:easyagro/Company/products.dart';
 import 'package:easyagro/Company/updateaccount.dart';
 import 'package:easyagro/Database/database.dart';
 import 'package:easyagro/splash.dart';
@@ -210,6 +211,10 @@ class _companyhomeState extends State<companyhome> {
                      Clear_Preferences();
                      EasyLoading.showSuccess('Logout');
                      Navigator.pushReplacement(context, Myroute(companylogin()));
+                     return;
+                   }
+                   if(sections_list[index]=='Products'){
+                     Navigator.push(context, Myroute(Allproducts()));
                      return;
                    }
                  },

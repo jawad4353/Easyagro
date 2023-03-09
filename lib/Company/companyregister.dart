@@ -310,20 +310,20 @@ class _companyresgisterState extends State<companyresgister> {
                           duplicate_phone=await new database().Duplicate_phone(countrycode+phone_controller.text,'company');
 
                           if(company_controller.text.isEmpty || f1[1]==Colors.red ||license_controller.text.isEmpty
-                          || f2[1]==Colors.red ||duplicate_license==true ||address_controller.text.isEmpty
-                          || f3[1]==Colors.red ||email_controller.text.isEmpty ||
+                              || f2[1]==Colors.red ||duplicate_license==true ||address_controller.text.isEmpty
+                              || f3[1]==Colors.red ||email_controller.text.isEmpty ||
                               f4[1]==Colors.red || duplicate_email==true || phone_controller.text.isEmpty
-                          || phone_controller.text.length!=10 || duplicate_phone==true || password_controller.text.isEmpty
-                          ||f5[1]==Colors.red || mode=='offline'
+                              || phone_controller.text.length!=10 || duplicate_phone==true || password_controller.text.isEmpty
+                              ||f5[1]==Colors.red || mode=='offline'
 
                           ){
                             EasyLoading.showInfo('Fill above details  correctly first!');
                             return;
                           }
 
-                          else{
+                           else{
                             try{
-                             var s=await UploadShop_image('company_licenses','${email_controller.text}');
+                              var s=await UploadShop_image('company_licenses','${email_controller.text}');
                               setState(() {
                                 image_uploaded=s;
                               });
@@ -332,8 +332,8 @@ class _companyresgisterState extends State<companyresgister> {
                               print(e);
                               EasyLoading.showError('Error uploading image');
                               return;
-                            }
 
+                            }
                           }
                         }, child: Text('License photo front'),style:
                         ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade700)),),

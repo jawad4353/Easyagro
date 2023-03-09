@@ -3,7 +3,9 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyagro/Company/companyhome.dart';
+import 'package:easyagro/Company/companylogin.dart';
 import 'package:easyagro/Dealer/dealerhome.dart';
+import 'package:easyagro/Dealer/dealerlogin.dart';
 import 'package:easyagro/Farmer/farmerhome.dart';
 import 'package:easyagro/selection.dart';
 import 'package:easyagro/sharedpref_validations.dart';
@@ -152,7 +154,7 @@ class _OTP_screenState extends State<OTP_screen> {
                               bool isregistered= await new database().Register_company(widget.Data[0],widget.Data[1],widget.Data[2], widget.Data[3], widget.Data[4], widget.Data[5]);
                               if(isregistered){
                                 Set_Shared_Preference('company',widget.Data[3],widget.Data[5]);
-                                Navigator.pushReplacement(context, Myroute(companyhome()));
+                                Navigator.pushReplacement(context, Myroute(companylogin()));
                               }
                               return;
                             }
@@ -173,7 +175,7 @@ class _OTP_screenState extends State<OTP_screen> {
                               bool isregistered= await new database().Register_dealer(widget.Data[0],widget.Data[1],widget.Data[2], widget.Data[3], widget.Data[4], widget.Data[5]);
                               if(isregistered){
                                 Set_Shared_Preference('dealer',widget.Data[3],widget.Data[5]);
-                                Navigator.pushReplacement(context, Myroute(dealerhome()));
+                                Navigator.pushReplacement(context, Myroute(dealerlogin()));
                               }
                               return;
                             }
@@ -203,9 +205,10 @@ class _OTP_screenState extends State<OTP_screen> {
 
                               });
                             });
-
-                            if(widget.Data[6]!=widget.Data[1]){
-                              new database().updateImageName('company_licenses/${widget.Data[6]}','company_licenses/${widget.Data[1]}');
+                           print(widget.Data[6]);
+                            print(widget.Data[2]);
+                            if(widget.Data[6]!=widget.Data[2]){
+                              new database().updateImageName('company_licenses/${widget.Data[6]}','company_licenses/${widget.Data[2]}');
                             }
 
                             EasyLoading.showSuccess('Updated');
@@ -219,6 +222,47 @@ class _OTP_screenState extends State<OTP_screen> {
                           }
 
                         }
+
+
+
+
+
+
+
+                        if(widget.type=='update_profile_dealer'){
+                          if(otp_controller.text.isEmpty){
+                            EasyLoading.showInfo('Enter OTP send to ${widget.Data[2]}');
+                            return;
+                          }
+                          if(widget.OTP==otp_controller.text){
+                            await FirebaseFirestore.instance.collection("dealer").get().then((querySnapshot) {
+                              querySnapshot.docs.forEach((result) {
+                                if(result.data()['license']== widget.Data[0] ){
+                                  FirebaseFirestore.instance.collection('dealer').doc(result.id).update(
+                                      {'email':"${widget.Data[2]}",'password':'${widget.Data[4]}','name':'${widget.Data[1]}',
+                                        'address':'${widget.Data[5]}','phone':'${widget.Data[3]}'
+                                      });
+                                }
+
+                              });
+                            });
+                            print(widget.Data[6]);
+                            print(widget.Data[2]);
+                            if(widget.Data[6]!=widget.Data[2]){
+                              new database().updateImageName('dealer_licenses/${widget.Data[6]}','dealer_licenses/${widget.Data[2]}');
+                            }
+
+                            EasyLoading.showSuccess('Updated');
+                            Set_Shared_Preference('dealer',widget.Data[2],widget.Data[4]);
+                            Navigator.pushReplacement(context, Myroute(dealerhome()));
+                            return;
+                          }
+                          else{
+                            EasyLoading.showInfo('Incorrect OTP !');
+
+                          }
+                        }
+
 
 
 

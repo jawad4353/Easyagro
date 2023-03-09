@@ -22,7 +22,8 @@ class _dealerregisterState extends State<dealerregister> {
 
  var  hidepassword=true,Email_Error,Email_Error_color=Colors.grey,Address_error,Address_error_color=Colors.grey,
      Name_Error,Name_error_color=Colors.grey,Password_Error, Password_Error_color=Colors.grey,Liscense_error,
-     Liscence_Error_color=Colors.grey,countrycode='+92',allvalid=false,phone_error,phone_error_color=Colors.grey;
+     Liscence_Error_color=Colors.grey,countrycode='+92',allvalid=false,phone_error,phone_error_color=Colors.grey,
+     image_uploaded=false;
 
 
  TextEditingController name_controller=new TextEditingController();
@@ -291,9 +292,13 @@ class _dealerregisterState extends State<dealerregister> {
                           ),
 
                         ),
-                        ElevatedButton(onPressed: (){
+                        ElevatedButton(onPressed: () async {
+
                           if(allvalid){
-                            UploadShop_image('company_licenses','${email_controller.text}');
+                            var s=await UploadShop_image('dealer_licenses','${email_controller.text}');
+                            setState(() {
+                              image_uploaded=s;
+                            });
                           }
                           else{
                             EasyLoading.showInfo('Fill above details first');
@@ -393,6 +398,10 @@ class _dealerregisterState extends State<dealerregister> {
                               }
                               if(mode=='offline'){
                                 EasyLoading.showInfo('Offline ! Connect to internet ');
+                                return;
+                              }
+                              if(image_uploaded==false){
+                                EasyLoading.showInfo('Upload license front photo ');
                                 return;
                               }
 

@@ -226,6 +226,7 @@ Update_password(newpass,email,collection_name) async {
     }
     await oldRef.writeToFile(tempFile);
     await newRef.putFile(tempFile).whenComplete(() => tempFile.delete());
+    await oldRef.delete();
   }
 
 

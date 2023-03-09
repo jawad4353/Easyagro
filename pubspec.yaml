@@ -52,6 +52,7 @@ dependencies:
   firebase_storage: ^11.0.14
   image_picker: ^0.8.6+4
   flutter_svg: ^2.0.2
+  select_form_field:
 
 dev_dependencies:
   flutter_test:

@@ -16,6 +16,32 @@ import '../Database/database.dart';
 import '../sharedpref_validations.dart';
 import '../splash.dart';
 
+
+
+class ImageScreen extends StatelessWidget {
+  final String imageUrl;
+
+  const ImageScreen({Key? key, required this.imageUrl}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var size=MediaQuery.of(context).size;
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(backgroundColor: Colors.black,),
+      body: Center(
+        child: Container(
+            height: size.height*0.7,
+            width: double.maxFinite,
+            child: InteractiveViewer(
+                   maxScale: 10,
+                minScale: 1,
+                child: Image.network(imageUrl,fit: BoxFit.fill,))),
+      ),
+    );
+  }
+}
+
 class update_company_account extends StatefulWidget{
   var user_data=[];
   update_company_account({required this.user_data});
@@ -103,18 +129,23 @@ class _update_company_accountState extends State<update_company_account> {
               children: [
                 Text('\n \n'),
 
-                CircleAvatar(
-                  radius: 100,
-                  backgroundColor: Colors.transparent,
-                 child: Container(
-                     clipBehavior: Clip.antiAlias,
-                     decoration: BoxDecoration(
-                       color: Colors.white,
-                       shape: BoxShape.circle,
-                       boxShadow: [BoxShadow(color: Colors.green.shade700,spreadRadius: 4)]
-                     ),
-                     child: Image.network('${widget.user_data[6]}',fit: BoxFit.cover,)),
+                InkWell(
+                  onTap: (){
+                    Navigator.push(context, Myroute(ImageScreen(imageUrl: widget.user_data[6],)));
+                  },
+                  child: CircleAvatar(
+                    radius: 100,
+                    backgroundColor: Colors.transparent,
+                   child: Container(
+                       clipBehavior: Clip.antiAlias,
+                       decoration: BoxDecoration(
+                         color: Colors.white,
+                         shape: BoxShape.circle,
+                         boxShadow: [BoxShadow(color: Colors.green.shade700,spreadRadius: 4)]
+                       ),
+                       child: Image.network('${widget.user_data[6]}',fit: BoxFit.cover,)),
               ),
+                ),
               Text('\n'),
                TextField(
                      controller: company_controller,
@@ -180,7 +211,6 @@ class _update_company_accountState extends State<update_company_account> {
                   inputFormatters: [  FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z.-.@-@_-_]')),],
                   onChanged: (a){
                     setState(() {
-                      print(a);
                       var s=Email_Validation(a);
                       Email_Error=s[0];
                       Email_Error_color=s[1];
