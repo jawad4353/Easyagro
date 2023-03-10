@@ -245,11 +245,14 @@ class _AddProductsPageState extends State<AddProductsPage> {
                       EasyLoading.showInfo('Product category required!');
                       return;
                     }
+                  EasyLoading.show(status: 'Processing...',dismissOnTap: false);
                     FirebaseStorage _storage=FirebaseStorage.instance;
                     var storageref=_storage.ref("products/${licenseno}/${product_category_Controller.text}/${productid}");
                   var a= new File(_image!.path);
                   try{
                     var task=storageref.putFile(a as File);
+                    TaskSnapshot storageTaskSnapshot = await task.whenComplete(() => null);
+                    String Urll = await storageTaskSnapshot.ref.getDownloadURL();
                     FirebaseFirestore.instance.collection('products').add({
                       'productid':'${productid}',
                       'productname':'${productName_Controller.text}',
@@ -257,9 +260,11 @@ class _AddProductsPageState extends State<AddProductsPage> {
                       'productdescription':'${productDescription_Controller.text}',
                       'productquantity':'${productquantity_Controller.text}',
                       'productcategory':'${product_category_Controller.text}',
-                      'companylicense':'${licenseno}'
+                      'companylicense':'${licenseno}',
+                      'image':'${Urll}'
 
                     });
+
                     EasyLoading.showSuccess('Product added Sucessfully');
                   }
                   catch(e){
