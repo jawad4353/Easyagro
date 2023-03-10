@@ -49,7 +49,8 @@ class _ViewProductPageState extends State<ViewProductPage> {
                   backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade700)
 
               ),onPressed: () async {
-
+                EasyLoading.show(status: 'Deleting ...');
+                Navigator.of(context).pop();
                 final storage = FirebaseStorage.instance;
                 final ref = storage.ref().child('products/${widget.product['companylicense']}/${widget.product['productcategory']}/${widget.product['productid']}');
                 try {
@@ -409,10 +410,6 @@ class _UpdateproductState extends State<Updateproduct> {
                   licenseno=await pref.getString("email");
 
 
-                  if(_image==null){
-                    EasyLoading.showInfo('Product image required!');
-                    return;
-                  }
                   if(productName_Controller.text.isEmpty){
                     EasyLoading.showInfo('Product name required!');
                     return;
@@ -434,6 +431,68 @@ class _UpdateproductState extends State<Updateproduct> {
                     EasyLoading.showInfo('Product category required!');
                     return;
                   }
+                  EasyLoading.show(status: 'Updating ...');
+                  var Urll=widget.product['image'];
+                  if(_image!=null){
+                    try{
+                      final storage = FirebaseStorage.instance;
+                      final ref = storage.ref().child('products/${widget.product['companylicense']}/${widget.product['productcategory']}/${widget.product['productid']}');
+                      ref.delete();
+                      var storageref= FirebaseStorage.instance.ref().child('products/${widget.product['companylicense']}/${widget.product['productcategory']}/${widget.product['productid']}');
+                      var a= new File(_image!.path);
+                      var task=storageref.putFile(a as File);
+                      TaskSnapshot storageTaskSnapshot = await task.whenComplete(() => null);
+                      Urll = await storageTaskSnapshot.ref.getDownloadURL();
+                      await FirebaseFirestore.instance.collection("products").get().then((querySnapshot) {
+                        querySnapshot.docs.forEach((result) async {
+                          if(result.data()['productid']==widget.product['productid'] && result.data()['companylicense']==
+                              widget.product['companylicense']
+                          ){
+
+                            FirebaseFirestore.instance.collection("products").doc(result.id).update({
+                              'productname':'${productName_Controller.text}',
+                              'productprice':'${productPrice_Controller.text}',
+                              'productdescription':'${productDescription_Controller.text}',
+                              'productquantity':'${productquantity_Controller.text}',
+                              'productcategory':'${product_category_Controller.text}',
+                              'image':'${Urll}'
+                            });
+                          }
+
+                        });
+                      });
+                      EasyLoading.showSuccess('Updated');
+                      Navigator.push(context, Myroute(Allproducts()));
+                      return;
+                    }
+                    catch(e){
+                      EasyLoading.showError('Error updating product');
+                    }
+
+                  }
+
+                  await FirebaseFirestore.instance.collection("products").get().then((querySnapshot) {
+                    querySnapshot.docs.forEach((result) async {
+                      if(result.data()['productid']==widget.product['productid'] && result.data()['companylicense']==
+                          widget.product['companylicense']
+                      ){
+
+                        FirebaseFirestore.instance.collection("products").doc(result.id).update({
+                          'productname':'${productName_Controller.text}',
+                          'productprice':'${productPrice_Controller.text}',
+                          'productdescription':'${productDescription_Controller.text}',
+                          'productquantity':'${productquantity_Controller.text}',
+                          'productcategory':'${product_category_Controller.text}',
+                          'image':'${Urll}'
+                        });
+                      }
+
+                    });
+                  });
+                  EasyLoading.showSuccess('Updated');
+                  Navigator.push(context, Myroute(Allproducts()));
+
+
 
 
                 },

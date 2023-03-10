@@ -322,10 +322,10 @@ class _companyhomeState extends State<companyhome> {
 
       });
     });
-print(user_data[1]);
+
     a=await new database().GetImage_Firebase('company_licenses',user_data[1]);
     user_data.add(a);
-    print(user_data[6]);
+
 
   }
 }

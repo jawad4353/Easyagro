@@ -165,7 +165,7 @@ class _companyloginState extends State<companylogin> {
                             var mode,userexist,s;
                             SharedPreferences pref =await SharedPreferences.getInstance();
                             mode=await pref.getString('mode');
-                            userexist=await new database().Login_company(license_controller.text,password_controller.text);
+
                             s=Password_Validation(password_controller.text);
 
                            if(mode=='offline'){
@@ -188,11 +188,13 @@ class _companyloginState extends State<companylogin> {
                              EasyLoading.showInfo('Invalid password!');
                              return;
                            }
+                            EasyLoading.show(status: 'Processing',dismissOnTap: false);
+                            userexist=await new database().Login_company(license_controller.text,password_controller.text);
                            if(userexist==false){
                              EasyLoading.showError('Incorrect credentials! ! \nlicense : ${license_controller.text}\npassword : ${password_controller.text}');
                              return;
                            }
-                           EasyLoading.show(status: 'Processing',dismissOnTap: false);
+
 
                            Set_Shared_Preference('company', license_controller.text, password_controller.text);
                            EasyLoading.showSuccess('Login Successful');
