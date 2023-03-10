@@ -3,18 +3,25 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyagro/splash.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:select_form_field/select_form_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'products.dart';
 
-class ViewProductPage extends StatelessWidget {
-  var product=[];
+class ViewProductPage extends StatefulWidget {
+  Map<String, dynamic> product;
 
   ViewProductPage({required this.product});
 
+  @override
+  State<ViewProductPage> createState() => _ViewProductPageState();
+}
+
+class _ViewProductPageState extends State<ViewProductPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,72 +30,117 @@ class ViewProductPage extends StatelessWidget {
         backgroundColor: Colors.green.shade700,
         actions: [
           IconButton(onPressed: (){
-            Navigator.push(context, Myroute(Updateproduct()));
+            print(widget.product['productname']);
+            Navigator.push(context, Myroute(Updateproduct(product: widget.product,)));
           }, icon: Icon(Icons.update,size: 30,)),
           IconButton(onPressed: (){
+
             showDialog(context: context, builder: (context)=>AlertDialog(
-              title:    Text('Are you sure You want to delete ?'),
+              title:   Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                Text('Are you sure?'),
+                Text('This product will be deleted permanently you will not be able to see it again',
+                style: TextStyle(fontSize: 17,fontWeight: FontWeight.normal),),
+              ],),
+
               actions: [
-              ElevatedButton(onPressed: (){}, child: Text('Yes')),
-                ElevatedButton(onPressed: (){}, child: Text('No')),
+              ElevatedButton(style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade700)
+
+              ),onPressed: () async {
+
+                final storage = FirebaseStorage.instance;
+                final ref = storage.ref().child('products/${widget.product['companylicense']}/${widget.product['productcategory']}/${widget.product['productid']}');
+                try {
+                  await ref.delete();
+                  await FirebaseFirestore.instance.collection("products").get().then((querySnapshot) {
+                    querySnapshot.docs.forEach((result) {
+                      if(result.data()['productid']==widget.product['productid'] && result.data()['companylicense']==
+                          widget.product['companylicense']
+                      ){
+                        FirebaseFirestore.instance.collection("products").doc(result.id).delete();
+                      }
+
+                    });
+                  });
+                  EasyLoading.showSuccess('Product Deleted');
+                  Navigator.pushReplacement(context, Myroute(Allproducts()));
+                } catch (e) {
+                 EasyLoading.showError('Error deleting Products');
+                }
+
+
+              }, child: Text('Yes')),
+                ElevatedButton(style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade700)
+
+            ),onPressed: (){
+                  Navigator.of(context).pop();
+                }, child: Text('No')),
               ],
             ));
           }, icon: Icon(Icons.delete,size: 30,)),
           Text('  '),
         ],
-        title: Text('View Product'),
+        title: Text('Product details'),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Image.network(
-            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8c2hvZXN8ZW58MHx8MHx8&w=1000&q=80',
-            fit: BoxFit.cover,
-            height: 200,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Shoes',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Imported shoe very soft and comfortable to wear',
-                  style: TextStyle(fontSize: 16),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Price: 675 R.s',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Row(
+      body: Container(
+        color: Colors.white,
+              padding: const EdgeInsets.all(3.0),
+              child:  ListView(
                   children: [
-                    Icon(Icons.star, color: Colors.yellow),
-                    SizedBox(width: 8),
+                    InkWell(
+                      hoverColor: Colors.green,
+                      onTap: (){
+                        Navigator.push(context,Myroute(View_image(imageurl:widget.product['image'] ,)));
+                      },
+                      child: Image.network(
+                        '${widget.product['image']}',
+                        fit: BoxFit.fill,
+                        height: 350,
+                      ),
+                    ),
                     Text(
-                      '(4.7)',
+                      '${widget.product['productname']}',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          'R.s ${widget.product['productprice']}',
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green.shade700
+                          ),
+                        ),
+                        Text('  '),
+                        Text('('),
+                        Icon(Icons.star, color: Colors.yellow),
+
+                        Text(
+                          '4.7)   ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+
+                    Text(
+                      '${widget.product['productdescription']}',
+                      style: TextStyle(fontSize: 16),
+                    )
+
                   ],
-                ),
-              ],
-            ),
-          ),
-        ],
+              ),
       ),
     );
   }
@@ -97,7 +149,23 @@ class ViewProductPage extends StatelessWidget {
 
 
 
+class View_image extends StatelessWidget{
+  var imageurl;
+  View_image({required this.imageurl});
+  @override
+  Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.black,
+    body: Center(
+      child: InteractiveViewer(
+          maxScale: 10,
 
+          child: Image.network('${imageurl}')),
+    ),
+  );
+  }
+  
+}
 
 
 
@@ -107,11 +175,15 @@ class ViewProductPage extends StatelessWidget {
 
 
 class Updateproduct extends StatefulWidget{
+  var product;
+  Updateproduct({required this.product});
   @override
   State<Updateproduct> createState() => _UpdateproductState();
 }
 
 class _UpdateproductState extends State<Updateproduct> {
+
+
   final productName_Controller = TextEditingController();
 
   final productPrice_Controller = TextEditingController();
@@ -188,6 +260,18 @@ class _UpdateproductState extends State<Updateproduct> {
   }
 
   @override
+  void initState() {
+  product_category_Controller.text=widget.product['productcategory'];
+  productquantity_Controller.text=widget.product['productquantity'];
+  productDescription_Controller.text=widget.product['productdescription'];
+  productPrice_Controller.text=widget.product['productprice'];
+  productName_Controller.text=widget.product['productname'];
+  
+    super.initState();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
     return Scaffold(
@@ -219,7 +303,7 @@ class _UpdateproductState extends State<Updateproduct> {
                         ),
                       ),
                       child: _image == null
-                          ? Center(child: Text('Tap to add image'))
+                          ? Image.network('${widget.product['image']}',fit: BoxFit.fill,)
                           : null,
                     ),
                   ),

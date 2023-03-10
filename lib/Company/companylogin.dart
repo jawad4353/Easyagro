@@ -192,6 +192,7 @@ class _companyloginState extends State<companylogin> {
                              EasyLoading.showError('Incorrect credentials! ! \nlicense : ${license_controller.text}\npassword : ${password_controller.text}');
                              return;
                            }
+                           EasyLoading.show(status: 'Processing',dismissOnTap: false);
 
                            Set_Shared_Preference('company', license_controller.text, password_controller.text);
                            EasyLoading.showSuccess('Login Successful');

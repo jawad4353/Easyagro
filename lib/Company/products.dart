@@ -16,7 +16,7 @@ class Allproducts extends StatefulWidget{
 }
 
 class _AllproductsState extends State<Allproducts> with SingleTickerProviderStateMixin {
- late TabController catagoty_controller=new TabController(length: 4,vsync: this);
+ late TabController catagoty_controller=new TabController(length: 7,vsync: this);
  var licenseno;
 
  @override
@@ -45,7 +45,7 @@ class _AllproductsState extends State<Allproducts> with SingleTickerProviderStat
       Text('  '),],elevation: 0,backgroundColor: Colors.green.shade700,
 
       bottom:PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight + 78),
+        preferredSize: Size.fromHeight(kToolbarHeight + 48),
         child: Column(children: [
 
           Padding(
@@ -69,12 +69,16 @@ class _AllproductsState extends State<Allproducts> with SingleTickerProviderStat
           TabBar(
             controller:catagoty_controller ,
             indicatorColor: Colors.white,
+            isScrollable: true,
             tabs: [
 
-              Tab(icon: Icon(Icons.accessibility), text: 'Pesticides'),
-              Tab(icon: Icon(Icons.hourglass_bottom), text: 'Granuale'),
-              Tab(icon: Icon(Icons.directions_ferry), text: 'Micronutrient'),
-              Tab(icon: Icon(Icons.ac_unit_sharp), text: 'Fertilizers'),
+              Tab( text: 'Pesticides'),
+              Tab( text: 'Granuale'),
+              Tab( text: 'Micronutrient'),
+              Tab(text: 'Fertilizers'),
+              Tab(text: 'Seeds'),
+              Tab(text: 'Farming Tools'),
+              Tab(text: 'Others'),
             ],
           ),
         ],),
@@ -86,7 +90,10 @@ class _AllproductsState extends State<Allproducts> with SingleTickerProviderStat
         pesticides(license: licenseno,),
          granuale(license: licenseno,),
          micronutrient(license: licenseno,),
-         fertilizer(license: licenseno,)
+         fertilizer(license: licenseno,),
+         seeds(license: licenseno),
+         farming_tools(license: licenseno),
+         seeds(license: licenseno),
 
        ],
      )
@@ -110,7 +117,7 @@ class _pesticidesState extends State<pesticides> {
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black12,
       body:  StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('products').where('companylicense', isEqualTo: '${widget.license}').where('productcategory', isEqualTo: 'Pesticides').snapshots(),
         builder: (context, snapshot) {
@@ -125,9 +132,9 @@ class _pesticidesState extends State<pesticides> {
 
           return products.isEmpty? Center(child: Text('No products')): Container(
             color: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
+            padding: const EdgeInsets.all(8.0),
+            child:  GridView.builder(
+                padding: EdgeInsets.all(10),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 10,
@@ -137,53 +144,68 @@ class _pesticidesState extends State<pesticides> {
                 itemCount: products.length,
                 itemBuilder: (context, index) {
                   final product = products[index].data() as Map<String, dynamic>;
+                  final namee= product['productname'] as String;
+                  final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
                   final description = product['productdescription'] as String;
                   final shortDescription =
                   description.length > 50 ? '${description.substring(0, 50)}...' : description;
                   // Replace the placeholders with the actual product data
-                  return  Column(
-                    children: [
-                      Container(
-                        height: 120,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-                          child: Image.network(
-                            '${product['image']}',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                  return  InkWell(
+                    onTap: (){
+                      Navigator.push(context, Myroute(ViewProductPage(product: product,)));
+                    },
+                    child: Container(
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(width: 2,color: Colors.black12)
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${product['productname']}',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                      child: Column(
+                       crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                         Container(
+                           height: 105,
+                           child: Image.network(
+                              '${product['image']}',fit: BoxFit.fill,
+
                             ),
-                            Text(shortDescription),
-                            Text(''),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                         ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '\R.s ${product['productprice']}',
-                                  style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
-                                ),
-                                Text(
-                                  '(${product['productquantity']})',
+                                  '$nameeshort',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
-                              ],)
-                          ],
-                        ),
+                                Text('$shortDescription'),
+                                Text(''),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      ' \R.s ${product['productprice']}',
+                                      style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
+                                    ),
+                                    Text(
+                                      '(${product['productquantity']})  ',
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+
+                                  ],),
+                                Text('')
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   );
                 },
               ),
-            ),
+
           );
         },
       ),
@@ -219,67 +241,82 @@ class _granualeState extends State<granuale> {
           // Create a list of product documents from the snapshot
           final products = snapshot.data!.docs;
 
-          return products.isEmpty? Center(child: Text('No products')): Container(
+          return products.isEmpty? Center(child: Text('No products')):Container(
             color: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.75,
-                ),
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  final product = products[index].data() as Map<String, dynamic>;
-                  final description = product['productdescription'] as String;
-                  final shortDescription =
-                  description.length > 50 ? '${description.substring(0, 50)}...' : description;
-                  // Replace the placeholders with the actual product data
-                  return  Column(
-                    children: [
-                      Container(
-                        height: 120,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+            padding: const EdgeInsets.all(8.0),
+            child:  GridView.builder(
+              padding: EdgeInsets.all(10),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final product = products[index].data() as Map<String, dynamic>;
+                final namee= product['productname'] as String;
+                final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
+                final description = product['productdescription'] as String;
+                final shortDescription =
+                description.length > 50 ? '${description.substring(0, 50)}...' : description;
+                // Replace the placeholders with the actual product data
+                return  InkWell(
+                  onTap: (){
+                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
+                  },
+                  child: Container(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(width: 2,color: Colors.black12)
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          height: 105,
                           child: Image.network(
-                            '${product['image']}',
-                            fit: BoxFit.cover,
+                            '${product['image']}',fit: BoxFit.fill,
+
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${product['productname']}',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Text(shortDescription),
-                            Text(''),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '\R.s ${product['productprice']}',
-                                  style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
-                                ),
-                                Text(
-                                  '(${product['productquantity']})',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ],)
-                          ],
+                        Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '$nameeshort',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text('$shortDescription'),
+                              Text(''),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    ' \R.s ${product['productprice']}',
+                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
+                                  ),
+                                  Text(
+                                    '(${product['productquantity']})  ',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+
+                                ],),
+                              Text('')
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
+
           );
         },
       ),
@@ -321,65 +358,80 @@ class _micronutrientState extends State<micronutrient> {
 
           return products.isEmpty? Center(child: Text('No products')): Container(
             color: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.75,
-                ),
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  final product = products[index].data() as Map<String, dynamic>;
-                  final description = product['productdescription'] as String;
-                  final shortDescription =
-                  description.length > 50 ? '${description.substring(0, 50)}...' : description;
-                  // Replace the placeholders with the actual product data
-                  return  Column(
-                    children: [
-                      Container(
-                        height: 120,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+            padding: const EdgeInsets.all(8.0),
+            child:  GridView.builder(
+              padding: EdgeInsets.all(10),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final product = products[index].data() as Map<String, dynamic>;
+                final namee= product['productname'] as String;
+                final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
+                final description = product['productdescription'] as String;
+                final shortDescription =
+                description.length > 50 ? '${description.substring(0, 50)}...' : description;
+                // Replace the placeholders with the actual product data
+                return  InkWell(
+                  onTap: (){
+                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
+                  },
+                  child: Container(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(width: 2,color: Colors.black12)
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          height: 105,
                           child: Image.network(
-                            '${product['image']}',
-                            fit: BoxFit.cover,
+                            '${product['image']}',fit: BoxFit.fill,
+
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${product['productname']}',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Text(shortDescription),
-                            Text(''),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '\R.s ${product['productprice']}',
-                                  style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
-                                ),
-                                Text(
-                                  '(${product['productquantity']})',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ],)
-                          ],
+                        Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '$nameeshort',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text('$shortDescription'),
+                              Text(''),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    ' \R.s ${product['productprice']}',
+                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
+                                  ),
+                                  Text(
+                                    '(${product['productquantity']})  ',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+
+                                ],),
+                              Text('')
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
+
           );
         },
       ),
@@ -421,65 +473,80 @@ class _fertilizerState extends State<fertilizer> {
 
           return products.isEmpty? Center(child: Text('No products')):Container(
             color: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.75,
-                ),
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  final product = products[index].data() as Map<String, dynamic>;
-                  final description = product['productdescription'] as String;
-                  final shortDescription =
-                  description.length > 50 ? '${description.substring(0, 50)}...' : description;
-                  // Replace the placeholders with the actual product data
-                  return  Column(
-                    children: [
-                      Container(
-                        height: 120,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+            padding: const EdgeInsets.all(8.0),
+            child:  GridView.builder(
+              padding: EdgeInsets.all(10),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final product = products[index].data() as Map<String, dynamic>;
+                final namee= product['productname'] as String;
+                final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
+                final description = product['productdescription'] as String;
+                final shortDescription =
+                description.length > 50 ? '${description.substring(0, 50)}...' : description;
+                // Replace the placeholders with the actual product data
+                return  InkWell(
+                  onTap: (){
+                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
+                  },
+                  child: Container(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(width: 2,color: Colors.black12)
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          height: 105,
                           child: Image.network(
-                            '${product['image']}',
-                            fit: BoxFit.cover,
+                            '${product['image']}',fit: BoxFit.fill,
+
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${product['productname']}',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Text(shortDescription),
-                            Text(''),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '\R.s ${product['productprice']}',
-                                  style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
-                                ),
-                                Text(
-                                  '(${product['productquantity']})',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ],)
-                          ],
+                        Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '$nameeshort',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text('$shortDescription'),
+                              Text(''),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    ' \R.s ${product['productprice']}',
+                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
+                                  ),
+                                  Text(
+                                    '(${product['productquantity']})  ',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+
+                                ],),
+                              Text('')
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
+
           );
         },
       ),
@@ -495,6 +562,359 @@ class _fertilizerState extends State<fertilizer> {
 
 
 
+
+
+
+class seeds extends StatefulWidget {
+  var license;
+  seeds({required this.license});
+  @override
+  State<seeds> createState() => _seedsState();
+}
+
+class _seedsState extends State<seeds> {
+  @override
+  Widget build(BuildContext context) {
+    var size=MediaQuery.of(context).size;
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body:  StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('products').where('companylicense', isEqualTo: '${widget.license}').where('productcategory', isEqualTo: 'Seeds').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          // Create a list of product documents from the snapshot
+          final products = snapshot.data!.docs;
+
+          return products.isEmpty? Center(child: Text('No products')):Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(8.0),
+            child:  GridView.builder(
+              padding: EdgeInsets.all(10),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final product = products[index].data() as Map<String, dynamic>;
+                final namee= product['productname'] as String;
+                final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
+                final description = product['productdescription'] as String;
+                final shortDescription =
+                description.length > 50 ? '${description.substring(0, 50)}...' : description;
+                // Replace the placeholders with the actual product data
+                return  InkWell(
+                  onTap: (){
+                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
+                  },
+                  child: Container(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(width: 2,color: Colors.black12)
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          height: 105,
+                          child: Image.network(
+                            '${product['image']}',fit: BoxFit.fill,
+
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '$nameeshort',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text('$shortDescription'),
+                              Text(''),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    ' \R.s ${product['productprice']}',
+                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
+                                  ),
+                                  Text(
+                                    '(${product['productquantity']})  ',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+
+                                ],),
+                              Text('')
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+
+          );
+        },
+      ),
+
+    );
+  }
+}
+
+
+
+
+
+
+
+
+class farming_tools extends StatefulWidget {
+  var license;
+  farming_tools({required this.license});
+  @override
+  State<farming_tools> createState() => _farming_toolsState();
+}
+
+class _farming_toolsState extends State<farming_tools> {
+  @override
+  Widget build(BuildContext context) {
+    var size=MediaQuery.of(context).size;
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body:  StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('products').where('companylicense', isEqualTo: '${widget.license}').where('productcategory', isEqualTo: 'Farming Tools').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          // Create a list of product documents from the snapshot
+          final products = snapshot.data!.docs;
+
+          return products.isEmpty? Center(child: Text('No products')):Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(8.0),
+            child:  GridView.builder(
+              padding: EdgeInsets.all(10),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final product = products[index].data() as Map<String, dynamic>;
+                final namee= product['productname'] as String;
+                final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
+                final description = product['productdescription'] as String;
+                final shortDescription =
+                description.length > 50 ? '${description.substring(0, 50)}...' : description;
+                // Replace the placeholders with the actual product data
+                return  InkWell(
+                  onTap: (){
+                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
+                  },
+                  child: Container(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(width: 2,color: Colors.black12)
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          height: 105,
+                          child: Image.network(
+                            '${product['image']}',fit: BoxFit.fill,
+
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '$nameeshort',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text('$shortDescription'),
+                              Text(''),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    ' \R.s ${product['productprice']}',
+                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
+                                  ),
+                                  Text(
+                                    '(${product['productquantity']})  ',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+
+                                ],),
+                              Text('')
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+
+          );
+        },
+      ),
+
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Others extends StatefulWidget {
+  var license;
+  Others({required this.license});
+  @override
+  State<Others> createState() => _OthersState();
+}
+
+class _OthersState extends State<Others> {
+  @override
+  Widget build(BuildContext context) {
+    var size=MediaQuery.of(context).size;
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body:  StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('products').where('companylicense', isEqualTo: '${widget.license}').where('productcategory', isEqualTo: 'Others').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          // Create a list of product documents from the snapshot
+          final products = snapshot.data!.docs;
+
+          return products.isEmpty? Center(child: Text('No products')):Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(8.0),
+            child:  GridView.builder(
+              padding: EdgeInsets.all(10),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final product = products[index].data() as Map<String, dynamic>;
+                final namee= product['productname'] as String;
+                final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
+                final description = product['productdescription'] as String;
+                final shortDescription =
+                description.length > 50 ? '${description.substring(0, 50)}...' : description;
+                // Replace the placeholders with the actual product data
+                return  InkWell(
+                  onTap: (){
+                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
+                  },
+                  child: Container(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(width: 2,color: Colors.black12)
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          height: 105,
+                          child: Image.network(
+                            '${product['image']}',fit: BoxFit.fill,
+
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '$nameeshort',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text('$shortDescription'),
+                              Text(''),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    ' \R.s ${product['productprice']}',
+                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
+                                  ),
+                                  Text(
+                                    '(${product['productquantity']})  ',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+
+                                ],),
+                              Text('')
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+
+          );
+        },
+      ),
+
+    );
+  }
+}
 
 
 

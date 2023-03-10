@@ -28,6 +28,7 @@ class _AddProductsPageState extends State<AddProductsPage> {
       'value': 'Pesticides',
       'label': 'Pesticides',
     },
+
     {
       'value': 'Granuale',
       'label': 'Granuale',
@@ -39,6 +40,18 @@ class _AddProductsPageState extends State<AddProductsPage> {
     {
       'value': 'Fertilizers',
       'label': 'Fertilizers',
+    },
+    {
+      'value': 'Seeds',
+      'label': 'Seeds',
+    },
+    {
+      'value': 'Farming Tools',
+      'label': 'Farming Tools',
+    },
+    {
+      'value': 'Others',
+      'label': 'Others',
     },
   ];
   final List<Map<String, dynamic>> _quantity_list = [
