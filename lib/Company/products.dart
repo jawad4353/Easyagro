@@ -1,13 +1,19 @@
 
 
 
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyagro/Company/addproducts.dart';
 import 'package:easyagro/Company/rud_products.dart';
 import 'package:easyagro/splash.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'Notifiers.dart';
 
 
 class Allproducts extends StatefulWidget{
@@ -17,12 +23,14 @@ class Allproducts extends StatefulWidget{
 
 class _AllproductsState extends State<Allproducts> with SingleTickerProviderStateMixin {
  late TabController catagoty_controller=new TabController(length: 7,vsync: this);
- var licenseno;
+ var licenseno,clear_provider=false;
 
  @override
   void initState() {
     super.initState();
     Getlicense();
+    Timer(Duration(milliseconds: 100),()=> Provider.of<GlobalState>(context, listen: false).value = '');
+
   }
 
   Future<void> Getlicense() async {
@@ -36,67 +44,72 @@ class _AllproductsState extends State<Allproducts> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
-  return Scaffold(
-    backgroundColor:Colors.white,
-    appBar: AppBar(centerTitle: true,title: Text('Products',style: TextStyle(fontSize: 20,fontFamily: 'jd'),),
-      actions: [IconButton(onPressed: (){
-        Navigator.push(context, Myroute(AddProductsPage()));
-      }, icon: Icon(Icons.add,color: Colors.white,size: 27,)),
-      Text('  '),],elevation: 0,backgroundColor: Colors.green.shade700,
+  return  Scaffold(
+      backgroundColor:Colors.white,
+      appBar: AppBar(centerTitle: true,title: Text('Products',style: TextStyle(fontSize: 20,fontFamily: 'jd'),),
+        actions: [IconButton(onPressed: (){
+          Navigator.push(context, Myroute(AddProductsPage()));
+        }, icon: Icon(Icons.add,color: Colors.white,size: 27,)),
+        Text('  '),],elevation: 0,backgroundColor: Colors.green.shade700,
 
-      bottom:PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight + 48),
-        child: Column(children: [
+        bottom:PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight + 48),
+          child: Column(children: [
 
-          Padding(
-            padding: EdgeInsets.only(left: size.width*0.1,right: size.width*0.1),
-            child: TextField(
-              cursorColor: Colors.green,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(left: 15),
-                filled: true,
-                fillColor: Colors.white,
-                hintText: 'Search products',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
+            Padding(
+              padding: EdgeInsets.only(left: size.width*0.1,right: size.width*0.1),
+              child: TextField(
+                cursorColor: Colors.green,
+
+                onChanged: (a){
+                    Provider.of<GlobalState>(context, listen: false).value = a;
+                },
+
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.only(left: 15),
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: 'Search products',
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.green)
-                ),
-              ),),
-          ),
-          TabBar(
-            controller:catagoty_controller ,
-            indicatorColor: Colors.white,
-            isScrollable: true,
-            tabs: [
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.green)
+                  ),
+                ),),
+            ),
+            TabBar(
+              controller:catagoty_controller ,
+              indicatorColor: Colors.white,
+              isScrollable: true,
+              tabs: [
 
-              Tab( text: 'Pesticides'),
-              Tab( text: 'Granuale'),
-              Tab( text: 'Micronutrient'),
-              Tab(text: 'Fertilizers'),
-              Tab(text: 'Seeds'),
-              Tab(text: 'Farming Tools'),
-              Tab(text: 'Others'),
-            ],
-          ),
-        ],),
-      )
-    ),
-     body: TabBarView(
-       controller: catagoty_controller,
-       children: [
-        pesticides(license: licenseno,),
-         granuale(license: licenseno,),
-         micronutrient(license: licenseno,),
-         fertilizer(license: licenseno,),
-         seeds(license: licenseno),
-         farming_tools(license: licenseno),
-         seeds(license: licenseno),
+                Tab( text: 'Pesticides'),
+                Tab( text: 'Granuale'),
+                Tab( text: 'Micronutrient'),
+                Tab(text: 'Fertilizers'),
+                Tab(text: 'Seeds'),
+                Tab(text: 'Farming Tools'),
+                Tab(text: 'Others'),
+              ],
+            ),
+          ],),
+        )
+      ),
+       body: TabBarView(
+         controller: catagoty_controller,
+         children: [
+           pesticides(license: licenseno,),
+           granuale(license: licenseno,),
+           micronutrient(license: licenseno,),
+           fertilizer(license: licenseno,),
+           seeds(license: licenseno),
+           farming_tools(license: licenseno),
+           seeds(license: licenseno),
 
-       ],
-     )
+         ],
+       )
 
   );
   }
@@ -112,9 +125,12 @@ class pesticides extends StatefulWidget{
 }
 
 class _pesticidesState extends State<pesticides> {
+ late String globalValue;
+
 
   @override
   Widget build(BuildContext context) {
+    globalValue = Provider.of<GlobalState>(context).value;
     var size=MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.black12,
@@ -127,10 +143,14 @@ class _pesticidesState extends State<pesticides> {
             );
           }
 
-          // Create a list of product documents from the snapshot
-          final products = snapshot.data!.docs;
 
-          return products.isEmpty? Center(child: Text('No products')): Container(
+
+          List<DocumentSnapshot> filteredProducts = snapshot.data!.docs.where((doc) {
+            return doc['productname'].toLowerCase().contains(globalValue.toLowerCase());
+          }).toList();
+
+
+          return filteredProducts.isEmpty? Center(child: Text('No products')): Container(
             color: Colors.white,
             padding: const EdgeInsets.all(8.0),
             child:  GridView.builder(
@@ -141,9 +161,9 @@ class _pesticidesState extends State<pesticides> {
                   mainAxisSpacing: 10,
                   childAspectRatio: 0.75,
                 ),
-                itemCount: products.length,
+                itemCount: filteredProducts.length,
                 itemBuilder: (context, index) {
-                  final product = products[index].data() as Map<String, dynamic>;
+                  final product = filteredProducts[index].data() as Map<String, dynamic>;
                   final namee= product['productname'] as String;
                   final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
                   final description = product['productdescription'] as String;
@@ -224,8 +244,11 @@ class granuale extends StatefulWidget {
 }
 
 class _granualeState extends State<granuale> {
+
+
   @override
   Widget build(BuildContext context) {
+    String globalValue = Provider.of<GlobalState>(context).value;
     var size=MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -238,10 +261,12 @@ class _granualeState extends State<granuale> {
             );
           }
 
-          // Create a list of product documents from the snapshot
-          final products = snapshot.data!.docs;
+          List<DocumentSnapshot> filteredProducts = snapshot.data!.docs.where((doc) {
+            return doc['productname'].toLowerCase().contains(globalValue.toLowerCase());
+          }).toList();
 
-          return products.isEmpty? Center(child: Text('No products')):Container(
+
+          return filteredProducts.isEmpty? Center(child: Text('No products')): Container(
             color: Colors.white,
             padding: const EdgeInsets.all(8.0),
             child:  GridView.builder(
@@ -252,9 +277,9 @@ class _granualeState extends State<granuale> {
                 mainAxisSpacing: 10,
                 childAspectRatio: 0.75,
               ),
-              itemCount: products.length,
+              itemCount: filteredProducts.length,
               itemBuilder: (context, index) {
-                final product = products[index].data() as Map<String, dynamic>;
+                final product = filteredProducts[index].data() as Map<String, dynamic>;
                 final namee= product['productname'] as String;
                 final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
                 final description = product['productdescription'] as String;
@@ -341,6 +366,7 @@ class micronutrient extends StatefulWidget {
 class _micronutrientState extends State<micronutrient> {
   @override
   Widget build(BuildContext context) {
+    String globalValue = Provider.of<GlobalState>(context).value;
     var size=MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -349,14 +375,16 @@ class _micronutrientState extends State<micronutrient> {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(color: Colors.green.shade700,),
             );
           }
 
-          // Create a list of product documents from the snapshot
-          final products = snapshot.data!.docs;
+          List<DocumentSnapshot> filteredProducts = snapshot.data!.docs.where((doc) {
+            return doc['productname'].toLowerCase().contains(globalValue.toLowerCase());
+          }).toList();
 
-          return products.isEmpty? Center(child: Text('No products')): Container(
+
+          return filteredProducts.isEmpty? Center(child: Container(color:Colors.white,child: Text('No products'))): Container(
             color: Colors.white,
             padding: const EdgeInsets.all(8.0),
             child:  GridView.builder(
@@ -367,9 +395,9 @@ class _micronutrientState extends State<micronutrient> {
                 mainAxisSpacing: 10,
                 childAspectRatio: 0.75,
               ),
-              itemCount: products.length,
+              itemCount: filteredProducts.length,
               itemBuilder: (context, index) {
-                final product = products[index].data() as Map<String, dynamic>;
+                final product = filteredProducts[index].data() as Map<String, dynamic>;
                 final namee= product['productname'] as String;
                 final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
                 final description = product['productdescription'] as String;
@@ -456,6 +484,7 @@ class fertilizer extends StatefulWidget {
 class _fertilizerState extends State<fertilizer> {
   @override
   Widget build(BuildContext context) {
+    String globalValue = Provider.of<GlobalState>(context).value;
     var size=MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -464,14 +493,16 @@ class _fertilizerState extends State<fertilizer> {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(color: Colors.green.shade700,),
             );
           }
 
-          // Create a list of product documents from the snapshot
-          final products = snapshot.data!.docs;
+          List<DocumentSnapshot> filteredProducts = snapshot.data!.docs.where((doc) {
+            return doc['productname'].toLowerCase().contains(globalValue.toLowerCase());
+          }).toList();
 
-          return products.isEmpty? Center(child: Text('No products')):Container(
+
+          return filteredProducts.isEmpty? Center(child: Container(color:Colors.white,child: Text('No products'))): Container(
             color: Colors.white,
             padding: const EdgeInsets.all(8.0),
             child:  GridView.builder(
@@ -482,9 +513,9 @@ class _fertilizerState extends State<fertilizer> {
                 mainAxisSpacing: 10,
                 childAspectRatio: 0.75,
               ),
-              itemCount: products.length,
+              itemCount: filteredProducts.length,
               itemBuilder: (context, index) {
-                final product = products[index].data() as Map<String, dynamic>;
+                final product = filteredProducts[index].data() as Map<String, dynamic>;
                 final namee= product['productname'] as String;
                 final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
                 final description = product['productdescription'] as String;
@@ -575,6 +606,7 @@ class seeds extends StatefulWidget {
 class _seedsState extends State<seeds> {
   @override
   Widget build(BuildContext context) {
+    String globalValue = Provider.of<GlobalState>(context).value;
     var size=MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -587,10 +619,12 @@ class _seedsState extends State<seeds> {
             );
           }
 
-          // Create a list of product documents from the snapshot
-          final products = snapshot.data!.docs;
+          List<DocumentSnapshot> filteredProducts = snapshot.data!.docs.where((doc) {
+            return doc['productname'].toLowerCase().contains(globalValue.toLowerCase());
+          }).toList();
 
-          return products.isEmpty? Center(child: Text('No products')):Container(
+
+          return filteredProducts.isEmpty? Center(child: Container(color:Colors.white,child: Text('No products'))): Container(
             color: Colors.white,
             padding: const EdgeInsets.all(8.0),
             child:  GridView.builder(
@@ -601,9 +635,9 @@ class _seedsState extends State<seeds> {
                 mainAxisSpacing: 10,
                 childAspectRatio: 0.75,
               ),
-              itemCount: products.length,
+              itemCount: filteredProducts.length,
               itemBuilder: (context, index) {
-                final product = products[index].data() as Map<String, dynamic>;
+                final product = filteredProducts[index].data() as Map<String, dynamic>;
                 final namee= product['productname'] as String;
                 final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
                 final description = product['productdescription'] as String;
@@ -691,6 +725,7 @@ class farming_tools extends StatefulWidget {
 class _farming_toolsState extends State<farming_tools> {
   @override
   Widget build(BuildContext context) {
+    String globalValue = Provider.of<GlobalState>(context).value;
     var size=MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -703,10 +738,12 @@ class _farming_toolsState extends State<farming_tools> {
             );
           }
 
-          // Create a list of product documents from the snapshot
-          final products = snapshot.data!.docs;
+          List<DocumentSnapshot> filteredProducts = snapshot.data!.docs.where((doc) {
+            return doc['productname'].toLowerCase().contains(globalValue.toLowerCase());
+          }).toList();
 
-          return products.isEmpty? Center(child: Text('No products')):Container(
+
+          return filteredProducts.isEmpty? Center(child: Container(color:Colors.white,child: Text('No products'))): Container(
             color: Colors.white,
             padding: const EdgeInsets.all(8.0),
             child:  GridView.builder(
@@ -717,9 +754,9 @@ class _farming_toolsState extends State<farming_tools> {
                 mainAxisSpacing: 10,
                 childAspectRatio: 0.75,
               ),
-              itemCount: products.length,
+              itemCount: filteredProducts.length,
               itemBuilder: (context, index) {
-                final product = products[index].data() as Map<String, dynamic>;
+                final product = filteredProducts[index].data() as Map<String, dynamic>;
                 final namee= product['productname'] as String;
                 final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
                 final description = product['productdescription'] as String;
@@ -817,6 +854,7 @@ class Others extends StatefulWidget {
 class _OthersState extends State<Others> {
   @override
   Widget build(BuildContext context) {
+    String globalValue = Provider.of<GlobalState>(context).value;
     var size=MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -829,10 +867,12 @@ class _OthersState extends State<Others> {
             );
           }
 
-          // Create a list of product documents from the snapshot
-          final products = snapshot.data!.docs;
+          List<DocumentSnapshot> filteredProducts = snapshot.data!.docs.where((doc) {
+            return doc['productname'].toLowerCase().contains(globalValue.toLowerCase());
+          }).toList();
 
-          return products.isEmpty? Center(child: Text('No products')):Container(
+
+          return filteredProducts.isEmpty? Center(child: Container(color:Colors.white,child: Text('No products'))): Container(
             color: Colors.white,
             padding: const EdgeInsets.all(8.0),
             child:  GridView.builder(
@@ -843,9 +883,9 @@ class _OthersState extends State<Others> {
                 mainAxisSpacing: 10,
                 childAspectRatio: 0.75,
               ),
-              itemCount: products.length,
+              itemCount: filteredProducts.length,
               itemBuilder: (context, index) {
-                final product = products[index].data() as Map<String, dynamic>;
+                final product = filteredProducts[index].data() as Map<String, dynamic>;
                 final namee= product['productname'] as String;
                 final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
                 final description = product['productdescription'] as String;

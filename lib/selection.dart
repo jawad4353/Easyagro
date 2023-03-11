@@ -33,7 +33,7 @@ class _SelectionState extends State<Selection> {
                Opacity(
                  opacity: 0.5,
                  child: Container(
-                   height:size.height*0.94,
+                   height:size.height,
                    width: size.width,
                    decoration: const BoxDecoration(
                      image: DecorationImage(

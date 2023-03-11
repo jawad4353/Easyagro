@@ -54,6 +54,7 @@ dependencies:
   flutter_svg: ^2.0.2
   select_form_field:
   uuid: ^3.0.7
+  provider:
 
 dev_dependencies:
   flutter_test:
