@@ -172,13 +172,15 @@ class _display_productsState extends State<display_products> {
             color: Colors.white,
             padding: const EdgeInsets.all(8.0),
             child:  GridView.builder(
+
                 padding: EdgeInsets.all(10),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.73,
-                ),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 5,
+                childAspectRatio:size.width / 690,
+
+              ),
                 itemCount: filteredProducts.length,
                 itemBuilder: (context, index) {
                   final product = filteredProducts[index].data() as Map<String, dynamic>;
@@ -188,61 +190,81 @@ class _display_productsState extends State<display_products> {
                   final shortDescription =
                   description.length > 50 ? '${description.substring(0, 50)}...' : description;
                   // Replace the placeholders with the actual product data
-                  return  InkWell(
-                    onTap: (){
-                      Navigator.push(context, Myroute(ViewProductPage(product: product,)));
-                    },
-                    child: Container(
+                  return   Container(
                       clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(width: 2,color: Colors.black12)
-                      ),
-                      child: Column(
-                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                         Container(
-                           height: 125,
-                           child: Image.network(
-                              '${product['image']}',fit: BoxFit.fill,
 
+                          border: Border.all(width: 3,color: Colors.black12)
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(context, Myroute(ViewProductPage(product: product,)));
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: 145,
+                              child: Image.network(
+                                '${product['image']}',
+                                fit: BoxFit.fill,
+                              ),
                             ),
-                         ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 10),
-                            child: Column(
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 Text(
-                                  '$nameeshort',
+                                  '$namee',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 Text('$shortDescription'),
-                                Text(''),
+                                SizedBox(height: 10),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       ' \R.s ${product['productprice']}',
-                                      style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green.shade700,
+                                      ),
                                     ),
                                     Text(
                                       '(${product['productquantity']})  ',
                                       style: TextStyle(fontWeight: FontWeight.bold),
                                     ),
 
-                                  ],),
-                                Text('')
+                                  ],
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+
+                                  children: [
+                                    ElevatedButton(
+
+                                      onPressed: () {
+                                        Navigator.push(context, Myroute(ViewProductPage(product: product,)));
+                                      },
+                                      style: ButtonStyle(
+                                          backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade700)
+                                      ),
+                                      child: Text('View'),
+                                    ),
+                                  ],
+                                )
                               ],
                             ),
-                          ),
-                        ],
+
+                          ],
+                        ),
                       ),
-                    ),
+
                   );
                 },
-              ),
+            ),
 
           );
         },

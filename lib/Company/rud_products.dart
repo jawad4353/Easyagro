@@ -542,37 +542,37 @@ class _UpdateproductState extends State<Updateproduct> {
                     ),
                   ),
                   Text(''),
-                  SelectFormField(
-                    controller: product_category_Controller,
-                    decoration: InputDecoration(
-                      hintText: 'Fertilizers',
-                      border: OutlineInputBorder(),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color:Colors.green.shade700,width: 2),
-                      ),
-                    ),
-                    items: _categoryOptions,
-                    onChanged: (val) {
-                      setState(() {
-                        _selectedCategory = val;
-                        if(val=='Others' || val=='Farming Tools' ){
-                          quantity_list=_quantity_list_others;
-                          productquantity_Controller.clear();
-                          return;
-                        }
-                        if(val=='Fertilizers' || val=='Seeds'){
-                          quantity_list=_quantity_list_grams_kg;
-                          productquantity_Controller.clear();
-                        }
-                        else{
-                          quantity_list=_quantity_list_ml;
-                          productquantity_Controller.clear();
-                        }
-
-                      });
-                    },
-
-                  ),
+                  // SelectFormField(
+                  //   controller: product_category_Controller,
+                  //   decoration: InputDecoration(
+                  //     hintText: 'Fertilizers',
+                  //     border: OutlineInputBorder(),
+                  //     focusedBorder: OutlineInputBorder(
+                  //       borderSide: BorderSide(color:Colors.green.shade700,width: 2),
+                  //     ),
+                  //   ),
+                  //   items: _categoryOptions,
+                  //   onChanged: (val) {
+                  //     setState(() {
+                  //       _selectedCategory = val;
+                  //       if(val=='Others' || val=='Farming Tools' ){
+                  //         quantity_list=_quantity_list_others;
+                  //         productquantity_Controller.clear();
+                  //         return;
+                  //       }
+                  //       if(val=='Fertilizers' || val=='Seeds'){
+                  //         quantity_list=_quantity_list_grams_kg;
+                  //         productquantity_Controller.clear();
+                  //       }
+                  //       else{
+                  //         quantity_list=_quantity_list_ml;
+                  //         productquantity_Controller.clear();
+                  //       }
+                  //
+                  //     });
+                  //   },
+                  //
+                  // ),
                   SizedBox(height: 16.0),
                 ],
               ),

@@ -169,50 +169,55 @@ class _load_ProductsState extends State<load_Products> {
           ): Container(
             color: Colors.white,
             padding: const EdgeInsets.all(8.0),
-            child: GridView.builder(
+            child:  GridView.builder(
+
               padding: EdgeInsets.all(10),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.65
+                childAspectRatio:size.width / 690,
+
               ),
               itemCount: filteredProducts.length,
               itemBuilder: (context, index) {
                 final product = filteredProducts[index].data() as Map<String, dynamic>;
-                final name = product['productname'] as String;
-                final nameShort = name.length > 20 ? '${name.substring(0, 20)}...' : name;
+                final namee= product['productname'] as String;
+                final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
                 final description = product['productdescription'] as String;
                 final shortDescription =
                 description.length > 50 ? '${description.substring(0, 50)}...' : description;
-                return Card(
-                  clipBehavior: Clip.antiAlias,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    side: BorderSide(width: 2, color: Colors.black12),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(context, Myroute(ViewProductPage(product: product)));
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          height: 125,
-                          child: Image.network(
-                            '${product['image']}',
-                            fit: BoxFit.fill,
+                // Replace the placeholders with the actual product data
+                return  InkWell(
+                  onTap: (){
+                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
+                  },
+                  child: Container(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+
+                        border: Border.all(width: 3,color: Colors.black12)
+                    ),
+                    child: InkWell(
+                      onTap: () {
+
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            height: 145,
+                            child: Image.network(
+                              '${product['image']}',
+                              fit: BoxFit.fill,
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Column(
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Text(
-                                '$nameShort',
+                                '$namee',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               Text('$shortDescription'),
@@ -242,7 +247,7 @@ class _load_ProductsState extends State<load_Products> {
                                   ElevatedButton(
 
                                     onPressed: () {
-                                      // Handle button press
+                                      Navigator.push(context, Myroute(ViewProductPage(product: product,)));
                                     },
                                     style: ButtonStyle(
                                         backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade700)
@@ -253,13 +258,15 @@ class _load_ProductsState extends State<load_Products> {
                               )
                             ],
                           ),
-                        ),
-                      ],
+
+                        ],
+                      ),
                     ),
                   ),
                 );
               },
             ),
+
           );
 
 
