@@ -195,13 +195,14 @@ class _UpdateproductState extends State<Updateproduct> {
 
   final product_category_Controller = TextEditingController();
 
-  var active_color=Colors.grey;
+  var active_color=Colors.grey,quantity_list;
 
   final List<Map<String, dynamic>> _categoryOptions = [
     {
       'value': 'Pesticides',
       'label': 'Pesticides',
     },
+
     {
       'value': 'Granuale',
       'label': 'Granuale',
@@ -214,25 +215,169 @@ class _UpdateproductState extends State<Updateproduct> {
       'value': 'Fertilizers',
       'label': 'Fertilizers',
     },
+    {
+      'value': 'Seeds',
+      'label': 'Seeds',
+    },
+    {
+      'value': 'Farming Tools',
+      'label': 'Farming Tools',
+    },
+    {
+      'value': 'Others',
+      'label': 'Others',
+    },
   ];
 
-  final List<Map<String, dynamic>> _quantity_list = [
+
+  final List<Map<String, dynamic>> _quantity_list_ml = [
     {
       'value': '250ml',
       'label': '250ml',
     },
     {
-      'value': '500ml',
-      'label': '500ml',
+      'value': '100ml',
+      'label': '100ml',
     },
     {
-      'value': '1Litre',
-      'label': '1Litre',
+      'value': '400ml',
+      'label': '400ml',
     },
     {
-      'value': '5 Litre',
-      'label': '5 Litre',
+      'value': '800ml',
+      'label': '800ml',
     },
+    {
+      'value': '5Liter',
+      'label': '5Liter',
+    },
+    {
+      'value': '50Liter',
+      'label': '50Liter',
+    },
+  ];
+
+
+
+
+  final List<Map<String, dynamic>> _quantity_list_grams_kg = [
+    {
+      'value': '50 Gram',
+      'label': '50 Gram',
+    },
+    {
+      'value': '100 Gram',
+      'label': '100 Gram',
+    },
+    {
+      'value': '200 Gram',
+      'label': '200 Gram',
+    },
+    {
+      'value': '250 Gram',
+      'label': '250 Gram',
+    },
+    {
+      'value': '500 Gram',
+      'label': '500 Gram',
+    },
+    {
+      'value': '800 Gram',
+      'label': '800 Gram',
+    },
+    {
+      'value': '1KG',
+      'label': '1KG',
+    },
+    {
+      'value': '5KG',
+      'label': '5KG',
+    },
+    {
+      'value': '20KG',
+      'label': '20KG',
+    },
+    {
+      'value': '40KG',
+      'label': '40KG',
+    },
+  ];
+
+
+  final List<Map<String, dynamic>> _quantity_list_others = [
+
+    {
+      'value': '50 Gram',
+      'label': '50 Gram',
+    },
+    {
+      'value': '50ml',
+      'label': '50ml',
+    },
+    {
+      'value': '100 Gram',
+      'label': '100 Gram',
+    },
+
+    {
+      'value': '100ml',
+      'label': '100ml',
+    },
+    {
+      'value': '200 Gram',
+      'label': '200 Gram',
+    },
+    {
+      'value': '200ml',
+      'label': '200ml',
+    },
+    {
+      'value': '800 Gram',
+      'label': '800 Gram',
+    },
+    {
+      'value': '800ml',
+      'label': '800ml',
+    },
+    {
+      'value': '5Liter',
+      'label': '5Liter',
+    },
+    {
+      'value': '50Liter',
+      'label': '50Liter',
+    },
+
+
+    {
+      'value': '500 Gram',
+      'label': '500 Gram',
+    },
+    {
+      'value': '800 Gram',
+      'label': '800 Gram',
+    },
+    {
+      'value': '1KG',
+      'label': '1KG',
+    },
+    {
+      'value': '5KG',
+      'label': '5KG',
+    },
+    {
+      'value': '20KG',
+      'label': '20KG',
+    },
+    {
+      'value': '40KG',
+      'label': '40KG',
+    },
+    {
+      'value': 'Other',
+      'label': 'Other',
+    },
+
   ];
 
   late String _selectedCategory='';
@@ -262,13 +407,26 @@ class _UpdateproductState extends State<Updateproduct> {
 
   @override
   void initState() {
+    super.initState();
   product_category_Controller.text=widget.product['productcategory'];
   productquantity_Controller.text=widget.product['productquantity'];
   productDescription_Controller.text=widget.product['productdescription'];
   productPrice_Controller.text=widget.product['productprice'];
   productName_Controller.text=widget.product['productname'];
+  if(widget.product['productcategory']=='Others' || widget.product['productcategory']=='Farming Tools' ){
+    quantity_list=_quantity_list_others;
+    return;
+  }
+  if(widget.product['productcategory']=='Fertilizers' || widget.product['productcategory']=='Seeds'){
+    quantity_list=_quantity_list_grams_kg;
+
+  }
+  else{
+    quantity_list=_quantity_list_ml;
+
+  }
   
-    super.initState();
+
   }
 
 
@@ -337,8 +495,10 @@ class _UpdateproductState extends State<Updateproduct> {
                         borderSide: BorderSide(color:Colors.green.shade700,width: 2),
                       ),
                     ),
-                    items: _quantity_list,
-                    onChanged: (val) => setState(() => _selectedCategory = val),
+                    items: quantity_list,
+                    onChanged: (val){setState(() {
+                      quantity_list=val;
+                    });},
 
                   ),
                   Text(''),
@@ -392,7 +552,25 @@ class _UpdateproductState extends State<Updateproduct> {
                       ),
                     ),
                     items: _categoryOptions,
-                    onChanged: (val) => setState(() => _selectedCategory = val),
+                    onChanged: (val) {
+                      setState(() {
+                        _selectedCategory = val;
+                        if(val=='Others' || val=='Farming Tools' ){
+                          quantity_list=_quantity_list_others;
+                          productquantity_Controller.clear();
+                          return;
+                        }
+                        if(val=='Fertilizers' || val=='Seeds'){
+                          quantity_list=_quantity_list_grams_kg;
+                          productquantity_Controller.clear();
+                        }
+                        else{
+                          quantity_list=_quantity_list_ml;
+                          productquantity_Controller.clear();
+                        }
+
+                      });
+                    },
 
                   ),
                   SizedBox(height: 16.0),

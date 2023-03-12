@@ -3,9 +3,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyagro/Dealer/dealerlogin.dart';
 import 'package:easyagro/Dealer/update_dealer.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Company/companylogin.dart';
@@ -13,6 +16,7 @@ import '../Company/live_chat.dart';
 import '../Database/database.dart';
 import '../sharedpref_validations.dart';
 import '../splash.dart';
+import './Productsdealer.dart';
 
 class dealerhome extends StatefulWidget{
   @override
@@ -21,24 +25,68 @@ class dealerhome extends StatefulWidget{
 
 class _dealerhomeState extends State<dealerhome> {
   var user_data=[], index_current=0;
-
+  TextEditingController search_controller=new TextEditingController();
+  final CollectionReference companyCollection =
+  FirebaseFirestore.instance.collection('company');
 
   @override
   void initState() {
-
     super.initState();
     Get_current_dealer_details();
   }
   @override
   Widget build(BuildContext context) {
+    var size=MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(title: Text('Dealer Home'),backgroundColor: Colors.green.shade700,actions: [
-        IconButton(onPressed:(){
-          Clear_Preferences();
-          EasyLoading.showSuccess('Logout');
-          Navigator.pushReplacement(context, Myroute(dealerlogin()));
-        }, icon: Icon(Icons.logout,color: Colors.white,))
-      ],),
+
+      backgroundColor: Colors.white,
+
+
+      appBar: AppBar(
+        elevation: 0,
+        title: Container(
+          height: 40,
+          width: size.width*0.9,
+          child: TextField(
+            controller: search_controller,
+            onChanged: (a){
+              setState(() {
+
+              });
+            },
+            style: TextStyle(fontSize: 21,fontWeight: FontWeight.w400),
+            cursorColor: Colors.green.shade700,
+            decoration: InputDecoration(
+              hintText: 'Search company',
+              hintStyle:TextStyle(fontSize: 16) ,
+              fillColor: Colors.white,
+              filled: true,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5),
+                borderSide:BorderSide.none,
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16),
+            ),
+          ),
+        ),backgroundColor: Colors.green.shade700,actions: [
+
+         IconButton(onPressed: (){
+           Clear_Preferences();
+           EasyLoading.showSuccess('Logout');
+           Navigator.pushReplacement(context, Myroute(dealerlogin()));
+         },icon: Icon(Icons.logout,),) ,
+          IconButton(onPressed:(){}, icon: Icon(Icons.notifications,)),
+
+      ],
+
+      ),
+
+
+
       drawer: Drawer(
         backgroundColor: Colors.transparent,
         child: Container(
@@ -76,6 +124,7 @@ class _dealerhomeState extends State<dealerhome> {
 
 
               Row(children: [
+
                 TextButton.icon(style: ButtonStyle(
                     overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
                 ),onPressed: (){
@@ -94,6 +143,75 @@ class _dealerhomeState extends State<dealerhome> {
 
 
 
+      body: ListView(
+        children: [
+
+         Container(
+            height: size.height*0.7,
+
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance.collection('company').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                }
+
+                if (!snapshot.hasData) {
+                  return Center(
+                    child:  Container(
+                      color: Colors.white,
+                      child: SpinKitFoldingCube(
+                        size: 50.0,
+                        duration: Duration(milliseconds: 700),
+                        itemBuilder: ((context, index) {
+                          var Mycolors=[Colors.green.shade700,Colors.white];
+                          var Mycol=Mycolors[index%Mycolors.length];
+                          return DecoratedBox(decoration: BoxDecoration(
+                              color: Mycol,
+                              border: Border.all(color: Colors.green,)
+
+
+                          ));
+                        }),
+                      ),
+                    ),
+                  );
+                }
+
+                List<DocumentSnapshot> filteredcompanies = snapshot.data!.docs.where((doc) {
+                  return doc['name'].toLowerCase().contains(search_controller.text.toLowerCase());
+                }).toList();
+
+                return ListView.builder(
+                  itemCount: filteredcompanies.length,
+                  itemBuilder: (context, index) {
+                    DocumentSnapshot document = filteredcompanies[index];
+                    Map<String, dynamic> companyData = document.data() as Map<String, dynamic>;
+
+                    return ListTile(
+
+                      isThreeLine: true,
+                      splashColor: Colors.green.shade700,
+                      shape: Border.all(width: 2,color: Colors.black12),
+                      leading: Icon(Icons.badge,size: 56,color: Colors.green.shade700,),
+                      title: Text(companyData['name']),
+                      subtitle: Text('${companyData['address']}\n${companyData['email']}'),
+                      onTap: () {
+                        // Navigate to company details page
+                        Navigator.push(context, Myroute(dealer_products(company_license:companyData['license'] ,)));
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+
+        ],
+      ),
+
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         currentIndex: index_current,
@@ -110,12 +228,16 @@ class _dealerhomeState extends State<dealerhome> {
 
         },
         selectedItemColor: Colors.green.shade700,
+        elevation: 0,
         items: [
-          BottomNavigationBarItem(icon:Icon(Icons.home) ,label: 'Home'),
-          BottomNavigationBarItem(icon:Icon(Icons.supervised_user_circle),label: 'Account' ),
-          BottomNavigationBarItem(icon:Icon(Icons.sms),label: 'Chat' ),
+          BottomNavigationBarItem(icon:Icon(Icons.home,color: Colors.black,) ,label: 'Home',
+          backgroundColor: Colors.white),
+          BottomNavigationBarItem(icon:Icon(Icons.supervised_user_circle,color: Colors.black,),label: 'Account' ),
+          BottomNavigationBarItem(icon:Icon(Icons.sms,color: Colors.black,),label: 'Chat' ),
         ],
       ),
+
+
     );
   }
 
@@ -144,3 +266,7 @@ class _dealerhomeState extends State<dealerhome> {
 
   }
 }
+
+
+
+

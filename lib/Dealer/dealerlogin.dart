@@ -156,7 +156,7 @@ class _dealerloginState extends State<dealerlogin> {
                               borderRadius: BorderRadius.circular(30)
                           ),
                           child: ElevatedButton(onPressed: () async {
-                            var userexist=await new database().Login_dealer(license_controller.text,password_controller.text);
+
                             var s=Password_Validation(password_controller.text);
                             if(license_controller.text.isEmpty){
                               EasyLoading.showInfo('License required !');
@@ -174,6 +174,8 @@ class _dealerloginState extends State<dealerlogin> {
                               EasyLoading.showInfo('Invalid password!');
                               return;
                             }
+                            EasyLoading.show(status:'Processing' );
+                            var userexist=await new database().Login_dealer(license_controller.text,password_controller.text);
                             if(userexist==false){
                               EasyLoading.showError('Incorrect credentials! \nlicense : ${license_controller.text}\npassword : ${password_controller.text}');
                               return;

@@ -4,6 +4,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyagro/Company/companylogin.dart';
+import 'package:easyagro/Company/complains.dart';
 import 'package:easyagro/Company/products.dart';
 import 'package:easyagro/Company/updateaccount.dart';
 import 'package:easyagro/Database/database.dart';
@@ -14,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,7 +31,7 @@ class companyhome extends StatefulWidget{
 
 class _companyhomeState extends State<companyhome> {
   var user_data=[],sections_list=['Products','Dealers','Orders','Add new','Delivered','Policies',
-    'Revenues','New Disease','Complains','Logout'],
+    'Revenues','New Disease','Complaints','Logout'],
       images_list=['images/products.png','images/dealer.png','images/orders.png','images/add.png',
         'images/delivery.png','images/policy.png','images/revenue.png','images/disease.png','images/complain.png','images/logout.png'];
 
@@ -69,7 +71,8 @@ class _companyhomeState extends State<companyhome> {
                UserAccountsDrawerHeader(decoration: BoxDecoration(
                    color: Colors.green.shade700
                ),accountName: user_data.isEmpty ? Text(''):Text('${user_data[0]}'.toUpperCase()), accountEmail:user_data.isEmpty ? Text(''):Text('${user_data[1]}'),
-                 currentAccountPicture: Icon(Icons.face,color: Colors.white,size: 65,),
+                 currentAccountPicture:Icon(Icons.supervised_user_circle,size: 76,color: Colors.white,)
+
                ),
 
 
@@ -132,10 +135,12 @@ class _companyhomeState extends State<companyhome> {
 
        },
        selectedItemColor: Colors.green.shade700,
+       elevation: 0,
+       unselectedItemColor:Colors.black ,
        items: [
-         BottomNavigationBarItem(icon:Icon(Icons.home) ,label: 'Home'),
+         BottomNavigationBarItem(icon:Icon(Icons.home,) ,label: 'Home'),
          BottomNavigationBarItem(icon:Icon(Icons.supervised_user_circle),label: 'Account' ),
-         BottomNavigationBarItem(icon:Icon(Icons.sms),label: 'Chat' ),
+         BottomNavigationBarItem(icon:Icon(Icons.sms,),label: 'Chat' ),
        ],
      ),
 
@@ -221,6 +226,10 @@ class _companyhomeState extends State<companyhome> {
                    }
                    if(sections_list[index]=='Products'){
                      Navigator.push(context, Myroute(Allproducts()));
+                     return;
+                   }
+                   if(sections_list[index]=='Complaints'){
+                     Navigator.push(context, Myroute(Company_complaints()));
                      return;
                    }
                  },
@@ -317,6 +326,7 @@ class _companyhomeState extends State<companyhome> {
             user_data.add(result.data()['phone']);
             user_data.add(result.data()['license']);
             user_data.add(result.data()['address']);
+
           });
         }
 

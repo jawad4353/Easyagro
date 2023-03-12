@@ -80,7 +80,7 @@ class _update_company_accountState extends State<update_company_account> {
        body: ListView(children: [
         Stack(
         children: [
-          Container(height: size.height*0.8,),
+          Container(height: size.height*0.8,color: Colors.white,),
           ClipPath(
           clipper: ProsteBezierCurve(
             position: ClipPosition.bottom,
@@ -127,14 +127,14 @@ class _update_company_accountState extends State<update_company_account> {
 
             child: ListView(
               children: [
-                Text('\n \n'),
+
 
                 InkWell(
                   onTap: (){
                     Navigator.push(context, Myroute(ImageScreen(imageUrl: widget.user_data[6],)));
                   },
                   child: CircleAvatar(
-                    radius: 100,
+                    radius: 150,
                     backgroundColor: Colors.transparent,
                    child: Container(
                        clipBehavior: Clip.antiAlias,
@@ -146,7 +146,7 @@ class _update_company_accountState extends State<update_company_account> {
                        child: Image.network('${widget.user_data[6]}',fit: BoxFit.cover,)),
               ),
                 ),
-              Text('\n'),
+
                TextField(
                      controller: company_controller,
                      inputFormatters: [  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z - ]')),],

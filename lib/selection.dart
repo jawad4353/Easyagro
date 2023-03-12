@@ -26,7 +26,7 @@ class _SelectionState extends State<Selection> {
     var size=MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.green.shade900,
+        backgroundColor: Colors.green.shade700,
          body:ListView(
            children: [
              Stack(children: [

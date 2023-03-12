@@ -132,14 +132,13 @@ class _update_dealer_accountState extends State<update_dealer_account> {
 
                   child: ListView(
                     children: [
-                      Text('\n \n'),
 
                       InkWell(
                         onTap: (){
                           Navigator.push(context, Myroute(ImageScreen(imageUrl: widget.user_data[6],)));
                         },
                         child: CircleAvatar(
-                          radius: 100,
+                          radius: 150,
                           backgroundColor: Colors.transparent,
                           child: Container(
                               clipBehavior: Clip.antiAlias,
@@ -151,7 +150,7 @@ class _update_dealer_accountState extends State<update_dealer_account> {
                               child: Image.network('${widget.user_data[6]}',fit: BoxFit.cover,)),
                         ),
                       ),
-                      Text('\n'),
+
                       TextField(
                         controller: company_controller,
                         inputFormatters: [  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z - ]')),],

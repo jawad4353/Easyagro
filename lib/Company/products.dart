@@ -10,6 +10,7 @@ import 'package:easyagro/splash.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -98,15 +99,16 @@ class _AllproductsState extends State<Allproducts> with SingleTickerProviderStat
         )
       ),
        body: TabBarView(
+
          controller: catagoty_controller,
          children: [
-           pesticides(license: licenseno,),
-           granuale(license: licenseno,),
-           micronutrient(license: licenseno,),
-           fertilizer(license: licenseno,),
-           seeds(license: licenseno),
-           farming_tools(license: licenseno),
-           seeds(license: licenseno),
+           display_products(license: licenseno,category: 'Pesticides',),
+           display_products(license: licenseno,category: 'Granuale',),
+           display_products(license: licenseno,category: 'Micronutrient',),
+           display_products(license: licenseno,category: 'Fertilizers',),
+           display_products(license: licenseno,category: 'Seeds',),
+           display_products(license: licenseno,category: 'Farming Tools',),
+           display_products(license: licenseno,category: 'Others',),
 
          ],
        )
@@ -117,29 +119,45 @@ class _AllproductsState extends State<Allproducts> with SingleTickerProviderStat
 
 
 
-class pesticides extends StatefulWidget{
-  var license;
-  pesticides({required this.license});
+
+class display_products  extends StatefulWidget{
+  var license,category;
+  display_products({required this.license,this.category});
   @override
-  State<pesticides> createState() => _pesticidesState();
+  State<display_products> createState() => _display_productsState();
 }
 
-class _pesticidesState extends State<pesticides> {
+class _display_productsState extends State<display_products> {
  late String globalValue;
-
 
   @override
   Widget build(BuildContext context) {
     globalValue = Provider.of<GlobalState>(context).value;
     var size=MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.black12,
+      backgroundColor: Colors.white,
       body:  StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('products').where('companylicense', isEqualTo: '${widget.license}').where('productcategory', isEqualTo: 'Pesticides').snapshots(),
+        stream: FirebaseFirestore.instance.collection('products').where('companylicense', isEqualTo: '${widget.license}').where('productcategory', isEqualTo: '${widget.category}').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
-              child: CircularProgressIndicator(color: Colors.green.shade700,),
+              child:  Container(
+               color: Colors.white,
+                child: SpinKitFoldingCube(
+                  size: 50.0,
+                  duration: Duration(milliseconds: 700),
+                  itemBuilder: ((context, index) {
+                    var Mycolors=[Colors.green.shade700,Colors.white];
+                    var Mycol=Mycolors[index%Mycolors.length];
+                    return DecoratedBox(decoration: BoxDecoration(
+                      color: Mycol,
+                        border: Border.all(color: Colors.green)
+
+
+                    ));
+                  }),
+                ),
+              ),
             );
           }
 
@@ -159,7 +177,7 @@ class _pesticidesState extends State<pesticides> {
                   crossAxisCount: 2,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  childAspectRatio: 0.75,
+                  childAspectRatio: 0.73,
                 ),
                 itemCount: filteredProducts.length,
                 itemBuilder: (context, index) {
@@ -185,7 +203,7 @@ class _pesticidesState extends State<pesticides> {
                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                          Container(
-                           height: 105,
+                           height: 125,
                            child: Image.network(
                               '${product['image']}',fit: BoxFit.fill,
 
@@ -233,729 +251,6 @@ class _pesticidesState extends State<pesticides> {
     );
   }
 }
-
-
-
-class granuale extends StatefulWidget {
-  var license;
-  granuale({required this.license});
-  @override
-  State<granuale> createState() => _granualeState();
-}
-
-class _granualeState extends State<granuale> {
-
-
-  @override
-  Widget build(BuildContext context) {
-    String globalValue = Provider.of<GlobalState>(context).value;
-    var size=MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body:  StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('products').where('companylicense', isEqualTo: '${widget.license}').where('productcategory', isEqualTo: 'Granuale').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          List<DocumentSnapshot> filteredProducts = snapshot.data!.docs.where((doc) {
-            return doc['productname'].toLowerCase().contains(globalValue.toLowerCase());
-          }).toList();
-
-
-          return filteredProducts.isEmpty? Center(child: Text('No products')): Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(8.0),
-            child:  GridView.builder(
-              padding: EdgeInsets.all(10),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.75,
-              ),
-              itemCount: filteredProducts.length,
-              itemBuilder: (context, index) {
-                final product = filteredProducts[index].data() as Map<String, dynamic>;
-                final namee= product['productname'] as String;
-                final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
-                final description = product['productdescription'] as String;
-                final shortDescription =
-                description.length > 50 ? '${description.substring(0, 50)}...' : description;
-                // Replace the placeholders with the actual product data
-                return  InkWell(
-                  onTap: (){
-                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
-                  },
-                  child: Container(
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(width: 2,color: Colors.black12)
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          height: 105,
-                          child: Image.network(
-                            '${product['image']}',fit: BoxFit.fill,
-
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '$nameeshort',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Text('$shortDescription'),
-                              Text(''),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    ' \R.s ${product['productprice']}',
-                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
-                                  ),
-                                  Text(
-                                    '(${product['productquantity']})  ',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-
-                                ],),
-                              Text('')
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-
-          );
-        },
-      ),
-
-    );
-  }
-}
-
-
-
-
-
-
-class micronutrient extends StatefulWidget {
-  var license;
-  micronutrient({required this.license});
-
-  @override
-  State<micronutrient> createState() => _micronutrientState();
-}
-
-class _micronutrientState extends State<micronutrient> {
-  @override
-  Widget build(BuildContext context) {
-    String globalValue = Provider.of<GlobalState>(context).value;
-    var size=MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body:  StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('products').where('companylicense', isEqualTo: '${widget.license}').where('productcategory', isEqualTo: 'Micronutrient').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(color: Colors.green.shade700,),
-            );
-          }
-
-          List<DocumentSnapshot> filteredProducts = snapshot.data!.docs.where((doc) {
-            return doc['productname'].toLowerCase().contains(globalValue.toLowerCase());
-          }).toList();
-
-
-          return filteredProducts.isEmpty? Center(child: Container(color:Colors.white,child: Text('No products'))): Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(8.0),
-            child:  GridView.builder(
-              padding: EdgeInsets.all(10),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.75,
-              ),
-              itemCount: filteredProducts.length,
-              itemBuilder: (context, index) {
-                final product = filteredProducts[index].data() as Map<String, dynamic>;
-                final namee= product['productname'] as String;
-                final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
-                final description = product['productdescription'] as String;
-                final shortDescription =
-                description.length > 50 ? '${description.substring(0, 50)}...' : description;
-                // Replace the placeholders with the actual product data
-                return  InkWell(
-                  onTap: (){
-                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
-                  },
-                  child: Container(
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(width: 2,color: Colors.black12)
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          height: 105,
-                          child: Image.network(
-                            '${product['image']}',fit: BoxFit.fill,
-
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '$nameeshort',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Text('$shortDescription'),
-                              Text(''),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    ' \R.s ${product['productprice']}',
-                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
-                                  ),
-                                  Text(
-                                    '(${product['productquantity']})  ',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-
-                                ],),
-                              Text('')
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-
-          );
-        },
-      ),
-
-    );
-  }
-}
-
-
-
-
-
-
-
-class fertilizer extends StatefulWidget {
-  var license;
-  fertilizer({required this.license});
-  @override
-  State<fertilizer> createState() => _fertilizerState();
-}
-
-class _fertilizerState extends State<fertilizer> {
-  @override
-  Widget build(BuildContext context) {
-    String globalValue = Provider.of<GlobalState>(context).value;
-    var size=MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body:  StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('products').where('companylicense', isEqualTo: '${widget.license}').where('productcategory', isEqualTo: 'Fertilizers').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(color: Colors.green.shade700,),
-            );
-          }
-
-          List<DocumentSnapshot> filteredProducts = snapshot.data!.docs.where((doc) {
-            return doc['productname'].toLowerCase().contains(globalValue.toLowerCase());
-          }).toList();
-
-
-          return filteredProducts.isEmpty? Center(child: Container(color:Colors.white,child: Text('No products'))): Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(8.0),
-            child:  GridView.builder(
-              padding: EdgeInsets.all(10),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.75,
-              ),
-              itemCount: filteredProducts.length,
-              itemBuilder: (context, index) {
-                final product = filteredProducts[index].data() as Map<String, dynamic>;
-                final namee= product['productname'] as String;
-                final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
-                final description = product['productdescription'] as String;
-                final shortDescription =
-                description.length > 50 ? '${description.substring(0, 50)}...' : description;
-                // Replace the placeholders with the actual product data
-                return  InkWell(
-                  onTap: (){
-                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
-                  },
-                  child: Container(
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(width: 2,color: Colors.black12)
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          height: 105,
-                          child: Image.network(
-                            '${product['image']}',fit: BoxFit.fill,
-
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '$nameeshort',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Text('$shortDescription'),
-                              Text(''),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    ' \R.s ${product['productprice']}',
-                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
-                                  ),
-                                  Text(
-                                    '(${product['productquantity']})  ',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-
-                                ],),
-                              Text('')
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-
-          );
-        },
-      ),
-
-    );
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-class seeds extends StatefulWidget {
-  var license;
-  seeds({required this.license});
-  @override
-  State<seeds> createState() => _seedsState();
-}
-
-class _seedsState extends State<seeds> {
-  @override
-  Widget build(BuildContext context) {
-    String globalValue = Provider.of<GlobalState>(context).value;
-    var size=MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body:  StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('products').where('companylicense', isEqualTo: '${widget.license}').where('productcategory', isEqualTo: 'Seeds').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          List<DocumentSnapshot> filteredProducts = snapshot.data!.docs.where((doc) {
-            return doc['productname'].toLowerCase().contains(globalValue.toLowerCase());
-          }).toList();
-
-
-          return filteredProducts.isEmpty? Center(child: Container(color:Colors.white,child: Text('No products'))): Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(8.0),
-            child:  GridView.builder(
-              padding: EdgeInsets.all(10),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.75,
-              ),
-              itemCount: filteredProducts.length,
-              itemBuilder: (context, index) {
-                final product = filteredProducts[index].data() as Map<String, dynamic>;
-                final namee= product['productname'] as String;
-                final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
-                final description = product['productdescription'] as String;
-                final shortDescription =
-                description.length > 50 ? '${description.substring(0, 50)}...' : description;
-                // Replace the placeholders with the actual product data
-                return  InkWell(
-                  onTap: (){
-                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
-                  },
-                  child: Container(
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(width: 2,color: Colors.black12)
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          height: 105,
-                          child: Image.network(
-                            '${product['image']}',fit: BoxFit.fill,
-
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '$nameeshort',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Text('$shortDescription'),
-                              Text(''),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    ' \R.s ${product['productprice']}',
-                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
-                                  ),
-                                  Text(
-                                    '(${product['productquantity']})  ',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-
-                                ],),
-                              Text('')
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-
-          );
-        },
-      ),
-
-    );
-  }
-}
-
-
-
-
-
-
-
-
-class farming_tools extends StatefulWidget {
-  var license;
-  farming_tools({required this.license});
-  @override
-  State<farming_tools> createState() => _farming_toolsState();
-}
-
-class _farming_toolsState extends State<farming_tools> {
-  @override
-  Widget build(BuildContext context) {
-    String globalValue = Provider.of<GlobalState>(context).value;
-    var size=MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body:  StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('products').where('companylicense', isEqualTo: '${widget.license}').where('productcategory', isEqualTo: 'Farming Tools').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          List<DocumentSnapshot> filteredProducts = snapshot.data!.docs.where((doc) {
-            return doc['productname'].toLowerCase().contains(globalValue.toLowerCase());
-          }).toList();
-
-
-          return filteredProducts.isEmpty? Center(child: Container(color:Colors.white,child: Text('No products'))): Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(8.0),
-            child:  GridView.builder(
-              padding: EdgeInsets.all(10),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.75,
-              ),
-              itemCount: filteredProducts.length,
-              itemBuilder: (context, index) {
-                final product = filteredProducts[index].data() as Map<String, dynamic>;
-                final namee= product['productname'] as String;
-                final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
-                final description = product['productdescription'] as String;
-                final shortDescription =
-                description.length > 50 ? '${description.substring(0, 50)}...' : description;
-                // Replace the placeholders with the actual product data
-                return  InkWell(
-                  onTap: (){
-                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
-                  },
-                  child: Container(
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(width: 2,color: Colors.black12)
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          height: 105,
-                          child: Image.network(
-                            '${product['image']}',fit: BoxFit.fill,
-
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '$nameeshort',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Text('$shortDescription'),
-                              Text(''),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    ' \R.s ${product['productprice']}',
-                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
-                                  ),
-                                  Text(
-                                    '(${product['productquantity']})  ',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-
-                                ],),
-                              Text('')
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-
-          );
-        },
-      ),
-
-    );
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class Others extends StatefulWidget {
-  var license;
-  Others({required this.license});
-  @override
-  State<Others> createState() => _OthersState();
-}
-
-class _OthersState extends State<Others> {
-  @override
-  Widget build(BuildContext context) {
-    String globalValue = Provider.of<GlobalState>(context).value;
-    var size=MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body:  StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('products').where('companylicense', isEqualTo: '${widget.license}').where('productcategory', isEqualTo: 'Others').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          List<DocumentSnapshot> filteredProducts = snapshot.data!.docs.where((doc) {
-            return doc['productname'].toLowerCase().contains(globalValue.toLowerCase());
-          }).toList();
-
-
-          return filteredProducts.isEmpty? Center(child: Container(color:Colors.white,child: Text('No products'))): Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(8.0),
-            child:  GridView.builder(
-              padding: EdgeInsets.all(10),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.75,
-              ),
-              itemCount: filteredProducts.length,
-              itemBuilder: (context, index) {
-                final product = filteredProducts[index].data() as Map<String, dynamic>;
-                final namee= product['productname'] as String;
-                final nameeshort= namee.length > 20 ? '${namee.substring(0, 20)}...' : namee;
-                final description = product['productdescription'] as String;
-                final shortDescription =
-                description.length > 50 ? '${description.substring(0, 50)}...' : description;
-                // Replace the placeholders with the actual product data
-                return  InkWell(
-                  onTap: (){
-                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
-                  },
-                  child: Container(
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(width: 2,color: Colors.black12)
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          height: 105,
-                          child: Image.network(
-                            '${product['image']}',fit: BoxFit.fill,
-
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '$nameeshort',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Text('$shortDescription'),
-                              Text(''),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    ' \R.s ${product['productprice']}',
-                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green.shade700),
-                                  ),
-                                  Text(
-                                    '(${product['productquantity']})  ',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-
-                                ],),
-                              Text('')
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-
-          );
-        },
-      ),
-
-    );
-  }
-}
-
 
 
 

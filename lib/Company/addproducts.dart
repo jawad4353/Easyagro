@@ -21,7 +21,7 @@ class _AddProductsPageState extends State<AddProductsPage> {
   final productDescription_Controller = TextEditingController();
   final productquantity_Controller = TextEditingController();
   final product_category_Controller = TextEditingController();
-  var active_color=Colors.grey;
+  var active_color=Colors.grey,quantity_list;
 
   final List<Map<String, dynamic>> _categoryOptions = [
     {
@@ -54,23 +54,156 @@ class _AddProductsPageState extends State<AddProductsPage> {
       'label': 'Others',
     },
   ];
-  final List<Map<String, dynamic>> _quantity_list = [
+
+
+  final List<Map<String, dynamic>> _quantity_list_ml = [
     {
       'value': '250ml',
       'label': '250ml',
     },
     {
-      'value': '500ml',
-      'label': '500ml',
+      'value': '100ml',
+      'label': '100ml',
     },
     {
-      'value': '1Litre',
-      'label': '1Litre',
+      'value': '400ml',
+      'label': '400ml',
     },
     {
-      'value': '5 Litre',
-      'label': '5 Litre',
+      'value': '800ml',
+      'label': '800ml',
     },
+    {
+      'value': '5Liter',
+      'label': '5Liter',
+    },
+    {
+      'value': '50Liter',
+      'label': '50Liter',
+    },
+  ];
+
+
+
+
+  final List<Map<String, dynamic>> _quantity_list_grams_kg = [
+    {
+      'value': '50 Gram',
+      'label': '50 Gram',
+    },
+    {
+      'value': '100 Gram',
+      'label': '100 Gram',
+    },
+    {
+      'value': '200 Gram',
+      'label': '200 Gram',
+    },
+    {
+      'value': '250 Gram',
+      'label': '250 Gram',
+    },
+    {
+      'value': '500 Gram',
+      'label': '500 Gram',
+    },
+    {
+      'value': '800 Gram',
+      'label': '800 Gram',
+    },
+    {
+      'value': '1KG',
+      'label': '1KG',
+    },
+    {
+      'value': '5KG',
+      'label': '5KG',
+    },
+    {
+      'value': '20KG',
+      'label': '20KG',
+    },
+    {
+      'value': '40KG',
+      'label': '40KG',
+    },
+  ];
+
+
+  final List<Map<String, dynamic>> _quantity_list_others = [
+
+    {
+      'value': '50 Gram',
+      'label': '50 Gram',
+    },
+    {
+      'value': '50ml',
+      'label': '50ml',
+    },
+    {
+      'value': '100 Gram',
+      'label': '100 Gram',
+    },
+
+    {
+      'value': '100ml',
+      'label': '100ml',
+    },
+    {
+      'value': '200 Gram',
+      'label': '200 Gram',
+    },
+    {
+      'value': '200ml',
+      'label': '200ml',
+    },
+    {
+      'value': '800 Gram',
+      'label': '800 Gram',
+    },
+    {
+      'value': '800ml',
+      'label': '800ml',
+    },
+    {
+      'value': '5Liter',
+      'label': '5Liter',
+    },
+    {
+      'value': '50Liter',
+      'label': '50Liter',
+    },
+
+
+    {
+      'value': '500 Gram',
+      'label': '500 Gram',
+    },
+    {
+      'value': '800 Gram',
+      'label': '800 Gram',
+    },
+    {
+      'value': '1KG',
+      'label': '1KG',
+    },
+    {
+      'value': '5KG',
+      'label': '5KG',
+    },
+    {
+      'value': '20KG',
+      'label': '20KG',
+    },
+    {
+      'value': '40KG',
+      'label': '40KG',
+    },
+    {
+      'value': 'Other',
+      'label': 'Other',
+    },
+
   ];
   late String _selectedCategory='';
 
@@ -152,15 +285,48 @@ class _AddProductsPageState extends State<AddProductsPage> {
               ),
               Text(''),
               SelectFormField(
-                controller: productquantity_Controller,
+                controller: product_category_Controller,
                 decoration: InputDecoration(
-                  hintText: '500ml',
+                  hintText: 'Fertilizers',
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color:Colors.green.shade700,width: 2),
                   ),
                 ),
-                items: _quantity_list,
+                items: _categoryOptions,
+                onChanged: (val) {
+                  setState(() {
+                    _selectedCategory = val;
+                    if(val=='Others' || val=='Farming Tools' ){
+                      quantity_list=_quantity_list_others;
+                      productquantity_Controller.clear();
+                      return;
+                    }
+                    if(val=='Fertilizers' || val=='Seeds'){
+                      quantity_list=_quantity_list_grams_kg;
+                      productquantity_Controller.clear();
+                    }
+                    else{
+                      quantity_list=_quantity_list_ml;
+                      productquantity_Controller.clear();
+                    }
+
+                  });
+                } ),
+
+
+
+              Text(''),
+              SelectFormField(
+                controller: productquantity_Controller,
+                decoration: InputDecoration(
+                  hintText: 'Quantity',
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color:Colors.green.shade700,width: 2),
+                  ),
+                ),
+                items: quantity_list,
                 onChanged: (val) => setState(() => _selectedCategory = val),
 
               ),
@@ -205,20 +371,7 @@ class _AddProductsPageState extends State<AddProductsPage> {
                 ),
               ),
               Text(''),
-              SelectFormField(
-                controller: product_category_Controller,
-                decoration: InputDecoration(
-                  hintText: 'Fertilizers',
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color:Colors.green.shade700,width: 2),
-                  ),
-                ),
-                items: _categoryOptions,
-                onChanged: (val) => setState(() => _selectedCategory = val),
 
-              ),
-              SizedBox(height: 16.0),
             ],
           ),
         ),
@@ -254,6 +407,11 @@ class _AddProductsPageState extends State<AddProductsPage> {
                       EasyLoading.showInfo('Product description required!');
                       return;
                     }
+                    var pd=productDescription_Controller.text.replaceAll(' ','');
+                  if(pd.length<50){
+                    EasyLoading.showInfo('Product description must have 50 characters!');
+                    return;
+                  }
                     if(product_category_Controller.text.isEmpty){
                       EasyLoading.showInfo('Product category required!');
                       return;
