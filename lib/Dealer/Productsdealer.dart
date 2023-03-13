@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 
 import '../Company/Notifiers.dart';
 import '../Company/rud_products.dart';
+import 'Addtocart.dart';
 
 class dealer_products extends StatefulWidget{
   var company_license;
@@ -199,7 +200,7 @@ class _load_ProductsState extends State<load_Products> {
                     ),
                     child: InkWell(
                       onTap: () {
-
+                        Navigator.push(context,Myroute(Add_to_cart(product: product,)));
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,

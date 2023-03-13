@@ -157,6 +157,7 @@ class View_image extends StatelessWidget{
   Widget build(BuildContext context) {
   return Scaffold(
     backgroundColor: Colors.black,
+    appBar: AppBar(backgroundColor: Colors.black,),
     body: Center(
       child: InteractiveViewer(
           maxScale: 10,
