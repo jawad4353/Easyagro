@@ -154,7 +154,26 @@ class _Add_to_cartState extends State<Add_to_cart> {
                   child: ElevatedButton(style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) =>
                   Colors.green.shade700)),
                       onPressed: () async {
-                        Add_tocart();
+                        SharedPreferences pref =await SharedPreferences.getInstance();
+                        bool found = false;
+                        var license;
+                        license=pref.getString("email");
+                        found=await Add_tocart(license);
+
+                        if(!found){
+                          FirebaseFirestore.instance.collection('cart').get().then((querySnapshot) {
+                            querySnapshot.docs.forEach((cart) {
+                              if(cart.data()['dealerlicense']==license){
+                                cart.reference.collection('cartitem').add({
+                                  'productid':'${widget.product['productid']}',
+                                  'productquantity':'${quantity_controller.text}',
+                                  'companylicense':'${widget.product['companylicense']}',
+                                });
+                              }
+                            });
+                          });
+
+                        }
 
                       }, child: Text('Add to cart')),
                 ),
@@ -187,31 +206,39 @@ class _Add_to_cartState extends State<Add_to_cart> {
     );
   }
 
-  Add_tocart() async {
-    var license,cart=FirebaseFirestore.instance.collection('cart'),productexist;
-    SharedPreferences pref =await SharedPreferences.getInstance();
-    license=pref.getString("email");
-    bool licenseExists = await licenseExistsInCart('${license}');
-    if (licenseExists) {
+  Add_tocart(license) async {
+    var cart=FirebaseFirestore.instance.collection('cart');
+    bool found = false;
+    bool license_Exists = await checkCartItem('${license}');
 
-      await FirebaseFirestore.instance.collection('cart').get().then((querySnapshot) {
-        querySnapshot.docs.forEach((cart) {
-          if(cart.data()['dealerlicense']==license){
-            cart.reference.collection('cartitem').get().then((querySnapshot) {
-              querySnapshot.docs.forEach((cartitem)  {
-                if(cartitem.data()['productid']==widget.product['productid']){
-                  productexist=true;
-                  cart.reference.collection('cartitem').doc(cartitem.id).update({'productquantity':'${quantity_controller.text}',});
+    if (license_Exists) {
+      await FirebaseFirestore.instance.collection('cart').get().then((querySnapshot) async {
+        for (var cart in querySnapshot.docs) {
+          if (cart.data()['dealerlicense'] == license) {
+            var cartItems = await cart.reference.collection('cartitem').get();
+            for (var cartItem in cartItems.docs) {
+              if (cartItem.data()['productid'] == widget.product['productid']) {
+                await cart.reference.collection('cartitem').doc(cartItem.id).update({
+                  'productquantity': '${quantity_controller.text}',
+                });
+                found =  true;
 
-                }
-              });
-            });;
+                break;
+              }
+            }
           }
-        });
-      }).whenComplete(() =>Product_not_exist(productexist,license) );
+          if (found) {
+            break;
+          }
+        }
+      });
 
 
-    } else {
+    return await found;
+
+
+    }
+    else {
       cart.add({'dealerlicense':'${license}'});
       cart.get().then((querySnapshot) {
         querySnapshot.docs.forEach((result) {
@@ -232,26 +259,14 @@ class _Add_to_cartState extends State<Add_to_cart> {
 
 
 
-  Future<bool> licenseExistsInCart(String license) async {
-    final cartSnapshot = await FirebaseFirestore.instance.collection('cart').get();
-    return cartSnapshot.docs.any((doc) => doc.data()['dealerlicense'] == license);
+
+  Future<bool> checkCartItem(String dealerLicense) async {
+    final cartRef = FirebaseFirestore.instance.collection('cart');
+    final querySnapshot = await cartRef.where('dealerlicense', isEqualTo: dealerLicense).get();
+    return querySnapshot.docs.isNotEmpty;
+
   }
 
-   Product_not_exist(productexist,license){
-    EasyLoading.showInfo(productexist);
-    if(productexist==false){
-      FirebaseFirestore.instance.collection('cart').get().then((querySnapshot) {
-        querySnapshot.docs.forEach((cart) {
-          if(cart.data()['dealerlicense']==license){
-            cart.reference.collection('cartitem').add({
-              'productid':'${widget.product['productid']}',
-              'productquantity':'${quantity_controller.text}',
-              'companylicense':'${widget.product['companylicense']}',
-            });
-          }
-        });
-      });
-    }
-  }
+
 
 }
