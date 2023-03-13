@@ -248,7 +248,7 @@ class _load_ProductsState extends State<load_Products> {
                                   ElevatedButton(
 
                                     onPressed: () {
-                                      Navigator.push(context, Myroute(ViewProductPage(product: product,)));
+                                      Navigator.push(context,Myroute(Add_to_cart(product: product,)));
                                     },
                                     style: ButtonStyle(
                                         backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade700)

@@ -7,12 +7,16 @@
 
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Company/rud_products.dart';
 import '../splash.dart';
+import '../Database/database.dart';
 
 class Add_to_cart extends StatefulWidget{
   var product;
@@ -40,7 +44,7 @@ class _Add_to_cartState extends State<Add_to_cart> {
       ],),
       body: Container(
         color: Colors.white,
-        padding: const EdgeInsets.all(3.0),
+        padding: const EdgeInsets.only(left: 5,right: 5),
         child:  ListView(
           children: [
             InkWell(
@@ -147,20 +151,25 @@ class _Add_to_cartState extends State<Add_to_cart> {
               children: [
                 Expanded(
                   flex: 2,
+                  child: ElevatedButton(style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) =>
+                  Colors.green.shade700)),
+                      onPressed: () async {
+                        Add_tocart();
+
+                      }, child: Text('Add to cart')),
+                ),
+                Expanded(
+                  flex: 1,
                   child: ElevatedButton(style: OutlinedButton.styleFrom(
 
                     backgroundColor: Colors.white,
-                    side: BorderSide(color: Colors.grey,width: 2)
+                    side: BorderSide(color: Colors.green.shade700,width: 2)
 
                   ),
-                      onPressed: (){}, child: Text('Buy Now',style: TextStyle(color: Colors.black),)),
+                      onPressed: (){}, child: Text('Buy Now',style: TextStyle(color: Colors.green.shade700),)),
                 ),
-              Expanded(
-                flex: 2,
-                child: ElevatedButton(style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) =>
-                Colors.green.shade700)),
-                    onPressed: (){}, child: Text('Add to cart')),
-              ),
+
+
 
             ],),
 
@@ -177,4 +186,72 @@ class _Add_to_cartState extends State<Add_to_cart> {
       ),
     );
   }
+
+  Add_tocart() async {
+    var license,cart=FirebaseFirestore.instance.collection('cart'),productexist;
+    SharedPreferences pref =await SharedPreferences.getInstance();
+    license=pref.getString("email");
+    bool licenseExists = await licenseExistsInCart('${license}');
+    if (licenseExists) {
+
+      await FirebaseFirestore.instance.collection('cart').get().then((querySnapshot) {
+        querySnapshot.docs.forEach((cart) {
+          if(cart.data()['dealerlicense']==license){
+            cart.reference.collection('cartitem').get().then((querySnapshot) {
+              querySnapshot.docs.forEach((cartitem)  {
+                if(cartitem.data()['productid']==widget.product['productid']){
+                  productexist=true;
+                  cart.reference.collection('cartitem').doc(cartitem.id).update({'productquantity':'${quantity_controller.text}',});
+
+                }
+              });
+            });;
+          }
+        });
+      }).whenComplete(() =>Product_not_exist(productexist,license) );
+
+
+    } else {
+      cart.add({'dealerlicense':'${license}'});
+      cart.get().then((querySnapshot) {
+        querySnapshot.docs.forEach((result) {
+          if(result.data()['dealerlicense']==license){
+           result.reference.collection('cartitem').add({
+             'productid':'${widget.product['productid']}',
+             'productquantity':'${quantity_controller.text}',
+             'companylicense':'${widget.product['companylicense']}',
+           });
+          }
+        });
+      });
+    }
+
+
+  }
+
+
+
+
+  Future<bool> licenseExistsInCart(String license) async {
+    final cartSnapshot = await FirebaseFirestore.instance.collection('cart').get();
+    return cartSnapshot.docs.any((doc) => doc.data()['dealerlicense'] == license);
+  }
+
+   Product_not_exist(productexist,license){
+    EasyLoading.showInfo(productexist);
+    if(productexist==false){
+      FirebaseFirestore.instance.collection('cart').get().then((querySnapshot) {
+        querySnapshot.docs.forEach((cart) {
+          if(cart.data()['dealerlicense']==license){
+            cart.reference.collection('cartitem').add({
+              'productid':'${widget.product['productid']}',
+              'productquantity':'${quantity_controller.text}',
+              'companylicense':'${widget.product['companylicense']}',
+            });
+          }
+        });
+      });
+    }
+  }
+
 }

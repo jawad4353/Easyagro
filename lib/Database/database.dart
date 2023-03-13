@@ -184,7 +184,8 @@ Future<bool> Duplicate_phone(phone,collection_name) async {
 }
 
 Update_password(newpass,email,collection_name) async {
-  await FirebaseFirestore.instance.collection("${collection_name}").get().then((querySnapshot) {
+  await FirebaseFirestore.instance.collection("${collection_name}").get().
+  then((querySnapshot) {
   querySnapshot.docs.forEach((result) {
   if(result.data()['email']==email){
   FirebaseFirestore.instance.collection("${collection_name}").doc(result.id).update({'password':'${newpass}'});
@@ -228,6 +229,7 @@ Update_password(newpass,email,collection_name) async {
     await newRef.putFile(tempFile).whenComplete(() => tempFile.delete());
     await oldRef.delete();
   }
+
 
 
 
