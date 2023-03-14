@@ -17,6 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Company/rud_products.dart';
 import '../splash.dart';
 import '../Database/database.dart';
+import 'cart.dart';
 
 class Add_to_cart extends StatefulWidget{
   var product;
@@ -28,6 +29,16 @@ class Add_to_cart extends StatefulWidget{
 class _Add_to_cartState extends State<Add_to_cart> {
   var quantity=1;
   TextEditingController quantity_controller=new TextEditingController();
+
+  var cartsnackbar=SnackBar(
+    backgroundColor: Colors.green.shade700,
+    duration: Duration(seconds: 1),
+    content: Text(
+      'Added to cart',
+      style: TextStyle(color: Colors.white),
+    ),
+  );
+
   @override
   void initState() {
     // TODO: implement initState
@@ -40,7 +51,9 @@ class _Add_to_cartState extends State<Add_to_cart> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(centerTitle:true,backgroundColor: Colors.green.shade700,title: Text('${widget.product['productname']}'),actions: [
-        IconButton(onPressed: (){}, icon: Icon(Icons.shopping_cart))
+        IconButton(onPressed: (){
+          Navigator.push(context, Myroute(CartScreen()));
+        }, icon: Icon(Icons.shopping_cart))
       ],),
       body: Container(
         color: Colors.white,
@@ -154,9 +167,10 @@ class _Add_to_cartState extends State<Add_to_cart> {
                   child: ElevatedButton(style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) =>
                   Colors.green.shade700)),
                       onPressed: () async {
+                    EasyLoading.show(status: 'Adding..');
                         SharedPreferences pref =await SharedPreferences.getInstance();
                         bool found = false;
-                        var license;
+                        var  license;
                         license=pref.getString("email");
                         found=await Add_tocart(license);
 
@@ -167,13 +181,20 @@ class _Add_to_cartState extends State<Add_to_cart> {
                                 cart.reference.collection('cartitem').add({
                                   'productid':'${widget.product['productid']}',
                                   'productquantity':'${quantity_controller.text}',
+                                  'productimage':'${widget.product['image']}',
                                   'companylicense':'${widget.product['companylicense']}',
+                                  'productname':'${widget.product['productname']}',
+                                  'productprice':'${widget.product['productprice']}',
+                                  'quantity':'${widget.product['productquantity']}',
                                 });
                               }
                             });
                           });
 
                         }
+
+                        EasyLoading.dismiss();
+                        ScaffoldMessenger.of(context).showSnackBar(cartsnackbar);
 
                       }, child: Text('Add to cart')),
                 ),
@@ -239,20 +260,25 @@ class _Add_to_cartState extends State<Add_to_cart> {
 
     }
     else {
-      cart.add({'dealerlicense':'${license}'});
+      cart.doc(license).set({'dealerlicense':'${license}'});
       cart.get().then((querySnapshot) {
         querySnapshot.docs.forEach((result) {
           if(result.data()['dealerlicense']==license){
            result.reference.collection('cartitem').add({
              'productid':'${widget.product['productid']}',
              'productquantity':'${quantity_controller.text}',
+             'productimage':'${widget.product['image']}',
              'companylicense':'${widget.product['companylicense']}',
+             'productname':'${widget.product['productname']}',
+             'productprice':'${widget.product['productprice']}',
+             'quantity':'${widget.product['productquantity']}',
            });
           }
         });
       });
     }
-
+    EasyLoading.dismiss();
+    ScaffoldMessenger.of(context).showSnackBar(cartsnackbar);
 
   }
 

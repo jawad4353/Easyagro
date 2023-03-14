@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import '../Company/Notifiers.dart';
 import '../Company/rud_products.dart';
 import 'Addtocart.dart';
+import 'cart.dart';
 
 class dealer_products extends StatefulWidget{
   var company_license;
@@ -37,40 +38,42 @@ class _dealer_productsState extends State<dealer_products> with SingleTickerProv
     var size=MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: Text('Products'),centerTitle: true,
+      appBar: AppBar(title:
+      Container(
+              height: 37,
+        child: TextField(
+          cursorColor: Colors.green,
+
+          onChanged: (a){
+            Provider.of<GlobalState>(context, listen: false).value = a;
+          },
+
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.only(left: 15),
+            filled: true,
+            fillColor: Colors.white,
+            hintText: 'Search products',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.green)
+            ),
+          ),),
+      ),centerTitle: true,
         leading: IconButton(icon: Icon(Icons.arrow_back_ios_rounded,size: 30),onPressed: (){
           Navigator.push(context, Myroute(dealerhome()));
         },),
         backgroundColor: Colors.green.shade700,actions: [
-        IconButton(onPressed: (){}, icon: Icon(Icons.shopping_cart)),
+        IconButton(onPressed: (){
+          Navigator.push(context, Myroute(CartScreen()));
+        }, icon: Icon(Icons.shopping_cart)),
       ],
       bottom: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight + 43),
+        preferredSize: Size.fromHeight(kToolbarHeight + 0),
         child: Column(children: [
 
-          Padding(
-            padding: EdgeInsets.only(left: size.width*0.1,right: size.width*0.1),
-            child: TextField(
-              cursorColor: Colors.green,
-
-              onChanged: (a){
-                Provider.of<GlobalState>(context, listen: false).value = a;
-              },
-
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(left: 15),
-                filled: true,
-                fillColor: Colors.white,
-                hintText: 'Search products',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.green)
-                ),
-              ),),
-          ),
           TabBar(
             controller:catagoty_controller ,
             indicatorColor: Colors.white,
@@ -276,6 +279,7 @@ class _load_ProductsState extends State<load_Products> {
 
     );
   }
+
 }
 
 

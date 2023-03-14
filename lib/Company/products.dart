@@ -47,39 +47,40 @@ class _AllproductsState extends State<Allproducts> with SingleTickerProviderStat
     var size=MediaQuery.of(context).size;
   return  Scaffold(
       backgroundColor:Colors.white,
-      appBar: AppBar(centerTitle: true,title: Text('Products',style: TextStyle(fontSize: 20,fontFamily: 'jd'),),
+      appBar: AppBar(centerTitle: true,title:
+      Container(
+        height: 36,
+        child: TextField(
+          cursorColor: Colors.green,
+          style: TextStyle(fontWeight: FontWeight.bold),
+
+          onChanged: (a){
+            Provider.of<GlobalState>(context, listen: false).value = a;
+          },
+
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.only(left: 15),
+            filled: true,
+            fillColor: Colors.white,
+            hintText: 'Search products',
+            hintStyle:  TextStyle(fontWeight: FontWeight.normal),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.green)
+            ),
+          ),),
+      ),
         actions: [IconButton(onPressed: (){
           Navigator.push(context, Myroute(AddProductsPage()));
         }, icon: Icon(Icons.add,color: Colors.white,size: 27,)),
         Text('  '),],elevation: 0,backgroundColor: Colors.green.shade700,
 
         bottom:PreferredSize(
-          preferredSize: Size.fromHeight(kToolbarHeight + 48),
+          preferredSize: Size.fromHeight(kToolbarHeight + 0),
           child: Column(children: [
-
-            Padding(
-              padding: EdgeInsets.only(left: size.width*0.1,right: size.width*0.1),
-              child: TextField(
-                cursorColor: Colors.green,
-
-                onChanged: (a){
-                    Provider.of<GlobalState>(context, listen: false).value = a;
-                },
-
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.only(left: 15),
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: 'Search products',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.green)
-                  ),
-                ),),
-            ),
             TabBar(
               controller:catagoty_controller ,
               indicatorColor: Colors.white,

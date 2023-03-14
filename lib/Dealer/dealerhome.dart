@@ -45,8 +45,8 @@ class _dealerhomeState extends State<dealerhome> {
       appBar: AppBar(
         elevation: 0,
         title: Container(
-          height: 40,
-          width: size.width*0.9,
+          height:37,
+
           child: TextField(
             controller: search_controller,
             onChanged: (a){
