@@ -153,7 +153,6 @@ class _OTP_screenState extends State<OTP_screen> {
                             if(widget.OTP==otp_controller.text){
                               bool isregistered= await new database().Register_company(widget.Data[0],widget.Data[1],widget.Data[2], widget.Data[3], widget.Data[4], widget.Data[5]);
                               if(isregistered){
-                                Set_Shared_Preference('company',widget.Data[3],widget.Data[5]);
                                 Navigator.pushReplacement(context, Myroute(companylogin()));
                               }
                               return;
@@ -174,7 +173,6 @@ class _OTP_screenState extends State<OTP_screen> {
                             if(widget.OTP==otp_controller.text){
                               bool isregistered= await new database().Register_dealer(widget.Data[0],widget.Data[1],widget.Data[2], widget.Data[3], widget.Data[4], widget.Data[5]);
                               if(isregistered){
-                                Set_Shared_Preference('dealer',widget.Data[3],widget.Data[5]);
                                 Navigator.pushReplacement(context, Myroute(dealerlogin()));
                               }
                               return;
