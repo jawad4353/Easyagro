@@ -39,7 +39,7 @@ class _dealerhomeState extends State<dealerhome> {
     var size=MediaQuery.of(context).size;
     return Scaffold(
 
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.green.shade700,
 
 
       appBar: AppBar(
@@ -147,11 +147,11 @@ class _dealerhomeState extends State<dealerhome> {
         children: [
 
          Container(
-            height: size.height*0.7,
+            height: size.height*0.77,
 
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance.collection('company').snapshots(),
-              builder: (context, snapshot) {
+              builder: (context, snapshot)  {
                 if (snapshot.hasError) {
                   return Center(
                     child: Text('Error: ${snapshot.error}'),
@@ -183,25 +183,56 @@ class _dealerhomeState extends State<dealerhome> {
                 List<DocumentSnapshot> filteredcompanies = snapshot.data!.docs.where((doc) {
                   return doc['name'].toLowerCase().contains(search_controller.text.toLowerCase());
                 }).toList();
+                // Navigator.push(context, Myroute(dealer_products(company_license:companyData['license'] ,)));
 
                 return ListView.builder(
                   itemCount: filteredcompanies.length,
-                  itemBuilder: (context, index) {
+                  itemBuilder: (context, index)  {
                     DocumentSnapshot document = filteredcompanies[index];
                     Map<String, dynamic> companyData = document.data() as Map<String, dynamic>;
-
-                    return ListTile(
-
-                      isThreeLine: true,
-                      splashColor: Colors.green.shade700,
-                      shape: Border.all(width: 2,color: Colors.black12),
-                      leading: Icon(Icons.badge,size: 56,color: Colors.green.shade700,),
-                      title: Text(companyData['name']),
-                      subtitle: Text('${companyData['address']}\n${companyData['email']}'),
-                      onTap: () {
-                        // Navigate to company details page
-                        Navigator.push(context, Myroute(dealer_products(company_license:companyData['license'] ,)));
+                    var addressshort='${companyData['address']}'.length<25 ?companyData['address']:'${companyData['address']}'.substring(0,25)+'..' ;
+                    var nameshort='${companyData['name']}'.length<17 ?companyData['name']:'${companyData['name']}'.substring(0,17)+'..' ;
+                    return InkWell(
+                      splashColor: Colors.white,
+                      onTap: (){
+                        Navigator.push(context, Myroute(dealer_products(company_license: companyData['license'],)));
                       },
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        border: Border(bottom: BorderSide(color: Colors.white,width: 2))
+                      ),
+                        child: Column(
+                          children: [
+                            Container(
+                              height:160,
+                                color: Colors.green.shade700,
+                                width: size.width,
+                                child:  Image.network('${companyData['profileimage']}',fit: BoxFit.fill,)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                              Text('$nameshort',style: TextStyle(fontFamily: 'jd',fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold),),
+                              Text('${companyData['email']}',style: TextStyle(color: Colors.white),),
+                            ],),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                              Row(children: [
+                                Icon(Icons.house_siding_sharp,color: Colors.white,),
+                                Text('$addressshort',style: TextStyle(color: Colors.white),),
+                              ],),
+                                Row(children: [
+                                  Icon(Icons.phone,color: Colors.white,),
+                                  Text('${companyData['phone']}',style: TextStyle(color: Colors.white),),
+                                ],),
+
+
+                            ],)
+
+                          ],
+                        ),
+                      ),
                     );
                   },
                 );
@@ -265,6 +296,9 @@ class _dealerhomeState extends State<dealerhome> {
     user_data.add(a);
 
   }
+
+
+
 }
 
 

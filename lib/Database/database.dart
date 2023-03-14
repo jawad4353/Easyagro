@@ -56,11 +56,13 @@ class database {
 
 
 
-  Future<bool> Register_company(name,license_no,address,email,phone,password) async {
+  Future<bool> Register_company(name,license_no,address,email,phone,password,profile_url,license_url) async {
     try{
 
       FirebaseFirestore.instance.collection('company').add({'email':"${email}",'password':'${password}','name':'${name}',
-        'license':'${license_no}', 'address':'${address}','phone':'${phone}'
+        'license':'${license_no}', 'address':'${address}','phone':'${phone}',
+        'profileimage':"${profile_url}",
+        'licenseimage':'${license_url}','accountstatus':'unverified'
       });
       EasyLoading.showSuccess('Account created Sucessfully  ');
       return true;
@@ -74,11 +76,12 @@ class database {
   }
 
 
-  Future<bool> Register_dealer(name,license_no,address,email,phone,password) async {
+  Future<bool> Register_dealer(name,license_no,address,email,phone,password,profile_url,license_url) async {
     try{
 
       FirebaseFirestore.instance.collection('dealer').add({'email':"${email}",'password':'${password}','name':'${name}',
-        'license':'${license_no}', 'address':'${address}','phone':'${phone}'
+        'license':'${license_no}', 'address':'${address}','phone':'${phone}','profileimage':"${profile_url}",
+      'licenseimage':'${license_url}','accountstatus':'unverified'
       });
       EasyLoading.showSuccess('Account created Sucessfully  ');
       return true;

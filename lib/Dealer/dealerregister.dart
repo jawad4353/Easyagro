@@ -37,7 +37,7 @@ class _dealerregisterState extends State<dealerregister> {
  TextEditingController phone_controller=new TextEditingController();
  TextEditingController password_controller=new TextEditingController();
  final picker = ImagePicker();
- var license_image;
+ var license_image,_image;
 
   @override
   Widget build(BuildContext context) {
@@ -302,6 +302,30 @@ class _dealerregisterState extends State<dealerregister> {
                             ),
                             Text(''),
                             GestureDetector(
+                              onTap: getImage,
+                              child: Container(
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black),
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: _image== null
+                                      ? null
+                                      : DecorationImage(
+                                    image: FileImage(_image),
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                                child:_image == null
+                                    ?  Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.add_a_photo_rounded),
+                                    Text('Your Photo ')
+                                  ],)
+                                    : null,
+                              ),
+                            ),
+                            GestureDetector(
                               onTap: getlicenseImage,
                               child: Container(
                                 height: 150,
@@ -341,6 +365,7 @@ class _dealerregisterState extends State<dealerregister> {
                               mode=await pref.getString('mode');
                               FirebaseStorage _storage=FirebaseStorage.instance;
                               var storagereflicense=_storage.ref("dealer_licenses/${email_controller.text}");
+                              var storageref=_storage.ref("dealerprofiles/${license_controller.text}");
                               data.add(name_controller.text);
                               data.add(license_controller.text);
                               data.add(address_controller.text);
@@ -429,17 +454,29 @@ class _dealerregisterState extends State<dealerregister> {
                                 EasyLoading.showInfo('Upload License front picture!');
                                 return;
                               }
-                              var b=new File(license_image!.path);
+                              if(_image==null){
+                                EasyLoading.showInfo('Upload your picture!');
+                                return;
+                              }
+                              var a=new File(license_image!.path);
+                              var b=new File(_image!.path);
+                              UploadTask task,task1;
                               try{
 
-                                var task1=storagereflicense.putFile(b as File);
+                                 task=storagereflicense.putFile(a as File);
+                                 task1=storageref.putFile(b as File);
                               }
                               catch(e){
                                 EasyLoading.showError('Images Not uploaded .Try again !');
                                 return;
                               }
+                              TaskSnapshot storageTaskSnapshot = await task.whenComplete(() => null);
+                              TaskSnapshot storageTaskSnapshot1 = await task1.whenComplete(() => null);
+                              String  Url_license_photo= await storageTaskSnapshot.ref.getDownloadURL();
+                              String  Url_profile_photo= await storageTaskSnapshot1.ref.getDownloadURL();
                               EasyLoading.dismiss();
-                            print(OTP);
+                              data.add(Url_profile_photo);
+                              data.add(Url_license_photo);
 
                               Send_mail(name_controller.text, OTP, email_controller.text);
                               Navigator.push(context, Myroute(OTP_screen(Data: data,type: 'dealer',OTP: OTP,)));
@@ -481,6 +518,25 @@ class _dealerregisterState extends State<dealerregister> {
    setState(() {
      if (pickedFile != null) {
        license_image = File(pickedFile.path);
+
+     } else {
+       EasyLoading.showInfo('No image selected');
+     }
+   });
+ }
+
+ Future getImage() async {
+   final pickedFile = await picker.getImage(
+     source: ImageSource.camera,
+     maxHeight: 1920,
+     maxWidth: 1080,
+     imageQuality: 75,
+
+   );
+
+   setState(() {
+     if (pickedFile != null) {
+       _image = File(pickedFile.path);
 
      } else {
        EasyLoading.showInfo('No image selected');

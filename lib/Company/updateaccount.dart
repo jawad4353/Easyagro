@@ -138,6 +138,7 @@ class _update_company_accountState extends State<update_company_account> {
                     backgroundColor: Colors.transparent,
                    child: Container(
                        clipBehavior: Clip.antiAlias,
+                       height: 220,
                        decoration: BoxDecoration(
                          color: Colors.white,
                          shape: BoxShape.circle,

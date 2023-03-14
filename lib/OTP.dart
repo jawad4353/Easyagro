@@ -108,10 +108,7 @@ class _OTP_screenState extends State<OTP_screen> {
                             focusedErrorBorder:UnderlineInputBorder(borderSide: BorderSide(color: Colors.green))  ,
                             focusedBorder:UnderlineInputBorder(borderSide: BorderSide(color: Colors.green)) ,
                             prefixIcon: Icon(Icons.sms,color: Colors.green,size: 28,),
-                            // suffix: ElevatedButton(onPressed:(){
-                            //   // OTP_button_disabled ? null:GenerateOTP_again();
-                            // } ,child: Text('Get OTP'),   style:ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade700),
-                            // ))
+
                         ),
                       ),
                       Text(''),
@@ -151,7 +148,7 @@ class _OTP_screenState extends State<OTP_screen> {
                               return;
                             }
                             if(widget.OTP==otp_controller.text){
-                              bool isregistered= await new database().Register_company(widget.Data[0],widget.Data[1],widget.Data[2], widget.Data[3], widget.Data[4], widget.Data[5]);
+                              bool isregistered= await new database().Register_company(widget.Data[0],widget.Data[1],widget.Data[2], widget.Data[3], widget.Data[4], widget.Data[5],widget.Data[6],widget.Data[7]);
                               if(isregistered){
                                 Navigator.pushReplacement(context, Myroute(companylogin()));
                               }
@@ -171,7 +168,7 @@ class _OTP_screenState extends State<OTP_screen> {
                               return;
                             }
                             if(widget.OTP==otp_controller.text){
-                              bool isregistered= await new database().Register_dealer(widget.Data[0],widget.Data[1],widget.Data[2], widget.Data[3], widget.Data[4], widget.Data[5]);
+                              bool isregistered= await new database().Register_dealer(widget.Data[0],widget.Data[1],widget.Data[2], widget.Data[3], widget.Data[4], widget.Data[5],widget.Data[6],widget.Data[7]);
                               if(isregistered){
                                 Navigator.pushReplacement(context, Myroute(dealerlogin()));
                               }

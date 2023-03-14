@@ -142,12 +142,13 @@ class _update_dealer_accountState extends State<update_dealer_account> {
                           backgroundColor: Colors.transparent,
                           child: Container(
                               clipBehavior: Clip.antiAlias,
+                              height: 220,
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   shape: BoxShape.circle,
                                   boxShadow: [BoxShadow(color: Colors.green.shade700,spreadRadius: 4)]
                               ),
-                              child: Image.network('${widget.user_data[6]}',fit: BoxFit.cover,)),
+                              child: Image.network('${widget.user_data[6]}',fit: BoxFit.fill,)),
                         ),
                       ),
 

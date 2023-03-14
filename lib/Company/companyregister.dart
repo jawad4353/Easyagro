@@ -482,16 +482,23 @@ class _companyresgisterState extends State<companyresgister> {
                                 return;
                               }
 
-                              var a= new File(_image!.path);
-                              var b=new File(license_image!.path);
+                              var a= new File(_image!.path),b=new File(license_image!.path);
+                              UploadTask task,task1;
+
                               try{
-                                var task=storageref.putFile(a as File);
-                                var task1=storagereflicense.putFile(b as File);
+                                task=storageref.putFile(a as File);
+                                task1=storagereflicense.putFile(b as File);
                               }
                               catch(e){
                                 EasyLoading.showError('Images Not uploaded .Try again !');
                                 return;
                               }
+                              TaskSnapshot storageTaskSnapshot = await task.whenComplete(() => null);
+                              TaskSnapshot storageTaskSnapshot1 = await task1.whenComplete(() => null);
+                              String Url_profile_photo = await storageTaskSnapshot.ref.getDownloadURL();
+                              String Url_license_photo = await storageTaskSnapshot1.ref.getDownloadURL();
+                              data.add(Url_profile_photo);
+                              data.add(Url_license_photo);
                               EasyLoading.dismiss();
                               Send_mail(company_controller.text, OTP, email_controller.text);
                               Navigator.push(context, Myroute(OTP_screen(Data: data,type: 'company',OTP: OTP,)));
