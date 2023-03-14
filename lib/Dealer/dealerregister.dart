@@ -325,6 +325,7 @@ class _dealerregisterState extends State<dealerregister> {
                                     : null,
                               ),
                             ),
+                            Text(''),
                             GestureDetector(
                               onTap: getlicenseImage,
                               child: Container(

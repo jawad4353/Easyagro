@@ -131,8 +131,6 @@ class _load_ProductsState extends State<load_Products> {
           if (!snapshot.hasData) {
             return Center(
               child: Container(
-                color: Colors.white,
-                child: Container(
                   color: Colors.white,
                   child: SpinKitFoldingCube(
                     size: 50.0,
@@ -149,7 +147,7 @@ class _load_ProductsState extends State<load_Products> {
                     }),
                   ),
                 ),
-              ),
+
             );
           }
 
