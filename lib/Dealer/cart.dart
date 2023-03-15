@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:easyagro/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'Addtocart.dart';
 
 class CartScreen extends StatefulWidget {
 
@@ -126,17 +129,50 @@ class _CartScreenState extends State<CartScreen> {
                               return Container(
 
                                 decoration: BoxDecoration(
-                                  border: Border(bottom: BorderSide(color: Colors.black12,width: 1))
+                                  border: Border(top: BorderSide(color: Colors.black12,width: 1))
                                 ),
                                 child: ListTile(
                                   isThreeLine: true,
-                                  leading: Image.network(cartItems[index]['productimage'],height: 150,),
+                                  contentPadding: EdgeInsets.zero,
+                                  onTap: () async {
+                                    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+                                        .collection('products')
+                                        .where('productid', isEqualTo:cartItems[index]['productid'] )
+                                        .get();
+
+                                    Navigator.push(context,Myroute( Add_to_cart(product: snapshot.docs.first,)));
+                                  },
+                                  leading: Image.network(cartItems[index]['productimage'],height: 190,),
                                   title: Text(cartItems[index]['productname']),
                                   subtitle: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text('${cartItems[index]['quantity']}\n${cartItems[index]['productprice']} R.s'),
-                                      IconButton(onPressed: (){}, icon: Icon(Icons.delete))
+
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                        IconButton(onPressed: () async {
+                                          var found=false;
+                                          await FirebaseFirestore.instance.collection('cart').get().then((querySnapshot) async {
+                                            for (var cart in querySnapshot.docs) {
+                                              if (cart.data()['dealerlicense'] == license) {
+                                                var cartItems1 = await cart.reference.collection('cartitem').get();
+                                                for (var cartItem1 in cartItems1.docs) {
+                                                  if (cartItem1.data()['productid'] == cartItems[index]['productid']) {
+                                                      await cart.reference.collection('cartitem').doc(cartItem1.id).delete();
+                                                    found =  true;
+                                                    break;
+                                                  }
+                                                }
+                                              }
+                                              if (found) {
+                                                break;
+                                              }
+                                            }
+                                          });
+                                        }, icon: Icon(Icons.delete_sharp,size: 29,color: Colors.redAccent,))
+                                      ],)
 
                                     ],
                                   ),
