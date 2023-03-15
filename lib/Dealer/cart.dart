@@ -140,7 +140,7 @@ class _CartScreenState extends State<CartScreen> {
                                         .where('productid', isEqualTo:cartItems[index]['productid'] )
                                         .get();
 
-                                    Navigator.push(context,Myroute( Add_to_cart(product: snapshot.docs.first,)));
+                                    Navigator.push(context,Myroute( Add_to_cart(product: snapshot.docs.first,type: '${cartItems[index]['productquantity']}',)));
                                   },
                                   leading: Image.network(cartItems[index]['productimage'],height: 190,),
                                   title: Text(cartItems[index]['productname']),

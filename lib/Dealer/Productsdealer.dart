@@ -191,7 +191,7 @@ class _load_ProductsState extends State<load_Products> {
                 // Replace the placeholders with the actual product data
                 return  InkWell(
                   onTap: (){
-                    Navigator.push(context, Myroute(ViewProductPage(product: product,)));
+                    Navigator.push(context, Myroute(Add_to_cart(product: product,type: 'first',)));
                   },
                   child: Container(
                     clipBehavior: Clip.antiAlias,
@@ -201,7 +201,7 @@ class _load_ProductsState extends State<load_Products> {
                     ),
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(context,Myroute(Add_to_cart(product: product,)));
+                        Navigator.push(context,Myroute(Add_to_cart(product: product,type: 'first',)));
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -249,7 +249,7 @@ class _load_ProductsState extends State<load_Products> {
                                   ElevatedButton(
 
                                     onPressed: () {
-                                      Navigator.push(context,Myroute(Add_to_cart(product: product,)));
+                                      Navigator.push(context,Myroute(Add_to_cart(product: product,type: "first",)));
                                     },
                                     style: ButtonStyle(
                                         backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade700)

@@ -20,8 +20,8 @@ import '../Database/database.dart';
 import 'cart.dart';
 
 class Add_to_cart extends StatefulWidget{
-  var product;
-  Add_to_cart({required this.product});
+  var product,type;
+  Add_to_cart({required this.product,required this.type});
   @override
   State<Add_to_cart> createState() => _Add_to_cartState();
 }
@@ -43,7 +43,12 @@ class _Add_to_cartState extends State<Add_to_cart> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    quantity_controller.text='$quantity';
+    if(widget.type=='first'){
+      quantity_controller.text='$quantity';
+    }
+    else{
+      quantity_controller.text=widget.type;
+    }
   }
 
 
