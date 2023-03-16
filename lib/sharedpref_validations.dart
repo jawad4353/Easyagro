@@ -336,3 +336,10 @@ String getUniqueProductID() {
   int randomInt = random.nextInt(100000);
   return "PRODUCT-$uniqueID-$randomInt";
 }
+String getUniqueorderID() {
+  var uuid = Uuid();
+  var random = Random();
+  String uniqueID = uuid.v4();
+  int randomInt = random.nextInt(100000);
+  return "ORDER-$uniqueID-$randomInt";
+}

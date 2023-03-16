@@ -17,8 +17,9 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  var license,totalbill=0,totalitems,dealer_address,addresschanged=false,Address_error,Address_error_color=Colors.grey;
+  var license,totalbill,totalitems,dealer_address,addresschanged=false,Address_error,Address_error_color=Colors.grey;
   int currentStep = 0;
+  var Titlelist=['Cart','Address','Confirm'];
   TextEditingController address_controller=new TextEditingController();
   
 
@@ -45,11 +46,11 @@ class _CartScreenState extends State<CartScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Confirm Order'),
+        title: Text(Titlelist[currentStep]),
         backgroundColor: Colors.green.shade700,
         actions: [
           Text(
-            'Total: $totalbill R.s',style: TextStyle(fontSize: 19,fontWeight: FontWeight.bold),
+            totalbill==null ? '':'Total: $totalbill R.s',style: TextStyle(fontSize: 19,fontWeight: FontWeight.bold),
           )
         ],
       ),
@@ -64,6 +65,13 @@ class _CartScreenState extends State<CartScreen> {
                   currentStep += 1;
                 }
               });
+              // if(currentStep==2){
+              //   FirebaseFirestore.instance.collection('orders').add({
+              //    'orderid': getUniqueorderID(),
+              //
+              //
+              //   });
+              // }
             },
             onStepCancel: currentStep==0 ? null:() {
               setState(() {
@@ -209,6 +217,7 @@ class _CartScreenState extends State<CartScreen> {
                                                 }
                                               }
                                             });
+                                            Calculate_TotalBill();
                                           },
                                           icon: Icon(Icons.minimize_outlined,color: Colors.red,),
                                         ),
@@ -242,6 +251,7 @@ class _CartScreenState extends State<CartScreen> {
                                                 }
                                               }
                                             });
+                                            Calculate_TotalBill();
                                           },
                                           icon: Icon(Icons.add,color: Colors.green.shade700,),
                                         ),
@@ -383,7 +393,10 @@ class _CartScreenState extends State<CartScreen> {
               ),
               Step(
                 title: Text('Payment'),
-                content: Text('Step 3 content'),
+                content: Column(
+                  children: [
+                  Text('Will be delivered to you in 2 to 7 days .Click continue to confirm order')
+                ],),
                 isActive: currentStep == 2,
                   state: currentStep >2 ?StepState.complete :StepState.editing
               ),
@@ -409,16 +422,32 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Calculate_TotalBill(){
-    totalbill=0;
-    for (int i = 0; i < totalitems.length; i++) {
-      if (totalitems[i]['productprice'] != null && totalitems[i]['productquantity'] != null) {
-        totalbill+= int.parse(totalitems[i]['productprice']) * int.parse(totalitems[i]['productquantity']);
+  Calculate_TotalBill() async {
+   var price=[],quantity=[];
+   num Bill=0;
+   await FirebaseFirestore.instance.collection('cart').get().then((querySnapshot) async {
+      for (var cart in querySnapshot.docs) {
+        if (cart.data()['dealerlicense'] == license) {
+          var cartItems1 = await cart.reference.collection('cartitem').get().then((querySnapshot) {
+            querySnapshot.docs.forEach((result) {
+              if(result.data()['productprice']!=null){
+                price.add(int.parse(result.data()['productprice']));
+                quantity.add(int.parse(result.data()['productquantity']));
+              }
+            });
+          });;
+          }
       }
-    }
-    Future.delayed(Duration(seconds: 2),()=>setState(() {
-      totalbill;
-    }));
+    });
+
+   for(int i=0;i<quantity.length;i++){
+     Bill+= price[i]*quantity[i];
+   }
+   print(Bill);
+   setState(() {
+     totalbill=Bill.toInt();
+   });
+
   }
 
 
