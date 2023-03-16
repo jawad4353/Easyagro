@@ -7,6 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../sharedpref_validations.dart';
 import 'Addtocart.dart';
 
 class CartScreen extends StatefulWidget {
@@ -16,9 +17,9 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  var license,totalbill=0,totalitems;
+  var license,totalbill=0,totalitems,dealer_address,addresschanged=false,Address_error,Address_error_color=Colors.grey;
   int currentStep = 0;
-
+  TextEditingController address_controller=new TextEditingController();
   
 
   @override
@@ -44,7 +45,7 @@ class _CartScreenState extends State<CartScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Cart Items'),
+        title: Text('Confirm Order'),
         backgroundColor: Colors.green.shade700,
         actions: [
           Text(
@@ -192,8 +193,10 @@ class _CartScreenState extends State<CartScreen> {
                                                       if(int.parse(cartItems[index]['productquantity'])>1){
                                                         await cart.reference.collection('cartitem').doc(cartItem1.id).update({
                                                           'productquantity': '${ int.parse(cartItems[index]['productquantity'])-1}',
+
                                                         });
                                                       }
+
 
                                                       found =  true;
 
@@ -261,9 +264,120 @@ class _CartScreenState extends State<CartScreen> {
                 state: currentStep > 0 ?StepState.complete :StepState.editing
               ),
 
+
+
+
+
+
+
+
+
+
               Step(
                 title: Text('Address'),
-                content: Text('Step 2 content'),
+                content: Column(children: [
+                Container(
+                  height: 100,
+                  child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection('dealer').where('license', isEqualTo: license).snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: Container(
+                          color: Colors.white,
+                          child: SpinKitFoldingCube(
+                            size: 50.0,
+                            duration: Duration(milliseconds: 700),
+                            itemBuilder: ((context, index) {
+                              var Mycolors=[Colors.green.shade700,Colors.white];
+                              var Mycol=Mycolors[index%Mycolors.length];
+                              return DecoratedBox(decoration: BoxDecoration(
+                                  color: Mycol,
+                                  border: Border.all(color: Colors.green,)
+
+
+                              ));
+                            }),
+                          ),
+                        ),
+
+                      );
+                    }
+
+                    return ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        DocumentSnapshot dealer = snapshot.data!.docs[index];
+                        return ListTile(
+                          title: Text(dealer['address']),
+                          subtitle:Text('Address') ,
+                          leading: Icon(Icons.location_on_rounded,size: 45,),
+                        );
+                      },
+                    );
+                  },
+              ),
+                ),
+
+        if(!addresschanged)
+                  ElevatedButton(onPressed: (){
+                    setState(() {
+                      addresschanged=!addresschanged;
+                    });
+                  }, child: Text('Change')),
+                  if(addresschanged)
+                    TextField(
+                      controller: address_controller,
+                      cursorColor: Colors.green.shade700,
+                      keyboardType: TextInputType.visiblePassword,
+                      onChanged: (a){
+                        setState(() {
+                          var s=Address_Validation(a.replaceAll(' ', ''));
+                          Address_error=s[0];
+                          Address_error_color=s[1];
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Address',
+                        prefixIcon: Icon(Icons.location_on,color: Colors.green,size: 28,),
+                        errorText: Address_error,
+                        errorStyle: TextStyle(color: Address_error_color),
+                        focusedErrorBorder:UnderlineInputBorder(borderSide: BorderSide(color: Address_error_color))
+                        ,focusedBorder:UnderlineInputBorder(borderSide: BorderSide(color: Address_error_color)) ,
+                        enabledBorder:UnderlineInputBorder(borderSide: BorderSide(color:Address_error_color)) ,
+                        errorBorder: UnderlineInputBorder(borderSide: BorderSide(color:Address_error_color)),
+
+                      ),),
+                  if(addresschanged)
+                  ElevatedButton(onPressed: () async {
+                    var s=Address_Validation(address_controller.text.replaceAll(' ', ''));
+                    if(address_controller.text.isEmpty){
+                      EasyLoading.showInfo('Address required !');
+                      return;
+                    }
+                    if(s[1]==Colors.red){
+                      EasyLoading.showInfo('Invalid Address !');
+                      return;
+                    }
+                    await FirebaseFirestore.instance.collection("dealer").get().then((querySnapshot) {
+                      querySnapshot.docs.forEach((result) {
+                        if(result.data()['license']==license ){
+                        FirebaseFirestore.instance.collection('dealer').doc(result.id).update({'address':'${address_controller.text}'});
+                        }
+                      });
+                    });
+
+                    setState(() {
+                      addresschanged=!addresschanged;
+
+                    });
+                  }, child: Text('Update')),
+
+                ],),
                 isActive: currentStep >= 1,
                   state: currentStep > 1 ?StepState.complete :StepState.editing
               ),
@@ -306,6 +420,8 @@ class _CartScreenState extends State<CartScreen> {
       totalbill;
     }));
   }
+
+
   
 
 }
