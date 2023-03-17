@@ -77,10 +77,19 @@ class _CartScreenState extends State<CartScreen> {
 
 
 
-
+          var mycompany;
               if(currentStep==2 ){
+                var ordersc=FirebaseFirestore.instance.collection('orders');
+                var docum=ordersc.doc();
+                FirebaseFirestore.instance.collection('orders').doc(docum.id).set({
+                  'dealerlicense':'$license',
+                  'address':'$address',
+                  'status':'confirmed',
+                  'total':'$totalbill',
+                  'date':'${DateTime. now()}',
 
-                var ref=FirebaseFirestore.instance.collection('orders').doc().collection('orderitem');
+                  });
+                var ref=docum.collection('orderitem');
                  var found=false;
                 await FirebaseFirestore.instance.collection('cart').get().then((querySnapshot) async {
                   for (var cart in querySnapshot.docs) {
@@ -93,18 +102,13 @@ class _CartScreenState extends State<CartScreen> {
                         ref.add({
                           'quantity':cartItem1['quantity'],
                           'productid':cartItem1['productid'],
-                          'companylicense':cartItem1['companylicense'],
                           'productquantity':cartItem1['productquantity'],
                           'productname':cartItem1['productname'],
                           'productprice':cartItem1['productprice'],
                           'productimage':cartItem1['productimage'],
-                          'dealerlicense':'$license',
-                          'address':'$address',
-                          'status':'confirmed',
-                          'total':'$totalbill',
-                          'date':'${DateTime. now()}'
 
                         });
+                        mycompany=cartItem1['companylicense'];
 
                       }
                     }
@@ -219,7 +223,7 @@ class _CartScreenState extends State<CartScreen> {
                               return Container(
 
                                 decoration: BoxDecoration(
-                                  border: Border(top: BorderSide(color: Colors.black12,width: 1))
+                                  border: Border(bottom: BorderSide(color: Colors.black12,width: 1))
                                 ),
                                 child: ListTile(
                                   isThreeLine: true,
@@ -233,11 +237,11 @@ class _CartScreenState extends State<CartScreen> {
                                     Navigator.push(context,Myroute( Add_to_cart(product: snapshot.docs.first,type: '${cartItems[index]['productquantity']}',)));
                                   },
                                   leading: Image.network(cartItems[index]['productimage'],height: 190,width: 70,),
-                                  title: Text(cartItems[index]['productname']),
+                                  title: Text(cartItems[index]['productname'],style: TextStyle(fontSize: 18)),
                                   subtitle: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text('${cartItems[index]['quantity']}\n${cartItems[index]['productprice']} R.s'),
+                                      Text('${cartItems[index]['quantity']}\nPrice: ${cartItems[index]['productprice']} R.s',style: TextStyle(fontSize: 15)),
 
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.end,

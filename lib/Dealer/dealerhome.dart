@@ -17,6 +17,7 @@ import '../Database/database.dart';
 import '../sharedpref_validations.dart';
 import '../splash.dart';
 import './Productsdealer.dart';
+import 'dealerorders.dart';
 
 class dealerhome extends StatefulWidget{
   @override
@@ -119,6 +120,14 @@ class _dealerhomeState extends State<dealerhome> {
                 ),onPressed: (){
 
                 },icon: Icon(Icons.contact_page,color: Colors.green.shade700,),label: Text('Contact Us',style: TextStyle(color: Colors.black,fontSize: 16),),),
+
+              ],),
+              Row(children: [
+                TextButton.icon(style: ButtonStyle(
+                    overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
+                ),onPressed: (){
+                Navigator.push(context, Myroute(OrdersScreen()));
+                },icon: Icon(Icons.favorite_border,color: Colors.green.shade700,),label: Text('Orders',style: TextStyle(color: Colors.black,fontSize: 16),),),
 
               ],),
 
