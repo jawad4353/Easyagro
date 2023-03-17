@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easyagro/Dealer/dealerhome.dart';
 import 'package:easyagro/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -51,7 +52,7 @@ class _CartScreenState extends State<CartScreen> {
         actions: [
           Center(
             child: Text(
-              totalbill==null ? '':'Total: $totalbill R.s',style: TextStyle(fontSize: 19,fontWeight: FontWeight.bold),
+              totalbill==null || totalbill==0 ? '':'Total: $totalbill R.s',style: TextStyle(fontSize: 19,fontWeight: FontWeight.bold),
             ),
           )
         ],
@@ -62,12 +63,22 @@ class _CartScreenState extends State<CartScreen> {
             type: StepperType.horizontal,
             currentStep: currentStep,
             onStepContinue: () async {
-              setState(() {
-                if(currentStep<2) {
-                  currentStep += 1;
-                }
-              });
-              if(currentStep==2){
+
+             if(currentStep==0){
+               final snapshot = await FirebaseFirestore.instance
+                   .collection('cart')
+                   .doc(license)
+                   .get();
+               if(!snapshot.exists){
+                 EasyLoading.showInfo('No items in cart. Add items to proceed');
+                 return;
+               }
+             }
+
+
+
+
+              if(currentStep==2 ){
 
                 var ref=FirebaseFirestore.instance.collection('orders').doc().collection('orderitem');
                  var found=false;
@@ -89,7 +100,7 @@ class _CartScreenState extends State<CartScreen> {
                           'productimage':cartItem1['productimage'],
                           'dealerlicense':'$license',
                           'address':'$address',
-                          'status':'confirmedd',
+                          'status':'confirmed',
                           'total':'$totalbill',
                           'date':'${DateTime. now()}'
 
@@ -122,21 +133,33 @@ class _CartScreenState extends State<CartScreen> {
                     }
                   }
                 });
-
-
-
-
-
-
-
+                totalbill=null;
+                EasyLoading.showSuccess('Order Placed ');
+                Navigator.pushReplacement(context, Myroute(dealerhome()));
               }
+             setState(() {
+               if(currentStep<2) {
+                 currentStep += 1;
+               }
+             });
             },
             onStepCancel: currentStep==0 ? null:() {
               setState(() {
                   currentStep -= 1;
               });
             },
-            onStepTapped: (a){
+            onStepTapped: (a) async {
+              if(currentStep==0){
+                final snapshot = await FirebaseFirestore.instance
+                    .collection('cart')
+                    .doc(license)
+                    .get();
+                if(!snapshot.exists){
+                  EasyLoading.showInfo('No items in cart. Add items to proceed');
+                  return;
+                }
+              }
+
               setState(() {
                 currentStep=a;
               });
@@ -177,7 +200,7 @@ class _CartScreenState extends State<CartScreen> {
                         }
 
                         final cartItems = snapshot.data!.docs;
-                         totalitems=cartItems;
+                        totalitems=cartItems;
                         return cartItems.isEmpty? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -452,13 +475,14 @@ class _CartScreenState extends State<CartScreen> {
                   state: currentStep > 1 ?StepState.complete :StepState.editing
               ),
               Step(
+
                 title: Text('Payment'),
                 content: Column(
                   children: [
-                  Text('Will be delivered to you in 2 to 7 days .Click continue to confirm order')
+                  Text('Will be delivered to you in 2 to 7 days .')
                 ],),
                 isActive: currentStep == 2,
-                  state: currentStep >2 ?StepState.complete :StepState.editing
+                  state: currentStep >2 ?StepState.complete :StepState.complete
               ),
             ],
           controlsBuilder: (context, details) => Row(
