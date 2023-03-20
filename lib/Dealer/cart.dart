@@ -133,6 +133,7 @@ class _CartScreenState extends State<CartScreen> {
                       for (var cartItem1 in cartItems1.docs) {
                          cart.reference.collection('cartitem').doc(cartItem1.id).delete();
                       }
+
                       FirebaseFirestore.instance.collection('cart').doc(license).delete();
                     }
                   }
@@ -255,6 +256,15 @@ class _CartScreenState extends State<CartScreen> {
                                                 for (var cartItem1 in cartItems1.docs) {
                                                   if (cartItem1.data()['productid'] == cartItems[index]['productid']) {
                                                       await cart.reference.collection('cartitem').doc(cartItem1.id).delete();
+                                                      cart.reference.collection('cartitem')
+                                                          .get()
+                                                          .then((querySnapshot) {
+                                                        if (querySnapshot.size == 0) {
+                                                          FirebaseFirestore.instance.collection('cart').doc(license).delete();
+                                                        } else {
+                                                          print('Collection is not empty');
+                                                        }
+                                                      });
                                                     found =  true;
                                                     break;
                                                   }

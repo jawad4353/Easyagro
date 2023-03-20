@@ -14,9 +14,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
    return Scaffold(
      appBar: AppBar(backgroundColor: Colors.green.shade700,title: Text('Orders'),),
      body: Container(
-       height: 500,
+       height: MediaQuery.of(context).size.height,
        child: StreamBuilder<QuerySnapshot>(
-         stream: FirebaseFirestore.instance.collection('orders').snapshots(),
+         stream: FirebaseFirestore.instance.collection('orders').orderBy('date', descending: true).snapshots(),
          builder: (context, snapshot) {
            if (snapshot.hasError) {
              return Text('Error: ${snapshot.error}');
@@ -53,10 +53,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     border: Border(bottom: BorderSide(color:Colors.grey ))
                 ),
                 child: ListTile(
+                  splashColor: Colors.green.shade700,
                   onTap: (){
-                    Navigator.push(context, Myroute(View_details(id: '${snapshot.data!.docs[index].id}',)));
+                    Navigator.push(context, Myroute(View_details(id: '${snapshot.data!.docs[index].id}',date: snapshot.data!.docs[index]['date'],status:snapshot.data!.docs[index]['status'] ,total:snapshot.data!.docs[index]['total'])));
                   },
-                  title: Text('${snapshot.data!.docs[index]['date']}'),
+                  title: Text('${snapshot.data!.docs[index]['date']}'.substring(0,19)),
                   subtitle: Text('Total : ${snapshot.data!.docs[index]['total']}'),
                   trailing: Text('${snapshot.data!.docs[index]['status']}'),
                 ),
@@ -74,8 +75,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
 
 class View_details extends StatefulWidget{
-  var id;
-  View_details({required this.id});
+  var id,total,date,status;
+  View_details({required this.id,required this.date,required this.status,required this.total});
   @override
   State<View_details> createState() => _View_detailsState();
 }
@@ -84,10 +85,13 @@ class _View_detailsState extends State<View_details> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Order details'),backgroundColor: Colors.green.shade700,),
+      appBar: AppBar(title: Text('Order details'),backgroundColor: Colors.green.shade700,actions: [
+        Center(child: Text('Total bill : ${widget.total} R.s',style: TextStyle(fontSize: 16))),
+      ],),
       body:StreamBuilder(
         stream: FirebaseFirestore.instance.collection('orders').doc(widget.id).collection('orderitem').snapshots(),
         builder: (context, snapshot) {
+          widget.date='${widget.date}'.substring(0,19);
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           }
@@ -116,22 +120,39 @@ class _View_detailsState extends State<View_details> {
           }
 
       var s=snapshot.data!.docs;
-          return ListView.builder(
-            itemCount:s.length,
-            itemBuilder: (context,index) =>
+          return Container(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: [
                 Container(
-                  decoration: BoxDecoration(
-                      border: Border(bottom: BorderSide(color:Colors.grey ))
-                  ),
-                  child: ListTile(
-                    leading: Image.network('${s[index]['productimage']}',fit: BoxFit.fill,),
-                    isThreeLine: true,
-                    trailing:Text('Price : ${s[index]['productprice']}') ,
-                    title: Text('${s[index]['productname']}',style: TextStyle(fontSize: 17),),
-                    subtitle:Text('${s[index]['quantity']}\nQuantity : ${s[index]['productquantity']}\nTotal : ${int.parse(s[index]['productquantity'])*int.parse(s[index]['productprice'])} R.s',style: TextStyle(fontSize: 15)) ,
+                  height:MediaQuery.of(context).size.height*0.77 ,
+                  child: ListView.builder(
+                    itemCount:s.length,
+                    itemBuilder: (context,index) =>
+                        Container(
+                          decoration: BoxDecoration(
+                              border: Border(bottom: BorderSide(color:Colors.grey ))
+                          ),
+                          child: ListTile(
+                            leading: Image.network('${s[index]['productimage']}',fit: BoxFit.fill,),
+                            isThreeLine: true,
+                            trailing:Text('Price : ${s[index]['productprice']}') ,
+                            title: Text('${s[index]['productname']}',style: TextStyle(fontSize: 17),),
+                            subtitle:Text('${s[index]['quantity']}\nQuantity : ${s[index]['productquantity']}\nTotal : ${int.parse(s[index]['productquantity'])*int.parse(s[index]['productprice'])} R.s',style: TextStyle(fontSize: 15)) ,
 
+                          ),
+                        ),
                   ),
                 ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                  Text('  Status : ${widget.status}',style: TextStyle(fontSize: 16),),
+                  Text('  Order Date : ${widget.date}',style: TextStyle(fontSize: 16)),
+
+                ],)
+              ],
+            ),
           );
         },
       )

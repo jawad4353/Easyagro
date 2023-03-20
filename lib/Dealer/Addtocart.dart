@@ -179,7 +179,12 @@ class _Add_to_cartState extends State<Add_to_cart> {
                         license=pref.getString("email");
                         found= await Add_tocart(license);
 
+                        if(found==null){
+                          EasyLoading.dismiss();
+                          return;
+                        }
                         if(!found){
+
                           FirebaseFirestore.instance.collection('cart').get().then((querySnapshot) {
                             querySnapshot.docs.forEach((cart) {
                               if(cart.data()['dealerlicense']==license){
@@ -195,11 +200,12 @@ class _Add_to_cartState extends State<Add_to_cart> {
                               }
                             });
                           });
-
+                          EasyLoading.dismiss();
+                          ScaffoldMessenger.of(context).showSnackBar(cartsnackbar);
                         }
 
-                        EasyLoading.dismiss();
-                        ScaffoldMessenger.of(context).showSnackBar(cartsnackbar);
+
+
 
                       }, child: Text('Add to cart')),
                 ),
@@ -235,9 +241,31 @@ class _Add_to_cartState extends State<Add_to_cart> {
   Add_tocart(license) async {
     var cart=FirebaseFirestore.instance.collection('cart');
     bool found = false;
-    bool license_Exists = await checkCartItem('${license}');
+    bool license_Exists = await checkCartItem('${license}') ;
+
 
     if (license_Exists) {
+
+        var s=false;
+        await FirebaseFirestore.instance.collection('cart').get().then((querySnapshot) async {
+          for (var cart in querySnapshot.docs) {
+            if (cart.data()['dealerlicense'] == license) {
+              var cartItems = await cart.reference.collection('cartitem').limit(1).get();
+              if(cartItems!=null){
+                if(cartItems.docs.first['companylicense']!=widget.product['companylicense']){
+                  EasyLoading.showInfo('Clear cart first');
+                  found =  true;
+                  break;
+                }
+              }
+
+            }
+          }
+
+        });
+
+
+
       await FirebaseFirestore.instance.collection('cart').get().then((querySnapshot) async {
         for (var cart in querySnapshot.docs) {
           if (cart.data()['dealerlicense'] == license) {
@@ -246,7 +274,10 @@ class _Add_to_cartState extends State<Add_to_cart> {
               if (cartItem.data()['productid'] == widget.product['productid']) {
                 await cart.reference.collection('cartitem').doc(cartItem.id).update({
                   'productquantity': '${quantity_controller.text}',
+
                 });
+                EasyLoading.dismiss();
+                ScaffoldMessenger.of(context).showSnackBar(cartsnackbar);
                 found =  true;
 
                 break;
@@ -260,11 +291,13 @@ class _Add_to_cartState extends State<Add_to_cart> {
       });
 
 
+
     return await found;
 
 
     }
     else {
+
       cart.doc(license).set({'dealerlicense':'${license}'});
       cart.get().then((querySnapshot) {
         querySnapshot.docs.forEach((result) {
@@ -297,6 +330,7 @@ class _Add_to_cartState extends State<Add_to_cart> {
     return querySnapshot.docs.isNotEmpty;
 
   }
+
 
 
 
