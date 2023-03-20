@@ -4,11 +4,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class OrdersScreen extends StatefulWidget{
+  var dealerlicense;
+  OrdersScreen({required this.dealerlicense});
   @override
   State<OrdersScreen> createState() => _OrdersScreenState();
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
+
+
+
   @override
   Widget build(BuildContext context) {
    return Scaffold(
@@ -16,7 +21,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
      body: Container(
        height: MediaQuery.of(context).size.height,
        child: StreamBuilder<QuerySnapshot>(
-         stream: FirebaseFirestore.instance.collection('orders').orderBy('date', descending: true).snapshots(),
+         stream: FirebaseFirestore.instance.collection('orders').where('dealerlicense' ,isEqualTo:widget.dealerlicense).snapshots(),
          builder: (context, snapshot) {
            if (snapshot.hasError) {
              return Text('Error: ${snapshot.error}');
@@ -45,7 +50,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
              );
            }
 
-           return ListView.builder(
+
+       //     print(s);
+           return snapshot.data!.docs.isEmpty ? Row(
+             mainAxisAlignment: MainAxisAlignment.center,
+             children: [
+               Text('No Previous Orders')
+           ],) : ListView.builder(
              itemCount:snapshot.data!.docs.length,
             itemBuilder: (context,index) =>
               Container(
