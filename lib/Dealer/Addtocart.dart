@@ -121,7 +121,10 @@ class _Add_to_cartState extends State<Add_to_cart> {
                     return;
                   }
                   var s=int.parse(quantity_controller.text);
-                  s=s-1;
+                  if(s>1){
+                    s=s-1;
+                  }
+
                   setState(() {
                     quantity_controller.text="$s";
                   });
@@ -137,7 +140,7 @@ class _Add_to_cartState extends State<Add_to_cart> {
                onChanged: (a){
 
                },
-                     inputFormatters: [  FilteringTextInputFormatter.allow(RegExp(r'[1-9]')),],
+                     inputFormatters: [  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),],
                      decoration: InputDecoration(
                        counterText: '',
                        border: OutlineInputBorder(
@@ -172,6 +175,11 @@ class _Add_to_cartState extends State<Add_to_cart> {
                   child: ElevatedButton(style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) =>
                   Colors.green.shade700)),
                       onPressed: () async {
+                    if(quantity_controller.text=='0'){
+                      EasyLoading.showInfo('Minimum quantity should be one');
+                      return;
+                    }
+
                     EasyLoading.show(status: 'Adding..');
                         SharedPreferences pref =await SharedPreferences.getInstance();
                         bool found = false;

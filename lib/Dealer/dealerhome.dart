@@ -214,7 +214,7 @@ class _dealerhomeState extends State<dealerhome> {
                         child: Column(
                           children: [
                             Container(
-                              height:160,
+                              height:200,
                                 color: Colors.green.shade700,
                                 width: size.width,
                                 child:  Image.network('${companyData['profileimage']}',fit: BoxFit.fill,)),
