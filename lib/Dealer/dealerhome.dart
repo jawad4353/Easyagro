@@ -40,7 +40,7 @@ class _dealerhomeState extends State<dealerhome> {
     var size=MediaQuery.of(context).size;
     return Scaffold(
 
-      backgroundColor: Colors.green.shade700,
+      backgroundColor: Colors.black12,
 
 
       appBar: AppBar(
@@ -221,19 +221,19 @@ class _dealerhomeState extends State<dealerhome> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                              Text('$nameshort',style: TextStyle(fontFamily: 'jd',fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold),),
-                              Text('${companyData['email']}',style: TextStyle(color: Colors.white),),
+                              Text('$nameshort',style: TextStyle(fontFamily: 'jd',fontSize: 18,color: Colors.black,fontWeight: FontWeight.bold),),
+                              Text('${companyData['email']}',style: TextStyle(color: Colors.black),),
                             ],),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                               Row(children: [
-                                Icon(Icons.house_siding_sharp,color: Colors.white,),
-                                Text('$addressshort',style: TextStyle(color: Colors.white),),
+                                Icon(Icons.house_siding_sharp,color: Colors.green,),
+                                Text('$addressshort',style: TextStyle(color: Colors.black),),
                               ],),
                                 Row(children: [
-                                  Icon(Icons.phone,color: Colors.white,),
-                                  Text('${companyData['phone']}',style: TextStyle(color: Colors.white),),
+                                  Icon(Icons.phone,color: Colors.black,),
+                                  Text('${companyData['phone']}',style: TextStyle(color: Colors.black),),
                                 ],),
 
 

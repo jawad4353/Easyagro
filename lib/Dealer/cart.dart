@@ -87,6 +87,7 @@ class _CartScreenState extends State<CartScreen> {
                   'status':'confirmed',
                   'total':'$totalbill',
                   'date':'${DateTime. now()}',
+                  'companylicense':'null',
 
                   });
                 var ref=docum.collection('orderitem');
@@ -108,7 +109,11 @@ class _CartScreenState extends State<CartScreen> {
                           'productimage':cartItem1['productimage'],
 
                         });
-                        mycompany=cartItem1['companylicense'];
+                        FirebaseFirestore.instance.collection('orders').doc(docum.id).update({
+                          'companylicense':cartItem1['companylicense'],
+
+                        });
+
 
                       }
                     }

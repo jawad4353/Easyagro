@@ -21,7 +21,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Farmer/farmerlogin.dart';
 import '../sharedpref_validations.dart';
+import 'Company_deals.dart';
 import 'addproducts.dart';
+import 'companyorders.dart';
 import 'live_chat.dart';
 
 class companyhome extends StatefulWidget{
@@ -30,7 +32,7 @@ class companyhome extends StatefulWidget{
 }
 
 class _companyhomeState extends State<companyhome> {
-  var user_data=[],sections_list=['Products','Dealers','Orders','Add new','Delivered','Policies',
+  var user_data=[],sections_list=['Products','Dealers','Orders','Add new','Delivered','Bulk Deals',
     'Revenues','New Disease','Complaints','Logout'],
       images_list=['images/products.png','images/dealer.png','images/orders.png','images/add.png',
         'images/delivery.png','images/policy.png','images/revenue.png','images/disease.png','images/complain.png','images/logout.png'];
@@ -231,6 +233,16 @@ class _companyhomeState extends State<companyhome> {
                    if(sections_list[index]=='Complaints'){
                      Navigator.push(context, Myroute(Company_complaints()));
                      return;
+                   }
+                   if(sections_list[index]=='Bulk Deals'){
+                     Navigator.push(context, Myroute(Company_deals()));
+                     return;
+
+                   }
+                   if(sections_list[index]=='Orders'){
+                     Navigator.push(context, Myroute( companyorders(companylicense: user_data[4],)));
+                     return;
+
                    }
                  },
                  child: Container(
