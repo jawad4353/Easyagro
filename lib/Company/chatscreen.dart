@@ -17,15 +17,20 @@ class ChatScreen extends StatefulWidget{
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController message_controller=new TextEditingController();
+  var sendbutton_color=Colors.grey;
   @override
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
    return Scaffold(
      backgroundColor: Colors.white,
-     appBar: AppBar(backgroundColor: Colors.green.shade700,title: Text('${widget.name}'),centerTitle: true,),
+     appBar: AppBar(backgroundColor: Colors.green.shade700,title: Text('${widget.name}'),centerTitle: true,actions: [
+       IconButton(onPressed: (){
+
+       }, icon: Icon(Icons.clear))
+     ],),
      body:StreamBuilder(
        stream: FirebaseFirestore.instance.collection('chats').doc(widget.companylicense+widget.dealerlicense).
-       collection('messages').snapshots(),
+       collection('messages').orderBy('date',descending: false).snapshots(),
 
        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
          if (snapshot.hasError) {
@@ -111,6 +116,25 @@ class _ChatScreenState extends State<ChatScreen> {
            padding: EdgeInsets.only(bottom: 5,right: 4,left: 4),
            child: TextField(
              cursorColor: Colors.green.shade700,
+             onChanged: (a){
+               if(a.isNotEmpty){
+                 setState(() {
+                   sendbutton_color=Colors.green;
+                 });
+               }
+               else{
+                 setState(() {
+                   sendbutton_color=Colors.grey;
+                 });
+               }
+             },
+             onSubmitted: (a){
+               if(message_controller.text.isEmpty){
+                 return;
+               }
+               Send_message(message_controller.text,widget.companylicense,widget.dealerlicense,'company');
+               message_controller.text='';
+             },
              style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600),
              keyboardType: TextInputType.visiblePassword,
              controller: message_controller,
@@ -126,7 +150,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
                  children: [
                  IconButton(icon:Icon( Icons.image,color: Colors.green.shade700,),onPressed: (){},),
-                 IconButton(icon:Icon( Icons.send,color: Colors.green.shade700,),onPressed: (){
+                 IconButton(icon:Icon( Icons.send,color: sendbutton_color,),onPressed: (){
+                   if(message_controller.text.isEmpty){
+                     return;
+                   }
                    Send_message(message_controller.text,widget.companylicense,widget.dealerlicense,'company');
                    message_controller.text='';
                  },)

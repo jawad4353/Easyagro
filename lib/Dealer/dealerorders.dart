@@ -1,6 +1,7 @@
 import 'package:easyagro/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'Chatdealer.dart';
@@ -23,7 +24,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
      body: Container(
        height: MediaQuery.of(context).size.height,
        child: StreamBuilder<QuerySnapshot>(
-         stream: FirebaseFirestore.instance.collection('orders').where('dealerlicense' ,isEqualTo:widget.dealerlicense).snapshots(),
+         stream: FirebaseFirestore.instance.collection('orders').where('dealerlicense' ,isEqualTo:widget.dealerlicense)
+            .snapshots(),
          builder: (context, snapshot) {
            if (snapshot.hasError) {
              return Text('Error: ${snapshot.error}');
