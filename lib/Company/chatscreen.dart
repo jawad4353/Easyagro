@@ -61,32 +61,42 @@ class _ChatScreenState extends State<ChatScreen> {
            itemCount: s.length,
            itemBuilder: (context,index)=> ListTile(
                title: s[index]['sender']=='company' ?  Container(
-                 
-                 decoration: BoxDecoration(
-                   color: Colors.green.shade200,
-                   borderRadius: BorderRadius.circular(9),
+                 alignment: Alignment.centerRight,
+                 child: Container(
+                   padding: EdgeInsets.only(left: 20,right: 20),
+                   decoration: BoxDecoration(
+                     color: Colors.green.shade200,
+                     borderRadius: BorderRadius.circular(10),
+                     border: Border.all(color: Colors.green.shade200)
 
-                 ),
-                 child: Column(
-                   mainAxisAlignment: MainAxisAlignment.end,
-                       children: [
+                   ),
+                   child:  Wrap(
+
+                     children: [
                        Text(s[index]['message'],style: TextStyle(fontSize: 21),),
+                       Text('  '),
                        Text('${s[index]['date']}'.substring(11,16)),
                      ],
+                   ),
                  ),
                ):null,
                subtitle:s[index]['sender']=='dealer' ?  Container(
-                 decoration: BoxDecoration(
-                   color: Colors.amberAccent,
-                   borderRadius: BorderRadius.circular(9),
+                 alignment: Alignment.centerLeft,
+                 child: Container(
+                   padding: EdgeInsets.only(left: 20,right: 20),
+                   decoration: BoxDecoration(
+                     color: Colors.white,
+                     borderRadius: BorderRadius.circular(10),
+                     border: Border.all(color: Colors.black26)
+                   ),
+                   child: Wrap(
 
-                 ),
-                 child: Column(
-                       crossAxisAlignment: CrossAxisAlignment.start,
-                       children: [
-                       Text(s[index]['message'],style: TextStyle(fontSize: 21),),
-                       Text('${s[index]['date']}'.substring(11,16)),
-                     ],
+                         children: [
+                         Text(s[index]['message'],style: TextStyle(fontSize: 21,color: Colors.black),),
+                         Text('  '),
+                         Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
+                       ],
+                   ),
                  ),
                ):null ,
              ),

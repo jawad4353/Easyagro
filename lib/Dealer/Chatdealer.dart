@@ -58,21 +58,48 @@ class _ChatdealerState extends State<Chatdealer> {
           var s=snapshot.data!.docs;
 
           return ListView.builder(
-              itemCount: s.length,
-              itemBuilder: (context,index)=>Container(
-                decoration: BoxDecoration(
-                    color: Colors.black12,
-                    borderRadius: BorderRadius.circular(21)
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+            itemCount: s.length,
+            itemBuilder: (context,index)=> ListTile(
+              title: s[index]['sender']=='company' ?  Container(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  padding: EdgeInsets.only(left: 20,right: 20),
+                  decoration: BoxDecoration(
+                      color: Colors.green.shade200,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.green.shade200)
 
-                  children: [
-                    Text('${s[index]['message']}',style: TextStyle(fontSize: 21,),),
-                    Text('${s[index]['date']}'.substring(11,16))
-                  ],),
-              )
+                  ),
+                  child:  Wrap(
+
+                    children: [
+                      Text(s[index]['message'],style: TextStyle(fontSize: 21),),
+                      Text('  '),
+                      Text('${s[index]['date']}'.substring(11,16)),
+                    ],
+                  ),
+                ),
+              ):null,
+              subtitle:s[index]['sender']=='dealer' ?  Container(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  padding: EdgeInsets.only(left: 20,right: 20),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black26)
+                  ),
+                  child: Wrap(
+
+                    children: [
+                      Text(s[index]['message'],style: TextStyle(fontSize: 21,color: Colors.black),),
+                      Text('  '),
+                      Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
+                    ],
+                  ),
+                ),
+              ):null ,
+            ),
           );
         },
       ),
