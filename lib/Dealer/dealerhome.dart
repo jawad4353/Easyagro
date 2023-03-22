@@ -12,7 +12,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Company/companylogin.dart';
-import '../Company/live_chat.dart';
+import '../Company/chatscreen.dart';
 import '../Database/database.dart';
 import '../sharedpref_validations.dart';
 import '../splash.dart';
@@ -263,7 +263,7 @@ class _dealerhomeState extends State<dealerhome> {
             Navigator.push(context, Myroute(update_dealer_account(user_data: user_data,)));
           }
           if(a==2){
-            Navigator.push(context, Myroute(LiveChatPage()));
+            // Navigator.push(context, Myroute(ChatScreen()));
           }
 
         },

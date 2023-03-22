@@ -24,7 +24,8 @@ import '../sharedpref_validations.dart';
 import 'Company_deals.dart';
 import 'addproducts.dart';
 import 'companyorders.dart';
-import 'live_chat.dart';
+import 'dealerscompanyside.dart';
+import 'chatscreen.dart';
 
 class companyhome extends StatefulWidget{
   @override
@@ -132,7 +133,7 @@ class _companyhomeState extends State<companyhome> {
            Navigator.push(context, Myroute(update_company_account(user_data: user_data,)));
          }
          if(a==2){
-           Navigator.push(context, Myroute(LiveChatPage()));
+           // Navigator.push(context, Myroute(ChatScreen()));
          }
 
        },
@@ -244,6 +245,12 @@ class _companyhomeState extends State<companyhome> {
                      return;
 
                    }
+                   if(sections_list[index]=='Dealers'){
+                     Navigator.push(context, Myroute(Dealerscompanyside (companylicense: user_data[4],)));
+                     return;
+
+                   }
+
                  },
                  child: Container(
                    decoration: BoxDecoration(

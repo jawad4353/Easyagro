@@ -1,0 +1,138 @@
+
+
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
+
+class ChatScreen extends StatefulWidget{
+  var companylicense,dealerlicense,name;
+  ChatScreen({required this.companylicense,required this.dealerlicense,required this.name});
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+//
+
+
+class _ChatScreenState extends State<ChatScreen> {
+  TextEditingController message_controller=new TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    var size=MediaQuery.of(context).size;
+   return Scaffold(
+     backgroundColor: Colors.white,
+     appBar: AppBar(backgroundColor: Colors.green.shade700,title: Text('${widget.name}'),centerTitle: true,),
+     body:StreamBuilder(
+       stream: FirebaseFirestore.instance.collection('chats').doc(widget.companylicense+widget.dealerlicense).
+       collection('messages').snapshots(),
+
+       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+         if (snapshot.hasError) {
+           return Text('Error: ${snapshot.error}');
+         }
+
+         if (snapshot.connectionState == ConnectionState.waiting) {
+           return Center(
+             child: Container(
+               color: Colors.white,
+               child: SpinKitFoldingCube(
+                 size: 50.0,
+                 duration: Duration(milliseconds: 700),
+                 itemBuilder: ((context, index) {
+                   var Mycolors=[Colors.green.shade700,Colors.white];
+                   var Mycol=Mycolors[index%Mycolors.length];
+                   return DecoratedBox(decoration: BoxDecoration(
+                       color: Mycol,
+                       border: Border.all(color: Colors.green,)
+
+
+                   ));
+                 }),
+               ),
+             ),
+
+           );
+         }
+
+         var s=snapshot.data!.docs;
+
+         return ListView.builder(
+           itemCount: s.length,
+           itemBuilder: (context,index)=> ListTile(
+               title: s[index]['sender']=='company' ?  Container(
+                 
+                 decoration: BoxDecoration(
+                   color: Colors.green.shade200,
+                   borderRadius: BorderRadius.circular(9),
+
+                 ),
+                 child: Column(
+                   mainAxisAlignment: MainAxisAlignment.end,
+                       children: [
+                       Text(s[index]['message'],style: TextStyle(fontSize: 21),),
+                       Text('${s[index]['date']}'.substring(11,16)),
+                     ],
+                 ),
+               ):null,
+               subtitle:s[index]['sender']=='dealer' ?  Container(
+                 decoration: BoxDecoration(
+                   color: Colors.amberAccent,
+                   borderRadius: BorderRadius.circular(9),
+
+                 ),
+                 child: Column(
+                       crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                       Text(s[index]['message'],style: TextStyle(fontSize: 21),),
+                       Text('${s[index]['date']}'.substring(11,16)),
+                     ],
+                 ),
+               ):null ,
+             ),
+         );
+       },
+     ),
+
+
+
+     bottomSheet: Container(
+           width: size.width,
+           padding: EdgeInsets.only(bottom: 5,right: 4,left: 4),
+           child: TextField(
+             cursorColor: Colors.green.shade700,
+             style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600),
+             keyboardType: TextInputType.visiblePassword,
+             controller: message_controller,
+             decoration: InputDecoration(
+               hintText: ' Enter message',
+               filled: true,
+               fillColor: Colors.white,
+               hintStyle: TextStyle(fontWeight: FontWeight.normal),
+               contentPadding: EdgeInsets.only(left: 10),
+               border:OutlineInputBorder(borderRadius: BorderRadius.circular(20)) ,
+               focusedBorder:OutlineInputBorder(borderRadius: BorderRadius.circular(20),borderSide: BorderSide(color: Colors.green.shade700)) ,
+               suffixIcon:Wrap(
+
+                 children: [
+                 IconButton(icon:Icon( Icons.image,color: Colors.green.shade700,),onPressed: (){},),
+                 IconButton(icon:Icon( Icons.send,color: Colors.green.shade700,),onPressed: (){
+                   Send_message(message_controller.text,widget.companylicense,widget.dealerlicense,'company');
+                   message_controller.text='';
+                 },)
+               ],)
+             ),
+           ),
+         ),
+
+   );
+  }
+
+  Send_message(message,companylicense,dealerlicense,sender){
+    var sms=FirebaseFirestore.instance.collection('chats').doc(companylicense+dealerlicense);
+    sms.set({'companylicense':"${companylicense}",'dealerlicense':'${dealerlicense}'});
+    sms.collection('messages').add({'message':'${message}','date':'${DateTime.now()}','sender':'$sender'});
+
+
+  }
+}
