@@ -168,6 +168,26 @@ class View_image extends StatelessWidget{
   }
   
 }
+class View_imagewide extends StatelessWidget{
+  var imageurl;
+  View_imagewide({required this.imageurl});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(backgroundColor: Colors.black,),
+      body:  Center(
+        child: Container(
+
+          child: InteractiveViewer(
+                maxScale: 10,
+                child: Image.network('${imageurl}')),
+        ),
+      ),
+
+    );
+  }
+
+}
 
 
 

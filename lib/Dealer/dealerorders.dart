@@ -151,37 +151,38 @@ class _View_detailsState extends State<View_details> {
       var s=snapshot.data!.docs;
           return Container(
             height: MediaQuery.of(context).size.height,
-            child: Column(
-              children: [
-                Container(
-                  height:MediaQuery.of(context).size.height*0.77 ,
-                  child: ListView.builder(
-                    itemCount:s.length,
-                    itemBuilder: (context,index) =>
-                        Container(
-                          decoration: BoxDecoration(
-                              border: Border(bottom: BorderSide(color:Colors.grey ))
-                          ),
-                          child: ListTile(
-                            leading: Image.network('${s[index]['productimage']}',fit: BoxFit.fill,),
-                            isThreeLine: true,
-                            trailing:Text('Price : ${s[index]['productprice']}') ,
-                            title: Text('${s[index]['productname']}',style: TextStyle(fontSize: 17),),
-                            subtitle:Text('${s[index]['quantity']}\nQuantity : ${s[index]['productquantity']}\nTotal : ${int.parse(s[index]['productquantity'])*int.parse(s[index]['productprice'])} R.s',style: TextStyle(fontSize: 15)) ,
+            child:  Column(
+                children: [
+                  Container(
+                    height:MediaQuery.of(context).size.height*0.77 ,
+                    child: ListView.builder(
+                      itemCount:s.length,
+                      itemBuilder: (context,index) =>
+                          Container(
+                            decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color:Colors.grey ))
+                            ),
+                            child: ListTile(
+                              leading: Image.network('${s[index]['productimage']}',fit: BoxFit.fill,),
+                              isThreeLine: true,
+                              trailing:Text('Price : ${s[index]['productprice']}') ,
+                              title: Text('${s[index]['productname']}',style: TextStyle(fontSize: 17),),
+                              subtitle:Text('${s[index]['quantity']}\nQuantity : ${s[index]['productquantity']}\nTotal : ${int.parse(s[index]['productquantity'])*int.parse(s[index]['productprice'])} R.s',style: TextStyle(fontSize: 15)) ,
 
+                            ),
                           ),
-                        ),
+                    ),
                   ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                  Text('  Status : ${widget.status}',style: TextStyle(fontSize: 16),),
-                  Text('  Order Date : ${widget.date}',style: TextStyle(fontSize: 16)),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                    Text('  Status : ${widget.status}',style: TextStyle(fontSize: 16),),
+                    Text('  Order Date : ${widget.date}',style: TextStyle(fontSize: 16)),
 
-                ],)
-              ],
-            ),
+                  ],)
+                ],
+              ),
+
           );
         },
       )

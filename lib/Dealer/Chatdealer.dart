@@ -1,10 +1,18 @@
 
 
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easyagro/splash.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+
+import '../Company/rud_products.dart';
 
 class Chatdealer extends StatefulWidget{
   var companylicense,dealerlicense,name;
@@ -25,9 +33,7 @@ class _ChatdealerState extends State<Chatdealer> {
       backgroundColor: Colors.white,
       appBar: AppBar(backgroundColor: Colors.green.shade700,title: Text('${widget.name}'),centerTitle: true,
       actions: [
-        IconButton(onPressed: (){
-
-        }, icon: Icon(Icons.clear))
+        IconButton(onPressed: (){}, icon: Icon(Icons.clear))
       ],
       ),
       body:StreamBuilder(
@@ -64,48 +70,68 @@ class _ChatdealerState extends State<Chatdealer> {
 
           var s=snapshot.data!.docs;
 
-          return ListView.builder(
-            itemCount: s.length,
-            itemBuilder: (context,index)=> ListTile(
 
-              title: s[index]['sender']=='company' ?  Container(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  padding: EdgeInsets.only(left: 20,right: 20),
-                  decoration: BoxDecoration(
-                      color: Colors.green.shade200,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.green.shade200)
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 58.0),
+            child: ListView.builder(
+              itemCount: s.length,
+              itemBuilder: (context,index)
+              {
+                return  ListTile(
 
-                  ),
-                  child:  Wrap(
+                title: s[index]['sender']=='company' ?  Container(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    padding: EdgeInsets.only(left: 20,right: 20),
+                    decoration: BoxDecoration(
+                        color: Colors.green.shade200,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.green.shade200)
 
-                    children: [
-                      Text(s[index]['message'],style: TextStyle(fontSize: 21),),
-                      Text('  '),
-                      Text('${s[index]['date']}'.substring(11,16)),
-                    ],
+                    ),
+                    child:  Wrap(
+
+                      children: [
+                        s[index]['message']=='' ? InkWell(
+                          onTap: (){
+                            Navigator.push(context,Myroute(View_imagewide(imageurl:s[index]['image'] ,)));
+                          },
+                          child: Container(
+                              height: 300,
+                              child: Image.network(s[index]['image'])),
+                        ): Text(s[index]['message'],style: TextStyle(fontSize: 21),),
+                        Text('  '),
+                        Text('${s[index]['date']}'.substring(11,16)),
+                      ],
+                    ),
                   ),
-                ),
-              ):null,
-              subtitle:s[index]['sender']=='dealer' ?  Container(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  padding: EdgeInsets.only(left: 20,right: 20),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.black26)
+                ):null,
+                subtitle:s[index]['sender']=='dealer' ?  Container(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    padding: EdgeInsets.only(left: 20,right: 20),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.black26)
+                    ),
+                    child: Wrap(
+                      children: [
+                        s[index]['message']=='' ? InkWell(
+                          onTap: (){
+                            Navigator.push(context,Myroute(View_imagewide(imageurl:s[index]['image'] ,)));
+                          },
+                          child: Container(
+                              height: 300,
+                              child: Image.network(s[index]['image'])),
+                        ): Text(s[index]['message'],style: TextStyle(fontSize: 21,color: Colors.black),),
+                        Text('  '),
+                        Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
+                      ],
+                    ),
                   ),
-                  child: Wrap(
-                    children: [
-                      Text(s[index]['message'],style: TextStyle(fontSize: 21,color: Colors.black),),
-                      Text('  '),
-                      Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
-                    ],
-                  ),
-                ),
-              ):null ,
+                ):null ,
+              );}
             ),
           );
         },
@@ -139,7 +165,6 @@ class _ChatdealerState extends State<Chatdealer> {
             message_controller.text='';
           },
           style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600),
-          keyboardType: TextInputType.visiblePassword,
           controller: message_controller,
           decoration: InputDecoration(
               hintText: ' Enter message',
@@ -152,7 +177,35 @@ class _ChatdealerState extends State<Chatdealer> {
               suffixIcon:Wrap(
 
                 children: [
-                  IconButton(icon:Icon( Icons.image,color: Colors.green.shade700,),onPressed: (){},),
+                  IconButton(icon:Icon( Icons.image,color: Colors.green.shade700,),onPressed: () async {
+                    final picker = ImagePicker();
+                    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+                    try{
+                      if (pickedFile != null) {
+                        // Upload image to Firebase Storage
+                        final file = File(pickedFile.path);
+                        final fileName = pickedFile.path.split('/').last;
+                        final storageRef = FirebaseStorage.instance.ref().child('chats_images/${widget.companylicense+widget.dealerlicense}/${fileName}');
+                        final uploadTask = storageRef.putFile(file);
+                        await uploadTask.whenComplete(() async {
+                          final downloadUrl = await storageRef.getDownloadURL();
+                          var sms=FirebaseFirestore.instance.collection('chats').doc(widget.companylicense+widget.dealerlicense);
+                          sms.set({'companylicense':"${widget.companylicense}",'dealerlicense':'${widget.dealerlicense}'});
+                          sms.collection('messages').add({'message':'','date':'${DateTime.now()}','sender':'dealer','image':'$downloadUrl'});
+
+                        });
+                      }
+                    }
+                    catch(e){
+                      EasyLoading.showError('Error sending image');
+                      return;
+                    }
+
+                  },),
+
+
+
                   IconButton(icon:Icon( Icons.send,color: sendbutton_color,),onPressed: (){
                     if(message_controller.text.isEmpty){
                       return;
@@ -172,8 +225,9 @@ class _ChatdealerState extends State<Chatdealer> {
   Send_message(message,companylicense,dealerlicense,sender){
     var sms=FirebaseFirestore.instance.collection('chats').doc(companylicense+dealerlicense);
     sms.set({'companylicense':"${companylicense}",'dealerlicense':'${dealerlicense}'});
-    sms.collection('messages').add({'message':'${message}','date':'${DateTime.now()}','sender':'$sender'});
+    sms.collection('messages').add({'message':'${message}','date':'${DateTime.now()}','sender':'$sender','image':'noimage'});
 
 
   }
 }
+
