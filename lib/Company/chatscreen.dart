@@ -1,6 +1,7 @@
 
 
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,6 +27,7 @@ class ChatScreen extends StatefulWidget{
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController message_controller=new TextEditingController();
   var sendbutton_color=Colors.grey;
+
   @override
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
@@ -74,8 +76,8 @@ class _ChatScreenState extends State<ChatScreen> {
            padding: const EdgeInsets.only(bottom: 58.0),
            child: ListView.builder(
              itemCount: s.length,
+             controller: ScrollController(initialScrollOffset:700.0,keepScrollOffset: true ),
              itemBuilder: (context,index)=> ListTile(
-
                  title: s[index]['sender']=='company' ?  Container(
                    alignment: Alignment.centerRight,
                    child: Container(

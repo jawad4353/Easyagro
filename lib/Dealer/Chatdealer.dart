@@ -75,6 +75,7 @@ class _ChatdealerState extends State<Chatdealer> {
             padding: const EdgeInsets.only(bottom: 58.0),
             child: ListView.builder(
               itemCount: s.length,
+                controller: ScrollController(initialScrollOffset:700.0,keepScrollOffset: true ),
               itemBuilder: (context,index)
               {
                 return  ListTile(
