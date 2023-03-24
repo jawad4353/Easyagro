@@ -12,8 +12,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../splash.dart';
+import 'Notifiers.dart';
 
 class ChatScreen extends StatefulWidget{
   var companylicense,dealerlicense,name;
@@ -26,7 +28,7 @@ class ChatScreen extends StatefulWidget{
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController message_controller=new TextEditingController();
-  var sendbutton_color=Colors.grey;
+
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
            padding: const EdgeInsets.only(bottom: 58.0),
            child: ListView.builder(
              itemCount: s.length,
-             controller: ScrollController(initialScrollOffset:700.0,keepScrollOffset: true ),
+             controller: ScrollController(initialScrollOffset:5000,keepScrollOffset: true ),
              itemBuilder: (context,index)=> ListTile(
                  title: s[index]['sender']=='company' ?   Container(
                    alignment: Alignment.centerRight,
@@ -87,8 +89,7 @@ class _ChatScreenState extends State<ChatScreen> {
                          borderRadius: BorderRadius.circular(10),
                          border: Border.all(color: Colors.grey)
                      ),
-                     child: Wrap(
-                       children: [
+                     child:
                          s[index]['message']=='' ? Stack(children: [
 
                            InkWell(
@@ -97,7 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
                              },
                              child: Container(
                                  height: 300,
-                                 width: 230,
+                                 width: 220,
 
                                  child: Image.network(s[index]['image'],fit: BoxFit.fill,)),
                            ),
@@ -125,11 +126,9 @@ class _ChatScreenState extends State<ChatScreen> {
                          ),
 
                          // Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
-                       ],
-                     ),
+
                    ),
-                 ):null,
-                 subtitle:s[index]['sender']=='dealer' ? Container(
+                 ):Container(
                    alignment: Alignment.centerLeft,
                    child: Container(
                      padding: EdgeInsets.only(left: 0,right: 0),
@@ -138,9 +137,7 @@ class _ChatScreenState extends State<ChatScreen> {
                          borderRadius: BorderRadius.circular(10),
                          border: Border.all(color: Colors.grey)
                      ),
-                     child: Wrap(
-                       children: [
-                         s[index]['message']=='' ? Stack(children: [
+                     child: s[index]['message']=='' ? Stack(children: [
 
                            InkWell(
                              onTap: (){
@@ -174,12 +171,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                ]
                            ),),
                          ),
-
-                         // Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
-                       ],
-                     ),
                    ),
-                 ):null ,
+                 ),
                ),
            ),
          );
@@ -194,18 +187,7 @@ class _ChatScreenState extends State<ChatScreen> {
            child: TextField(
              cursorColor: Colors.green.shade700,
              onChanged: (a){
-               if(a.isEmpty){
-                 setState(() {
-                   sendbutton_color=Colors.grey;
-                 });
-
-               }
-               else{
-                 setState(() {
-                   sendbutton_color=Colors.green;
-                 });
-               }
-
+                 Provider.of<ButtonColorProvider >(context, listen: false).updateButtonColor(a) ;
              },
              onSubmitted: (a){
                if(message_controller.text.isEmpty){
@@ -243,7 +225,7 @@ class _ChatScreenState extends State<ChatScreen> {
                          final downloadUrl = await storageRef.getDownloadURL();
                          var sms=FirebaseFirestore.instance.collection('chats').doc(widget.companylicense+widget.dealerlicense);
                          sms.set({'companylicense':"${widget.companylicense}",'dealerlicense':'${widget.dealerlicense}'});
-                         sms.collection('messages').add({'message':'','date':'${DateTime.now()}','sender':'dealer','image':'$downloadUrl'});
+                         sms.collection('messages').add({'message':'','date':'${DateTime.now()}','sender':'company','image':'$downloadUrl'});
 
                        });
                      }
@@ -254,13 +236,15 @@ class _ChatScreenState extends State<ChatScreen> {
                    }
 
                  },),
-                 IconButton(icon:Icon( Icons.send,color: sendbutton_color,),onPressed: (){
-                   if(message_controller.text.isEmpty){
-                     return;
-                   }
-                   Send_message(message_controller.text,widget.companylicense,widget.dealerlicense,'company');
-                   message_controller.text='';
-                 },)
+                 Consumer<ButtonColorProvider>(
+                   builder: (context,butoncolor,i)=> IconButton(icon:Icon( Icons.send,color: butoncolor.buttonColor,),onPressed: (){
+                     if(message_controller.text.isEmpty){
+                       return;
+                     }
+                     Send_message(message_controller.text,widget.companylicense,widget.dealerlicense,'company');
+                     message_controller.text='';
+                   },),
+                 )
                ],)
              ),
            ),

@@ -11,7 +11,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import '../Company/Notifiers.dart';
 import '../Company/rud_products.dart';
 
 class Chatdealer extends StatefulWidget{
@@ -25,7 +27,9 @@ class Chatdealer extends StatefulWidget{
 
 class _ChatdealerState extends State<Chatdealer> {
   TextEditingController message_controller=new TextEditingController();
-  var sendbutton_color=Colors.grey;
+
+
+
   @override
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
@@ -73,27 +77,25 @@ class _ChatdealerState extends State<Chatdealer> {
 
           return Padding(
             padding: const EdgeInsets.only(bottom: 58.0),
-            child: ListView.builder(
-              itemCount: s.length,
-                controller: ScrollController(initialScrollOffset:700.0,keepScrollOffset: true ),
-              itemBuilder: (context,index)
-              {
+            child:  ListView.builder(
+                itemCount: s.length,
+                  controller: ScrollController(initialScrollOffset:5000,keepScrollOffset: true ),
+                itemBuilder: (context,index)
+                {
 
-                return  ListTile(
+                  return  ListTile(
 
-                title: s[index]['sender']=='company' ?  Container(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    padding: EdgeInsets.only(left: 0,right: 0),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.black26)
-                    ),
-                    child: Wrap(
-                      children: [
-                        s[index]['message']=='' ? Stack(children: [
+                  title: s[index]['sender']=='company'?  Container(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.black26)
+                      ),
 
+                      child: s[index]['message']=='' ? Stack(
+                        children: [
                           InkWell(
                             onTap: (){
                               Navigator.push(context,Myroute(View_imagewide(imageurl:s[index]['image'] ,)));
@@ -101,6 +103,7 @@ class _ChatdealerState extends State<Chatdealer> {
                             child: Container(
                                 height: 300,
                                 width: 230,
+                                color: Colors.white,
 
                                 child: Image.network(s[index]['image'],fit: BoxFit.fill,)),
                           ),
@@ -113,77 +116,75 @@ class _ChatdealerState extends State<Chatdealer> {
                                       borderRadius: BorderRadius.circular(5)
                                   ),
                                   child: Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),))),
-                        ],): Padding(
-                          padding: const EdgeInsets.only(left: 20,right: 20),
-                          child: RichText(text: TextSpan(
-                              text: '${s[index]['message']}',
-                              style: TextStyle(color: Colors.black,fontSize: 22),
-                              children: [
-                                TextSpan(text: ' '),
-                                TextSpan(text: '${s[index]['date']}'.substring(11,16),
-                                  style: TextStyle(color: Colors.black,fontSize: 13),
-                                ),
-                              ]
-                          ),),
-                        ),
-
-                        // Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
-                      ],
-                    ),
-                  ),
-                ):null,
-                subtitle:s[index]['sender']=='dealer' ?  Container(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    padding: EdgeInsets.only(left: 0,right: 0),
-                    decoration: BoxDecoration(
-                        color: Colors.green.shade300,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.grey)
-                    ),
-                    child: Wrap(
-                      children: [
-                        s[index]['message']=='' ? Stack(children: [
-
-                          InkWell(
-                            onTap: (){
-                              Navigator.push(context,Myroute(View_imagewide(imageurl:s[index]['image'] ,)));
-                            },
-                            child: Container(
-                                height: 300,
-                                width: 230,
-
-                                child: Image.network(s[index]['image'],fit: BoxFit.fill,)),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                              right: 0,
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(5)
+                        ],
+                      ): Padding(
+                            padding: const EdgeInsets.only(left: 20,right: 20),
+                            child: RichText(text: TextSpan(
+                                text: '${s[index]['message']}',
+                                style: TextStyle(color: Colors.black,fontSize: 22),
+                                children: [
+                                  TextSpan(text: ' '),
+                                  TextSpan(text: '${s[index]['date']}'.substring(11,16),
+                                    style: TextStyle(color: Colors.black,fontSize: 13),
                                   ),
-                                  child: Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),))),
-                        ],): Padding(
-                          padding: const EdgeInsets.only(left: 20,right: 20),
-                          child: RichText(text: TextSpan(
-                            text: '${s[index]['message']}',
-                            style: TextStyle(color: Colors.black,fontSize: 22),
+                                ]
+                            ),),
+                      ),
+                    ),
+                  ): Container(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 0,right: 0),
+                      decoration: BoxDecoration(
+                          color: Colors.green.shade300,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.black26)
+                      ),
+                      child:
+                      s[index]['message']=='' ? Stack(
                             children: [
-                              TextSpan(text: ' '),
-                               TextSpan(text: '${s[index]['date']}'.substring(11,16),
-                                 style: TextStyle(color: Colors.black,fontSize: 13),
-                               ),
-                            ]
-                          ),),
-                        ),
+                              InkWell(
+                                onTap: (){
+                                  Navigator.push(context,Myroute(View_imagewide(imageurl:s[index]['image'] ,)));
+                                },
+                                child: Container(
+                                    height: 300,
+                                    width: 230,
+                                    color: Colors.white,
 
-                      // Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
-                      ],
+                                    child: Image.network(s[index]['image'],fit: BoxFit.fill,)),
+                              ),
+                              Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(5)
+                                      ),
+                                      child: Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),))),
+                            ],
+                          ): Padding(
+                            padding: const EdgeInsets.only(left: 20,right: 20),
+                            child: RichText(text: TextSpan(
+                                text: '${s[index]['message']}',
+                                style: TextStyle(color: Colors.black,fontSize: 22),
+                                children: [
+                                  TextSpan(text: ' '),
+                                  TextSpan(text: '${s[index]['date']}'.substring(11,16),
+                                    style: TextStyle(color: Colors.black,fontSize: 13),
+                                  ),
+                                ]
+                            ),),
+                          ),
+
+
+
                     ),
                   ),
-                ):null ,
-              );}
+
+                );}
+
             ),
           );
         },
@@ -198,16 +199,7 @@ class _ChatdealerState extends State<Chatdealer> {
         child: TextField(
           cursorColor: Colors.green.shade700,
           onChanged: (a){
-            if(a.isNotEmpty){
-            setState(() {
-              sendbutton_color=Colors.green;
-            });
-            }
-            else{
-              setState(() {
-                sendbutton_color=Colors.grey;
-              });
-            }
+            Provider.of<ButtonColorProvider >(context, listen: false).updateButtonColor(a) ;
           },
           onSubmitted: (a){
             if(message_controller.text.isEmpty){
@@ -258,14 +250,15 @@ class _ChatdealerState extends State<Chatdealer> {
 
 
 
-                  IconButton(icon:Icon( Icons.send,color: sendbutton_color,),onPressed: (){
-                    if(message_controller.text.isEmpty){
-                      return;
-                    }
-                    Send_message(message_controller.text,widget.companylicense,widget.dealerlicense,'dealer');
-                   message_controller.text='';
-
-                    },)
+                  Consumer<ButtonColorProvider>(
+                    builder: (context,butoncolor,i)=> IconButton(icon:Icon( Icons.send,color: butoncolor.buttonColor,),onPressed: (){
+                      if(message_controller.text.isEmpty){
+                        return;
+                      }
+                      Send_message(message_controller.text,widget.companylicense,widget.dealerlicense,'dealer');
+                      message_controller.text='';
+                    },),
+                  )
                 ],)
           ),
         ),

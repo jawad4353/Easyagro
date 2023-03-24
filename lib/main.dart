@@ -27,7 +27,9 @@ await  Firebase.initializeApp(
 
   runApp(MultiProvider(
       providers: [
-            ChangeNotifierProvider(create: (context) => GlobalState(),)
+            ChangeNotifierProvider(create: (context) => GlobalState(),),
+        ChangeNotifierProvider(create: (context) => ButtonColorProvider(),),
+
           ],
       child: MyApp()));
 }
