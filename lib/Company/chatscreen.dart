@@ -78,57 +78,105 @@ class _ChatScreenState extends State<ChatScreen> {
              itemCount: s.length,
              controller: ScrollController(initialScrollOffset:700.0,keepScrollOffset: true ),
              itemBuilder: (context,index)=> ListTile(
-                 title: s[index]['sender']=='company' ?  Container(
+                 title: s[index]['sender']=='company' ?   Container(
                    alignment: Alignment.centerRight,
                    child: Container(
-                     padding: EdgeInsets.only(left: 20,right: 20),
+                     padding: EdgeInsets.only(left: 0,right: 0),
                      decoration: BoxDecoration(
-                       color: Colors.green.shade200,
-                       borderRadius: BorderRadius.circular(10),
-                       border: Border.all(color: Colors.green.shade200)
-
+                         color: Colors.green.shade300,
+                         borderRadius: BorderRadius.circular(10),
+                         border: Border.all(color: Colors.grey)
                      ),
-                     child:  Wrap(
-
+                     child: Wrap(
                        children: [
-                         s[index]['message']=='' ? InkWell(
-                           onTap: (){
-                             Navigator.push(context,Myroute(View_imagewide(imageurl:s[index]['image'] ,)));
-                           },
-                           child: Container(
-                               height: 300,
-                               child: Image.network(s[index]['image'])),
-                         ): Text(s[index]['message'],style: TextStyle(fontSize: 21),),
-                         Text('  '),
-                         Text('${s[index]['date']}'.substring(11,16)),
+                         s[index]['message']=='' ? Stack(children: [
+
+                           InkWell(
+                             onTap: (){
+                               Navigator.push(context,Myroute(View_imagewide(imageurl:s[index]['image'] ,)));
+                             },
+                             child: Container(
+                                 height: 300,
+                                 width: 230,
+
+                                 child: Image.network(s[index]['image'],fit: BoxFit.fill,)),
+                           ),
+                           Positioned(
+                               bottom: 0,
+                               right: 0,
+                               child: Container(
+                                   decoration: BoxDecoration(
+                                       color: Colors.white,
+                                       borderRadius: BorderRadius.circular(5)
+                                   ),
+                                   child: Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),))),
+                         ],): Padding(
+                           padding: const EdgeInsets.only(left: 20,right: 20),
+                           child: RichText(text: TextSpan(
+                               text: '${s[index]['message']}',
+                               style: TextStyle(color: Colors.black,fontSize: 22),
+                               children: [
+                                 TextSpan(text: ' '),
+                                 TextSpan(text: '${s[index]['date']}'.substring(11,16),
+                                   style: TextStyle(color: Colors.black,fontSize: 13),
+                                 ),
+                               ]
+                           ),),
+                         ),
+
+                         // Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
                        ],
                      ),
                    ),
                  ):null,
-                 subtitle:s[index]['sender']=='dealer' ?  Container(
+                 subtitle:s[index]['sender']=='dealer' ? Container(
                    alignment: Alignment.centerLeft,
                    child: Container(
-                     padding: EdgeInsets.only(left: 20,right: 20),
+                     padding: EdgeInsets.only(left: 0,right: 0),
                      decoration: BoxDecoration(
-                       color: Colors.white,
-                       borderRadius: BorderRadius.circular(10),
-                       border: Border.all(color: Colors.black26)
+                         color: Colors.white,
+                         borderRadius: BorderRadius.circular(10),
+                         border: Border.all(color: Colors.grey)
                      ),
                      child: Wrap(
+                       children: [
+                         s[index]['message']=='' ? Stack(children: [
 
-                           children: [
-                             s[index]['message']=='' ? InkWell(
-                               onTap: (){
-                                 Navigator.push(context,Myroute(View_imagewide(imageurl:s[index]['image'] ,)));
-                               },
+                           InkWell(
+                             onTap: (){
+                               Navigator.push(context,Myroute(View_imagewide(imageurl:s[index]['image'] ,)));
+                             },
+                             child: Container(
+                                 height: 300,
+                                 width: 230,
+
+                                 child: Image.network(s[index]['image'],fit: BoxFit.fill,)),
+                           ),
+                           Positioned(
+                               bottom: 0,
+                               right: 0,
                                child: Container(
-                                   height: 300,
-                                   width: 200,
-                                   child: Image.network(s[index]['image'])),
-                             ):Text(s[index]['message'],style: TextStyle(fontSize: 21,color: Colors.black),),
-                           Text('  '),
-                           Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
-                         ],
+                                   decoration: BoxDecoration(
+                                       color: Colors.white,
+                                       borderRadius: BorderRadius.circular(5)
+                                   ),
+                                   child: Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),))),
+                         ],): Padding(
+                           padding: const EdgeInsets.only(left: 20,right: 20),
+                           child: RichText(text: TextSpan(
+                               text: '${s[index]['message']}',
+                               style: TextStyle(color: Colors.black,fontSize: 22),
+                               children: [
+                                 TextSpan(text: ' '),
+                                 TextSpan(text: '${s[index]['date']}'.substring(11,16),
+                                   style: TextStyle(color: Colors.black,fontSize: 13),
+                                 ),
+                               ]
+                           ),),
+                         ),
+
+                         // Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
+                       ],
                      ),
                    ),
                  ):null ,
@@ -146,16 +194,18 @@ class _ChatScreenState extends State<ChatScreen> {
            child: TextField(
              cursorColor: Colors.green.shade700,
              onChanged: (a){
-               if(a.isNotEmpty){
+               if(a.isEmpty){
+                 setState(() {
+                   sendbutton_color=Colors.grey;
+                 });
+
+               }
+               else{
                  setState(() {
                    sendbutton_color=Colors.green;
                  });
                }
-               else{
-                 setState(() {
-                   sendbutton_color=Colors.grey;
-                 });
-               }
+
              },
              onSubmitted: (a){
                if(message_controller.text.isEmpty){

@@ -78,39 +78,13 @@ class _ChatdealerState extends State<Chatdealer> {
                 controller: ScrollController(initialScrollOffset:700.0,keepScrollOffset: true ),
               itemBuilder: (context,index)
               {
+
                 return  ListTile(
 
                 title: s[index]['sender']=='company' ?  Container(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    padding: EdgeInsets.only(left: 20,right: 20),
-                    decoration: BoxDecoration(
-                        color: Colors.green.shade200,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.green.shade200)
-
-                    ),
-                    child:  Wrap(
-
-                      children: [
-                        s[index]['message']=='' ? InkWell(
-                          onTap: (){
-                            Navigator.push(context,Myroute(View_imagewide(imageurl:s[index]['image'] ,)));
-                          },
-                          child: Container(
-                              height: 300,
-                              child: Image.network(s[index]['image'])),
-                        ): Text(s[index]['message'],style: TextStyle(fontSize: 21),),
-                        Text('  '),
-                        Text('${s[index]['date']}'.substring(11,16)),
-                      ],
-                    ),
-                  ),
-                ):null,
-                subtitle:s[index]['sender']=='dealer' ?  Container(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    padding: EdgeInsets.only(left: 20,right: 20),
+                    padding: EdgeInsets.only(left: 0,right: 0),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
@@ -118,16 +92,93 @@ class _ChatdealerState extends State<Chatdealer> {
                     ),
                     child: Wrap(
                       children: [
-                        s[index]['message']=='' ? InkWell(
-                          onTap: (){
-                            Navigator.push(context,Myroute(View_imagewide(imageurl:s[index]['image'] ,)));
-                          },
-                          child: Container(
-                              height: 300,
-                              child: Image.network(s[index]['image'])),
-                        ): Text(s[index]['message'],style: TextStyle(fontSize: 21,color: Colors.black),),
-                        Text('  '),
-                        Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
+                        s[index]['message']=='' ? Stack(children: [
+
+                          InkWell(
+                            onTap: (){
+                              Navigator.push(context,Myroute(View_imagewide(imageurl:s[index]['image'] ,)));
+                            },
+                            child: Container(
+                                height: 300,
+                                width: 230,
+
+                                child: Image.network(s[index]['image'],fit: BoxFit.fill,)),
+                          ),
+                          Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(5)
+                                  ),
+                                  child: Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),))),
+                        ],): Padding(
+                          padding: const EdgeInsets.only(left: 20,right: 20),
+                          child: RichText(text: TextSpan(
+                              text: '${s[index]['message']}',
+                              style: TextStyle(color: Colors.black,fontSize: 22),
+                              children: [
+                                TextSpan(text: ' '),
+                                TextSpan(text: '${s[index]['date']}'.substring(11,16),
+                                  style: TextStyle(color: Colors.black,fontSize: 13),
+                                ),
+                              ]
+                          ),),
+                        ),
+
+                        // Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
+                      ],
+                    ),
+                  ),
+                ):null,
+                subtitle:s[index]['sender']=='dealer' ?  Container(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    padding: EdgeInsets.only(left: 0,right: 0),
+                    decoration: BoxDecoration(
+                        color: Colors.green.shade300,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey)
+                    ),
+                    child: Wrap(
+                      children: [
+                        s[index]['message']=='' ? Stack(children: [
+
+                          InkWell(
+                            onTap: (){
+                              Navigator.push(context,Myroute(View_imagewide(imageurl:s[index]['image'] ,)));
+                            },
+                            child: Container(
+                                height: 300,
+                                width: 230,
+
+                                child: Image.network(s[index]['image'],fit: BoxFit.fill,)),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                              right: 0,
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(5)
+                                  ),
+                                  child: Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),))),
+                        ],): Padding(
+                          padding: const EdgeInsets.only(left: 20,right: 20),
+                          child: RichText(text: TextSpan(
+                            text: '${s[index]['message']}',
+                            style: TextStyle(color: Colors.black,fontSize: 22),
+                            children: [
+                              TextSpan(text: ' '),
+                               TextSpan(text: '${s[index]['date']}'.substring(11,16),
+                                 style: TextStyle(color: Colors.black,fontSize: 13),
+                               ),
+                            ]
+                          ),),
+                        ),
+
+                      // Text('${s[index]['date']}'.substring(11,16),style: TextStyle(color: Colors.black),),
                       ],
                     ),
                   ),
