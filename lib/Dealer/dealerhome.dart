@@ -88,66 +88,65 @@ class _dealerhomeState extends State<dealerhome> {
 
 
 
-      drawer: Drawer(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(topRight: Radius.elliptical(120, 800),bottomRight:Radius.elliptical(120, 800), ),
-          ),
-          child: ListView(
-            children: [
-              UserAccountsDrawerHeader(decoration: BoxDecoration(
-                  color: Colors.green.shade700
-              ),accountName: user_data.isEmpty ?Text(''):Text('${user_data[0]}'), accountEmail: user_data.isEmpty ?Text(''):Text('${user_data[1]}'),
-                currentAccountPicture: Icon(Icons.face,color: Colors.white,size: 65,),
-              ),
-
-
-              Row(children: [
-                TextButton.icon(style: ButtonStyle(
-                    overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
-                ),onPressed: (){
-
-                },icon: Icon(Icons.supervised_user_circle,color: Colors.green.shade700,),label: Text('About Us',style: TextStyle(color: Colors.black,fontSize: 16),),),
-
-              ],),
-
-              Row(children: [
-                TextButton.icon(style: ButtonStyle(
-                    overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
-                ),onPressed: (){
-
-                },icon: Icon(Icons.contact_page,color: Colors.green.shade700,),label: Text('Contact Us',style: TextStyle(color: Colors.black,fontSize: 16),),),
-
-              ],),
-              Row(children: [
-                TextButton.icon(style: ButtonStyle(
-                    overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
-                ),onPressed: (){
-                Navigator.push(context, Myroute(OrdersScreen(dealerlicense:user_data[4])));
-                },icon: Icon(Icons.favorite_border,color: Colors.green.shade700,),label: Text('Orders',style: TextStyle(color: Colors.black,fontSize: 16),),),
-
-              ],),
-
-
-              Row(children: [
-
-                TextButton.icon(style: ButtonStyle(
-                    overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
-                ),onPressed: (){
-                  Clear_Preferences();
-                  EasyLoading.showSuccess('Logout');
-                  Navigator.pushReplacement(context, Myroute(dealerlogin()));
-                },icon: Icon(Icons.logout,color: Colors.green.shade900,),label: Text('Logout',style: TextStyle(color: Colors.black,fontSize: 17),),),
-
-              ],)
-
-            ],
-          ),
+      drawer: Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(topRight: Radius.elliptical(120, 800),bottomRight:Radius.elliptical(120, 800), ),
         ),
+        child: Drawer(
+          backgroundColor: Colors.white,
+          child: ListView(
+              children: [
+                UserAccountsDrawerHeader(decoration: BoxDecoration(
+                    color: Colors.green.shade700
+                ),accountName: user_data.isEmpty ?Text(''):Text('${user_data[0]}'), accountEmail: user_data.isEmpty ?Text(''):Text('${user_data[1]}'),
+                  currentAccountPicture: Icon(Icons.face,color: Colors.white,size: 65,),
+                ),
 
+
+                Row(children: [
+                  TextButton.icon(style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
+                  ),onPressed: (){
+
+                  },icon: Icon(Icons.supervised_user_circle,color: Colors.green.shade700,),label: Text('About Us',style: TextStyle(color: Colors.black,fontSize: 16),),),
+
+                ],),
+
+                Row(children: [
+                  TextButton.icon(style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
+                  ),onPressed: (){
+
+                  },icon: Icon(Icons.contact_page,color: Colors.green.shade700,),label: Text('Contact Us',style: TextStyle(color: Colors.black,fontSize: 16),),),
+
+                ],),
+                Row(children: [
+                  TextButton.icon(style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
+                  ),onPressed: (){
+                  Navigator.push(context, Myroute(OrdersScreen(dealerlicense:user_data[4])));
+                  },icon: Icon(Icons.favorite_border,color: Colors.green.shade700,),label: Text('Orders',style: TextStyle(color: Colors.black,fontSize: 16),),),
+
+                ],),
+
+
+                Row(children: [
+
+                  TextButton.icon(style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
+                  ),onPressed: (){
+                    Clear_Preferences();
+                    EasyLoading.showSuccess('Logout');
+                    Navigator.pushReplacement(context, Myroute(dealerlogin()));
+                  },icon: Icon(Icons.logout,color: Colors.green.shade900,),label: Text('Logout',style: TextStyle(color: Colors.black,fontSize: 17),),),
+
+                ],)
+
+              ],
+            ),
+        ),
       ),
 
 

@@ -190,6 +190,7 @@ class _registerfarmerState extends State<registerfarmer> {
                                s3=Name_Validation(name.text);
                                OTP=Generate_OTP();
                                print(OTP);
+                               EasyLoading.show(status: 'Processing');
                                var s4=await new database().Duplicate_email(email.text,'farmers');
                                if(name.text.isEmpty){
                                  EasyLoading.showInfo('Name Required !');
@@ -229,6 +230,8 @@ class _registerfarmerState extends State<registerfarmer> {
                                  EasyLoading.showInfo('Error ! OTP not sent');
                                  return;
                                }
+                               EasyLoading.dismiss();
+                               print(OTP);
                                 Navigator.push(context, Myroute(OTP_screen(Data: data,type: 'farmer',OTP: OTP,)));
                               }, child: Text('Register'),
                                   style:ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade700),

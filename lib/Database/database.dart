@@ -18,37 +18,31 @@ class database {
 
 
   Future<bool> Register_Farmer(email,password,name) async {
-
     try{
-      final _auth =await FirebaseAuth.instance.createUserWithEmailAndPassword
-        (email: email, password: password);
-      FirebaseFirestore.instance.collection('farmers').add({'email':"${email}",'password':'${password}','name':'${name}'});
+      var s= FirebaseFirestore.instance.collection('farmers').doc(email);
+      s.set({'email':"${email}",'password':'${password}','name':'${name}','image':''});
       EasyLoading.showSuccess('Account created Sucessfully  ');
       return true;
     }
     catch(e){
-      var s=e.toString().split(']');
-      EasyLoading.showError('! Account has not been created.'
-          '${s[1]}');
+      EasyLoading.showError('! Account has not been created.');
       return false;
     }
   }
 
   Login_Farmer(Email,Password) async {
+    var s=false;
+    await FirebaseFirestore.instance.collection("farmers").get().then((querySnapshot) {
+      querySnapshot.docs.forEach((result) {
 
-    try{
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: Email,
-          password: Password
-      );
-      EasyLoading.showSuccess('Sucessfully Login ');
-      return true;
-    }
+        if(result.data()['email']==Email && result.data()['password']==Password ){
+          s=true;
 
-    catch(e){
-      EasyLoading.showError('Incorrect credentials \n Email: ${Email} \nPassword: ${Password}');
-      return false;
-    }
+        }
+      });
+    });
+    return await s;
+
 
   }
 
@@ -233,11 +227,6 @@ Update_password(newpass,email,collection_name) async {
     await newRef.putFile(tempFile).whenComplete(() => tempFile.delete());
     await oldRef.delete();
   }
-
-
-
-
-
 
 
 

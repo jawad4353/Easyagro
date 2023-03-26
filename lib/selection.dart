@@ -54,47 +54,54 @@ class _SelectionState extends State<Selection> {
                  top: size.height*0.52,
                  left: size.width*0.08,
                  right:size.width*0.08 ,
+
                  child:   Container(
-                   height: 44,
+                   height: 30,
                    child: ElevatedButton(style: ButtonStyle(
                        backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade900)
                    ),onPressed: ()  {
 
                      Navigator.pushReplacement(context, Myroute(farmerlogin()));
-                   },child: Text('Continue as Farmer',style: TextStyle(fontSize: 21,color: Colors.white,fontWeight: FontWeight.bold,fontFamily: 'jd1')),),
+                   },child: Text('Continue as Farmer',style: TextStyle(fontSize: 17,color: Colors.white,fontWeight: FontWeight.bold,fontFamily: 'jd1')),),
                  ),
 
                  ),
 
 
                Positioned(
-                 top: size.height*0.58,
+                 top: size.height*0.57,
                  left: size.width*0.1,
                  right:size.width*0.1,
                  child: Row(
                    mainAxisAlignment: MainAxisAlignment.center,
                    children: [
-                      OutlinedButton(style: ButtonStyle(
-                        side: MaterialStateProperty.resolveWith((states) => BorderSide(color: Colors.white)),
-                        overlayColor: MaterialStateProperty.resolveWith((states) => Colors.grey),
-                           backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.white)
-                       ),onPressed: () {
-
-
-                        Navigator.pushReplacement(context,  Myroute(companylogin()));
-
-                        },child: Text('Company',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'jd1',fontSize: 17,color: Colors.green.shade900)),),
-
-                      Text(' or ',style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white,fontSize: 17,fontFamily: 'jd1'),),
-
-                      OutlinedButton(style: ButtonStyle(
+                      Container(
+                        height: 28,
+                        child: OutlinedButton(style: ButtonStyle(
+                          side: MaterialStateProperty.resolveWith((states) => BorderSide(color: Colors.white)),
                           overlayColor: MaterialStateProperty.resolveWith((states) => Colors.grey),
-                          side: MaterialStateProperty.resolveWith((states) => BorderSide(color: Colors.transparent)),
-                           backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.white)
-                       ),onPressed: ()  {
+                             backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.white)
+                         ),onPressed: () {
 
-                       Navigator.pushReplacement(context, Myroute(dealerlogin()));
-                      },child: Text('  Dealer  ',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17,color: Colors.green.shade900,fontFamily: 'jd1')),),
+
+                          Navigator.pushReplacement(context,  Myroute(companylogin()));
+
+                          },child: Text('Company',style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'jd1',fontSize: 17,color: Colors.green.shade900)),),
+                      ),
+
+                      Text(' or ',style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white,fontSize: 16,fontFamily: 'jd1'),),
+
+                      Container(
+                        height: 28,
+                        child: OutlinedButton(style: ButtonStyle(
+                            overlayColor: MaterialStateProperty.resolveWith((states) => Colors.grey),
+                            side: MaterialStateProperty.resolveWith((states) => BorderSide(color: Colors.transparent)),
+                             backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.white)
+                         ),onPressed: ()  {
+
+                         Navigator.pushReplacement(context, Myroute(dealerlogin()));
+                        },child: Text('  Dealer  ',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.green.shade900,fontFamily: 'jd1')),),
+                      ),
 
                    ],
                  ),

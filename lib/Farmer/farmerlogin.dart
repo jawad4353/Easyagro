@@ -182,13 +182,16 @@ class _farmerloginState extends State<farmerlogin> {
                               EasyLoading.showInfo('Invalid Password');
                               return;
                             }
-
+                          EasyLoading.show(status: 'checking info');
                           var farmer_exist=await  new database().Login_Farmer(email.text, password.text);
 
                           if(farmer_exist){
                             Set_Shared_Preference('farmer',email.text,password.text);
+                            EasyLoading.dismiss();
                             Navigator.pushReplacement(context, Myroute(farmerhome()));
+                            return;
                           }
+                          EasyLoading.showError('No account found with these creddentials \nEmail:${email.text}\nPassword:${password.text}');
 
                           }, child: Text('Login'),
                               style:ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade700),

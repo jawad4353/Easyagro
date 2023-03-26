@@ -60,66 +60,68 @@ class _companyhomeState extends State<companyhome> {
 
          IconButton(onPressed: (){}, icon: Icon(Icons.notifications))
      ],),
-     drawer: Drawer(
-         backgroundColor: Colors.transparent,
-         child: Container(
-           clipBehavior: Clip.antiAlias,
-           decoration: BoxDecoration(
-             color: Colors.white,
-             borderRadius: BorderRadius.only(topRight: Radius.elliptical(120, 800),bottomRight:Radius.elliptical(120, 800), ),
-           ),
-           child: ListView(
-             children: [
+     drawer: Container(
+       clipBehavior: Clip.antiAlias,
+       decoration: BoxDecoration(
+         color: Colors.white,
+         borderRadius: BorderRadius.only(topRight: Radius.elliptical(120, 800),bottomRight:Radius.elliptical(120, 800), ),
+       ),
+       child: Drawer(
+           backgroundColor: Colors.white,
 
-               UserAccountsDrawerHeader(decoration: BoxDecoration(
-                   color: Colors.green.shade700
-               ),accountName: user_data.isEmpty ? Text(''):Text('${user_data[0]}'.toUpperCase()), accountEmail:user_data.isEmpty ? Text(''):Text('${user_data[1]}'),
-                 currentAccountPicture:Icon(Icons.supervised_user_circle,size: 76,color: Colors.white,)
+             child: ListView(
+               children: [
 
-               ),
+                 UserAccountsDrawerHeader(decoration: BoxDecoration(
+                     color: Colors.green.shade700
+                 ),accountName: user_data.isEmpty ? Text(''):Text('${user_data[0]}'.toUpperCase()), accountEmail:user_data.isEmpty ? Text(''):Text('${user_data[1]}'),
+                   currentAccountPicture:Icon(Icons.supervised_user_circle,size: 76,color: Colors.white,)
 
-
-               Row(children: [
-                 Text('  Night Mode',style: TextStyle(color: Colors.black,fontSize: 16)),
-                 Switch.adaptive(value: false, onChanged: (a){})
-               ],),
+                 ),
 
 
-               Row(children: [
-                 TextButton.icon(style: ButtonStyle(
-                     overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
-                 ),onPressed: (){
-
-                 },icon: Icon(Icons.supervised_user_circle,color: Colors.green.shade700,),label: Text('About Us',style: TextStyle(color: Colors.black,fontSize: 16),),),
-
-               ],),
-
-               Row(children: [
-                 TextButton.icon(style: ButtonStyle(
-                     overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
-                 ),onPressed: (){
-
-                 },icon: Icon(Icons.contact_page,color: Colors.green.shade700,),label: Text('Contact Us',style: TextStyle(color: Colors.black,fontSize: 16),),),
-
-               ],),
+                 Row(children: [
+                   Text('  Night Mode',style: TextStyle(color: Colors.black,fontSize: 16)),
+                   Switch.adaptive(value: false, onChanged: (a){})
+                 ],),
 
 
-               Row(children: [
-                 TextButton.icon(style: ButtonStyle(
-                     overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
-                 ),onPressed: (){
-                   Clear_Preferences();
-                   EasyLoading.showSuccess('Logout');
-                   Navigator.pushReplacement(context, Myroute(companylogin()));
-                 },icon: Icon(Icons.logout,color: Colors.green.shade700,),label: Text('Logout',style: TextStyle(color: Colors.black,fontSize: 16),),),
+                 Row(children: [
+                   TextButton.icon(style: ButtonStyle(
+                       overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
+                   ),onPressed: (){
 
-               ],),
+                   },icon: Icon(Icons.supervised_user_circle,color: Colors.green.shade700,),label: Text('About Us',style: TextStyle(color: Colors.black,fontSize: 16),),),
+
+                 ],),
+
+                 Row(children: [
+                   TextButton.icon(style: ButtonStyle(
+                       overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
+                   ),onPressed: (){
+
+                   },icon: Icon(Icons.contact_page,color: Colors.green.shade700,),label: Text('Contact Us',style: TextStyle(color: Colors.black,fontSize: 16),),),
+
+                 ],),
+
+
+                 Row(children: [
+                   TextButton.icon(style: ButtonStyle(
+                       overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
+                   ),onPressed: (){
+                     Clear_Preferences();
+                     EasyLoading.showSuccess('Logout');
+                     Navigator.pushReplacement(context, Myroute(companylogin()));
+                   },icon: Icon(Icons.logout,color: Colors.green.shade700,),label: Text('Logout',style: TextStyle(color: Colors.black,fontSize: 16),),),
+
+                 ],),
 
 
 
-             ],
-           ),
-         ),
+               ],
+             ),
+
+       ),
      ),
 
      bottomNavigationBar: BottomNavigationBar(
