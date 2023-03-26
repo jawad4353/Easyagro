@@ -99,20 +99,16 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
    try{
      if (pickedFile != null) {
-       setState(() {
          _image = File(pickedFile.path);
-       });
-
        String fileName = _image!.path.split('/').last;
        Reference firebaseStorageRef =
        FirebaseStorage.instance.ref().child('farmerphotos/${photoname}');
        UploadTask uploadTask = firebaseStorageRef.putFile(_image!);
        TaskSnapshot storageTaskSnapshot1 = await uploadTask.whenComplete(() => null);
        String Url_profile_photo = await storageTaskSnapshot1.ref.getDownloadURL();
+       print('here');
        await FirebaseFirestore.instance
-           .collection('farmers')
-           .doc(photoname)
-           .update({'image': Url_profile_photo});
+           .collection('farmers').doc(photoname).update({'image': Url_profile_photo});
 
 
 
@@ -121,7 +117,9 @@ class _farmerhomeState1 extends State<farmerhome1> {
        print('No image selected.');
      }
    }
-   catch(e){}
+   catch(e){
+     print(e);
+   }
   }
 
   Future<void> getWeather() async {
@@ -392,7 +390,10 @@ class _ViewImageState extends State<ViewImage> {
                      {
                        return show_progress_indicator();
                      }
-                   return snap.data!.data()!['image']=='' ? Text('hi',style: TextStyle(color: Colors.white),)  : Image.network('${snap.data!.data()!['image']}',fit: BoxFit.fill,);
+                   return snap.data!.data()!['image']=='' ? Container(height: 400,color: Colors.green.shade700,
+                   child: Center(child: Text('${snap.data!.data()!['name']}'.toUpperCase(),style: TextStyle(fontSize: 34,fontWeight: FontWeight.bold,color: Colors.white),)),)
+
+                       : Image.network('${snap.data!.data()!['image']}',fit: BoxFit.fill,);
                  },
                ))),
      )
