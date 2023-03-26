@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyagro/Dealer/dealerhome.dart';
 import 'package:easyagro/splash.dart';
+import 'package:easyagro/supportingwidgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -129,26 +130,7 @@ class _load_ProductsState extends State<load_Products> {
         builder: (context, snapshot) {
 
           if (!snapshot.hasData) {
-            return Center(
-              child: Container(
-                  color: Colors.white,
-                  child: SpinKitFoldingCube(
-                    size: 50.0,
-                    duration: Duration(milliseconds: 700),
-                    itemBuilder: ((context, index) {
-                      var Mycolors=[Colors.green.shade700,Colors.white];
-                      var Mycol=Mycolors[index%Mycolors.length];
-                      return DecoratedBox(decoration: BoxDecoration(
-                          color: Mycol,
-                          border: Border.all(color: Colors.green,)
-
-
-                      ));
-                    }),
-                  ),
-                ),
-
-            );
+            return show_progress_indicator();
           }
 
 

@@ -15,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../splash.dart';
+import '../supportingwidgets.dart';
 import 'Notifiers.dart';
 
 class ChatScreen extends StatefulWidget{
@@ -50,26 +51,7 @@ class _ChatScreenState extends State<ChatScreen> {
          }
 
          if (snapshot.connectionState == ConnectionState.waiting) {
-           return Center(
-             child: Container(
-               color: Colors.white,
-               child: SpinKitFoldingCube(
-                 size: 50.0,
-                 duration: Duration(milliseconds: 700),
-                 itemBuilder: ((context, index) {
-                   var Mycolors=[Colors.green.shade700,Colors.white];
-                   var Mycol=Mycolors[index%Mycolors.length];
-                   return DecoratedBox(decoration: BoxDecoration(
-                       color: Mycol,
-                       border: Border.all(color: Colors.green,)
-
-
-                   ));
-                 }),
-               ),
-             ),
-
-           );
+           return show_progress_indicator();
          }
 
          var s=snapshot.data!.docs;

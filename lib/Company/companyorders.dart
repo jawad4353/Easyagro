@@ -8,6 +8,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../splash.dart';
+import '../supportingwidgets.dart';
 
 class companyorders extends StatefulWidget{
   var companylicense;
@@ -32,28 +33,8 @@ class _companyordersState extends State<companyorders> {
               if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               }
-
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: Container(
-                    color: Colors.white,
-                    child: SpinKitFoldingCube(
-                      size: 50.0,
-                      duration: Duration(milliseconds: 700),
-                      itemBuilder: ((context, index) {
-                        var Mycolors=[Colors.green.shade700,Colors.white];
-                        var Mycol=Mycolors[index%Mycolors.length];
-                        return DecoratedBox(decoration: BoxDecoration(
-                            color: Mycol,
-                            border: Border.all(color: Colors.green,)
-
-
-                        ));
-                      }),
-                    ),
-                  ),
-
-                );
+                return show_progress_indicator();
               }
 
 

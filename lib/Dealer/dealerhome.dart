@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyagro/Dealer/dealerlogin.dart';
 import 'package:easyagro/Dealer/update_dealer.dart';
+import 'package:easyagro/supportingwidgets.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -167,25 +168,7 @@ class _dealerhomeState extends State<dealerhome> {
                 }
 
                 if (!snapshot.hasData) {
-                  return Center(
-                    child:  Container(
-                      color: Colors.white,
-                      child: SpinKitFoldingCube(
-                        size: 50.0,
-                        duration: Duration(milliseconds: 700),
-                        itemBuilder: ((context, index) {
-                          var Mycolors=[Colors.green.shade700,Colors.white];
-                          var Mycol=Mycolors[index%Mycolors.length];
-                          return DecoratedBox(decoration: BoxDecoration(
-                              color: Mycol,
-                              border: Border.all(color: Colors.green,)
-
-
-                          ));
-                        }),
-                      ),
-                    ),
-                  );
+                  return show_progress_indicator();
                 }
 
                 List<DocumentSnapshot> filteredcompanies = snapshot.data!.docs.where((doc) {

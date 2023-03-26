@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import '../supportingwidgets.dart';
 import 'Chatdealer.dart';
 
 class OrdersScreen extends StatefulWidget{
@@ -126,26 +127,7 @@ class _View_detailsState extends State<View_details> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: Container(
-                color: Colors.white,
-                child: SpinKitFoldingCube(
-                  size: 50.0,
-                  duration: Duration(milliseconds: 700),
-                  itemBuilder: ((context, index) {
-                    var Mycolors=[Colors.green.shade700,Colors.white];
-                    var Mycol=Mycolors[index%Mycolors.length];
-                    return DecoratedBox(decoration: BoxDecoration(
-                        color: Mycol,
-                        border: Border.all(color: Colors.green,)
-
-
-                    ));
-                  }),
-                ),
-              ),
-
-            );
+            return show_progress_indicator();
           }
 
       var s=snapshot.data!.docs;

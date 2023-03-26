@@ -9,6 +9,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../Dealer/dealerorders.dart';
 import '../splash.dart';
+import '../supportingwidgets.dart';
 import 'chatscreen.dart';
 
 class Dealerscompanyside extends StatefulWidget{
@@ -182,26 +183,7 @@ class _ViewdealerState extends State<Viewdealer> {
          }
 
          if (snapshot.connectionState == ConnectionState.waiting) {
-           return Center(
-             child: Container(
-               color: Colors.white,
-               child: SpinKitFoldingCube(
-                 size: 50.0,
-                 duration: Duration(milliseconds: 700),
-                 itemBuilder: ((context, index) {
-                   var Mycolors=[Colors.green.shade700,Colors.white];
-                   var Mycol=Mycolors[index%Mycolors.length];
-                   return DecoratedBox(decoration: BoxDecoration(
-                       color: Mycol,
-                       border: Border.all(color: Colors.green,)
-
-
-                   ));
-                 }),
-               ),
-             ),
-
-           );
+           return show_progress_indicator();
          }
 
 

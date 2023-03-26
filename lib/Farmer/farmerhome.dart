@@ -18,6 +18,7 @@ import '../Database/database.dart';
 import '../sharedpref_validations.dart';
 import 'package:http/http.dart' as http;
 
+import '../supportingwidgets.dart';
 import 'calculator.dart';
 import 'diseases.dart';
 
@@ -37,7 +38,7 @@ class farmerhome extends StatefulWidget{
 }
 
 class _farmerhomeState extends State<farmerhome> {
-  var pages=[farmerhome1(),calculator(),disease()];
+  final pages=[farmerhome1(),calculator(),disease()];
 
   int myindex=0;
 
@@ -93,7 +94,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
   File? _image;
   final picker = ImagePicker();
 
-  Future getImageAndUploadToFirebase() async {
+  Future getImageAndUploadToFirebase(photoname) async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
    try{
@@ -104,13 +105,13 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
        String fileName = _image!.path.split('/').last;
        Reference firebaseStorageRef =
-       FirebaseStorage.instance.ref().child('farmerphotos/${user_data[1]}');
+       FirebaseStorage.instance.ref().child('farmerphotos/${photoname}');
        UploadTask uploadTask = firebaseStorageRef.putFile(_image!);
        TaskSnapshot storageTaskSnapshot1 = await uploadTask.whenComplete(() => null);
        String Url_profile_photo = await storageTaskSnapshot1.ref.getDownloadURL();
        await FirebaseFirestore.instance
            .collection('farmers')
-           .doc(user_data[1])
+           .doc(photoname)
            .update({'image': Url_profile_photo});
 
 
@@ -203,32 +204,44 @@ class _farmerhomeState1 extends State<farmerhome1> {
                   UserAccountsDrawerHeader(decoration: BoxDecoration(
                     color: Colors.green.shade700
                   ),accountName: user_data.isEmpty ?Text('') :Text('${user_data[0]}'), accountEmail:user_data.isEmpty ?Text(''): Text('${user_data[1]}'),
-                  currentAccountPicture: user_data[3]==''? InkWell(
-                    onTap: (){
-                      getImageAndUploadToFirebase();
+                  currentAccountPicture: StreamBuilder(
+                    stream: FirebaseFirestore.instance.collection('farmers').doc(user_data[1]).snapshots(),
+                    builder:(context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return show_progress_indicator();
+                      }
+
+                      return snapshot.data!.data()!['image']==''? InkWell(
+                        onTap: (){
+                          getImageAndUploadToFirebase(user_data[1]);
+                        },
+                        child: Container(
+                            height: 120,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(width: 2,color: Colors.black38),
+                                shape: BoxShape.circle
+                            ),
+                            child: Center(child: Text('${user_data[0][0]}'.toUpperCase(),style: TextStyle(fontSize: 36),))),
+                      ):
+                      InkWell(
+                        onTap: (){
+                          Navigator.push(context, Myroute(ViewImage(email: user_data[1],)));
+                        },
+                        child:Container(
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle
+                            ),
+                            child: Image.network('${snapshot.data!.data()!['image']}',fit: BoxFit.fill,)),
+                      );
+
+
+
+
                     },
-                    child: Container(
-                       height: 120,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(width: 2,color: Colors.black38),
-                          shape: BoxShape.circle
-                      ),
-                        child: Center(child: Text('${user_data[0][0]}'.toUpperCase(),style: TextStyle(fontSize: 36),))),
-                  ):InkWell(
-                    onTap: (){
-                      Navigator.push(context, Myroute(ViewImage(imageurl: user_data[3],)));
-                    },
-                    child:StreamBuilder(
-                      stream: FirebaseFirestore.instance.collection('farmers').where('email',isEqualTo: user_data[1]).snapshots(),
-                      builder: (context,snap)=> Container(
-                          clipBehavior: Clip.antiAlias,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle
-                          ),
-                          child: Image.network('${snap.data!.docs.first['image']}',fit: BoxFit.fill,)),
-                    ),
-                  )),
+                  )
+            ),
 
 
 
@@ -340,8 +353,8 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
 
 class ViewImage extends StatefulWidget{
-  var imageurl;
-  ViewImage({required this.imageurl});
+  var email;
+  ViewImage({required this.email});
 
   @override
   State<ViewImage> createState() => _ViewImageState();
@@ -353,14 +366,35 @@ class _ViewImageState extends State<ViewImage> {
 
    return Scaffold(
        backgroundColor: Colors.black,
-     appBar: AppBar(backgroundColor: Colors.black,actions: [],),
+     appBar: AppBar(backgroundColor: Colors.black,actions: [
+       IconButton(onPressed: (){
+         _farmerhomeState1().getImageAndUploadToFirebase(widget.email);
+       }, icon: Icon(Icons.update)),
+       IconButton(onPressed: (){
+         Reference firebaseStorageRef =
+         FirebaseStorage.instance.ref().child('farmerphotos/${widget.email}');
+         firebaseStorageRef.delete();
+         FirebaseFirestore.instance.collection('farmers').doc(widget.email).update({'image':''});
+       }, icon: Icon(Icons.delete,color: Colors.white,)),
+
+     ],),
      body: Center(
        child: InteractiveViewer(
            maxScale: 14,
            child: Container(
                height: 550,
                width: MediaQuery.of(context).size.width,
-               child: Image.network('${widget.imageurl}',fit: BoxFit.fill,))),
+               child: StreamBuilder(
+                 stream: FirebaseFirestore.instance.collection('farmers').doc(widget.email).snapshots(),
+                 builder: (context,snap){
+
+                   if(snap.connectionState==ConnectionState.waiting || !snap.hasData)
+                     {
+                       return show_progress_indicator();
+                     }
+                   return snap.data!.data()!['image']=='' ? Text('hi',style: TextStyle(color: Colors.white),)  : Image.network('${snap.data!.data()!['image']}',fit: BoxFit.fill,);
+                 },
+               ))),
      )
    );
   }

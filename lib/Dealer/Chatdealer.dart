@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 
 import '../Company/Notifiers.dart';
 import '../Company/rud_products.dart';
+import '../supportingwidgets.dart';
 
 class Chatdealer extends StatefulWidget{
   var companylicense,dealerlicense,name;
@@ -50,26 +51,7 @@ class _ChatdealerState extends State<Chatdealer> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: Container(
-                color: Colors.white,
-                child: SpinKitFoldingCube(
-                  size: 50.0,
-                  duration: Duration(milliseconds: 700),
-                  itemBuilder: ((context, index) {
-                    var Mycolors=[Colors.green.shade700,Colors.white];
-                    var Mycol=Mycolors[index%Mycolors.length];
-                    return DecoratedBox(decoration: BoxDecoration(
-                        color: Mycol,
-                        border: Border.all(color: Colors.green,)
-
-
-                    ));
-                  }),
-                ),
-              ),
-
-            );
+            return show_progress_indicator();
           }
 
           var s=snapshot.data!.docs;
