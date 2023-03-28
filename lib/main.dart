@@ -2,6 +2,7 @@ import 'package:easyagro/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'Company/Notifiers.dart';
 
@@ -24,7 +25,7 @@ await  Firebase.initializeApp(
 
     )
 );
-
+  await GoogleSignIn();
   runApp(MultiProvider(
       providers: [
             ChangeNotifierProvider(create: (context) => GlobalState(),),

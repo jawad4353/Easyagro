@@ -23,7 +23,7 @@ class farmerlogin extends StatefulWidget{
 class _farmerloginState extends State<farmerlogin> {
   TextEditingController email=new TextEditingController();
   TextEditingController password=new TextEditingController();
-
+  GoogleSignInHelper _googleSignInHelper = GoogleSignInHelper();
   var  hidepassword=true,s,s1,Email_Error,Password_Error,Password_Error_color=Colors.grey,Email_Error_color=Colors.grey,is_valid_email;
   @override
   Widget build(BuildContext context) {
@@ -200,7 +200,20 @@ class _farmerloginState extends State<farmerlogin> {
                      Row(
                        mainAxisAlignment: MainAxisAlignment.center,
                        children: [
-                         InkWell(child: Image.asset('images/google.png',height: 50,)),
+                         InkWell(
+                             onTap: () async {
+
+                               var userCredential = await _googleSignInHelper.signInWithGoogle();
+                               if(userCredential!.user!.email!.isEmpty){
+                                 return;
+                               }
+
+                               new database().Register_Farmer(userCredential!.user!.email, '', userCredential!.user!.displayName);
+                               Set_Shared_Preference('farmer',userCredential!.user!.email,'');
+                               Navigator.pushReplacement(context, Myroute(farmerhome()));
+
+                             },
+                             child: Image.asset('images/google.png',height: 50,)),
                          Text('  '),
                          InkWell(child: Image.asset('images/twitter.png',height: 50,) ,)
 

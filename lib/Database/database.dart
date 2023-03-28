@@ -9,8 +9,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 
 
@@ -231,3 +233,79 @@ Update_password(newpass,email,collection_name) async {
 
 
 }
+
+
+
+
+class GoogleSignInHelper {
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<UserCredential?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final UserCredential? userCredential = await _auth.signInWithCredential(credential);
+      return userCredential;
+    } catch (e) {
+      print('Error signing in with Google: $e');
+      return null;
+    }
+  }
+
+  Future<void> signOutGoogle() async {
+    await _googleSignIn.signOut();
+    await _auth.signOut();
+  }
+}
+
+
+
+
+//
+// class TwitterAuth {
+//   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+//
+//   Future<UserCredential> signInWithTwitter() async {
+//     // Initialize the Twitter login
+//     final TwitterLogin twitterLogin = TwitterLogin(
+//       consumerKey: 'YOUR_CONSUMER_KEY',
+//       consumerSecret: 'YOUR_CONSUMER_SECRET',
+//     );
+//
+//     // Perform the Twitter login
+//     final TwitterLoginResult result = await twitterLogin.authorize();
+//
+//     // Check if the Twitter login was successful
+//     if (result.status == TwitterLoginStatus.loggedIn) {
+//       // Get the Twitter session
+//       final TwitterSession twitterSession = result.session;
+//
+//       // Create a TwitterAuthCredential from the access token and secret
+//       final TwitterAuthCredential twitterAuthCredential =
+//       TwitterAuthProvider.credential(
+//         accessToken: twitterSession.token,
+//         secret: twitterSession.secret,
+//       );
+//
+//       // Sign in to Firebase with the Twitter credential
+//       final UserCredential userCredential =
+//       await _firebaseAuth.signInWithCredential(twitterAuthCredential);
+//
+//       return userCredential;
+//     } else {
+//       throw FirebaseAuthException(
+//         code: 'ERROR_TWITTER_LOGIN_FAILED',
+//         message: 'Twitter login failed',
+//       );
+//     }
+//   }
+//
+//   Future<void> signOut() async {
+//     await _firebaseAuth.signOut();
+//   }
+// }

@@ -11,6 +11,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:proste_bezier_curve/proste_bezier_curve.dart';
+import 'package:proste_bezier_curve/utils/type/index.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather_icons/weather_icons.dart';
 
@@ -21,6 +23,7 @@ import 'package:http/http.dart' as http;
 import '../supportingwidgets.dart';
 import 'calculator.dart';
 import 'diseases.dart';
+import 'package:intl/intl.dart';
 
 
 
@@ -38,7 +41,7 @@ class farmerhome extends StatefulWidget{
 }
 
 class _farmerhomeState extends State<farmerhome> {
-  final pages=[farmerhome1(),calculator(),disease()];
+  final pages=[farmerhome1(),calculator(),watercalculator(),disease()];
 
   int myindex=0;
 
@@ -52,8 +55,11 @@ class _farmerhomeState extends State<farmerhome> {
    currentIndex: myindex,
    elevation: 0,
 
+
    backgroundColor: Colors.white,
+   unselectedItemColor: Colors.black,
    selectedItemColor: Colors.green.shade700,
+
    onTap: (a){
        setState(() {
          myindex=a;
@@ -61,7 +67,8 @@ class _farmerhomeState extends State<farmerhome> {
    },
    items: [
        BottomNavigationBarItem(icon: Icon(Icons.home),label: 'Home'),
-       BottomNavigationBarItem(icon: Icon(Icons.calculate),label: 'Calculators'),
+       BottomNavigationBarItem(icon: Icon(Icons.calculate),label: 'Fertilizers Calculator'),
+       BottomNavigationBarItem(icon: Icon(Icons.calculate),label: 'Water Calculator'),
        BottomNavigationBarItem(icon: Icon(Icons.coronavirus),label: 'Diseases'),
    ],
  ),
@@ -86,10 +93,16 @@ class _farmerhomeState1 extends State<farmerhome1> {
   final String apiKey = '9bf76e4fddf97812e3d9dae079b63770';
   final String apiUrl = 'https://api.openweathermap.org/data/2.5/weather?q=Lahore&appid=';
 
-  String city = '';
-  String description = '';
-  String temperature = '';
-  IconData iconData = WeatherIcons.cloud_refresh;
+  String city = '',description = '',temperature = '',pressure='',wind='',humidity='',winddegree='',feelslike='',
+  precipitation='',rainchances='',date='';
+  var sunrise,sunset,email;
+
+ late IconData iconData= WeatherIcons.sunrise ;
+  final DateTime now = DateTime.now();
+  final DateFormat formatter = DateFormat('dd MMMM ');
+  final DateFormat formattersun = DateFormat('HH:MM a ');
+
+
 
   File? _image;
   final picker = ImagePicker();
@@ -125,10 +138,25 @@ class _farmerhomeState1 extends State<farmerhome1> {
   Future<void> getWeather() async {
     var response = await http.get(Uri.parse(apiUrl + apiKey));
     var result = jsonDecode(response.body);
+    print(result);
     setState(() {
+       sunrise = DateTime.fromMillisecondsSinceEpoch(
+          result['sys']['sunrise'] * 1000);
+       sunset = DateTime.fromMillisecondsSinceEpoch(
+          result['sys']['sunset'] * 1000);
+       sunrise=formattersun.format(sunrise);
+       sunset=formattersun.format(sunset);
+
+      date = formatter.format(now);
       city = result['name'];
       description = result['weather'][0]['description'];
       temperature = (result['main']['temp'] - 273.15).toStringAsFixed(1) + ' °C';
+      pressure='${result['main']['pressure']}'+' N/m';
+      humidity='${result['main']['humidity']}'+' %';
+      wind='${result['wind']['speed']}'+' km/s';
+      winddegree='${result['wind']['deg']}'+' deg';
+      feelslike=(result['main']['feels_like'] - 273.15).toStringAsFixed(1) + ' °C';
+      precipitation='67 %';
        iconData=_getWeatherIcon(int.parse('${result['weather'][0]['id']}'));
 
 
@@ -166,29 +194,22 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
   @override
   void initState() {
-    super.initState();
+
     Get_current_farmer_details();
     getWeather();
+    super.initState();
 
   }
 
 
   @override
   Widget build(BuildContext context) {
+    var size=MediaQuery.of(context).size;
     return Scaffold(
         key: _scaffoldKey,
+
         backgroundColor: Colors.white,
-        appBar: AppBar(title: Text('Farmer Home'),
-          leading: IconButton(icon:Icon(Icons.waves_outlined,color: Colors.grey,),onPressed: (){
-            _scaffoldKey.currentState!.openDrawer();
-          },),
-          backgroundColor: Colors.transparent,elevation: 0,centerTitle: true,actions: [
-          IconButton(onPressed:(){
-            Clear_Preferences();
-            EasyLoading.showSuccess('Logout');
-            Navigator.pushReplacement(context, Myroute(farmerlogin()));
-          }, icon: Icon(Icons.logout,color: Colors.grey,))
-        ],),
+
         drawer: Container(
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
@@ -203,7 +224,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
                     color: Colors.green.shade700
                   ),accountName: user_data.isEmpty ?Text('') :Text('${user_data[0]}'), accountEmail:user_data.isEmpty ?Text(''): Text('${user_data[1]}'),
                   currentAccountPicture: StreamBuilder(
-                    stream: FirebaseFirestore.instance.collection('farmers').doc(user_data[1]).snapshots(),
+                    stream: FirebaseFirestore.instance.collection('farmers').doc(email).snapshots(),
                     builder:(context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return show_progress_indicator();
@@ -249,6 +270,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
                      overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
                    ),onPressed: (){
                      Clear_Preferences();
+                     new GoogleSignInHelper().signOutGoogle();
                      EasyLoading.showSuccess('Logout');
                      Navigator.pushReplacement(context, Myroute(farmerlogin()));
                    },icon: Icon(Icons.logout,color: Colors.green.shade900,),label: Text('Logout',style: TextStyle(color: Colors.black,fontSize: 17),),),
@@ -276,42 +298,192 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
 
 
-        body:Center(
-          child: Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+        body:ListView(
+          children: [
+       Stack(
+         children: [
+             Container(height: size.height*0.18,),
+           ClipPath(
+             clipper: ProsteBezierCurve(
+               position: ClipPosition.bottom,
+               list: [
+                 BezierCurveSection(
+                   start: Offset(0, 166),
+                   top: Offset(size.width / 4, 190),
+                   end: Offset(size.width / 2, 155),
+                 ),
+                 BezierCurveSection(
+                   start: Offset(size.width / 2, 25),
+                   top: Offset(size.width / 4 * 3, 160),
+                   end: Offset(size.width, 180),
+                 ),
+               ],
+             ),
+             child: Container(
+               height: size.height*0.25,
+               width: size.width,
+               color: Colors.green.shade900,
+               child: Opacity(opacity: 0.2,child: Image.asset('images/back.jpg',fit: BoxFit.cover,),),
+             ),
+           ),
+           Positioned(
+             left: 0,
+             top: 0,
+             child: IconButton(icon:Icon(Icons.waves_sharp,color: Colors.white,),onPressed: (){
+               _scaffoldKey.currentState!.openDrawer();
+             },),
+           ),
+           Positioned(
+             left: 0,
+             top: 50,
+             child:Column(children: [
+               Text(
+                 ' ${city}',
+                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold,color: Colors.white),
+               ),
+               Text(
+                 ' ${temperature}',
 
-                Icon(
-                  iconData,
-                  size: 128,
-                  color: Colors.green.shade700,
+                 style: TextStyle(fontSize: 32,color: Colors.white),
+               ),
+             ],),
+           ),
+
+           Positioned(
+             right: 20,
+             child: Column(children: [
+               IconButton(onPressed: (){}, icon: Icon(Icons.search,color: Colors.white,)),
+               Icon(
+                 iconData,size: 50,color: Colors.white,
+               ),
+
+               Text(
+                 description=='' ? '':'\n${description[0]}'.toUpperCase()+'${description.substring(1)}',
+                 style: TextStyle(fontSize: 24,color: Colors.white),
+               ),
+               Text(
+                 '$date',
+                 style: TextStyle(fontSize: 17,color: Colors.white),
+               )
+
+
+             ],),
+           ),
+
+
+
+         ],
+       ),
+         Text('  Weather Now',style: TextStyle(fontSize: 27,fontWeight: FontWeight.bold),)
+           ,
+
+
+            Container(
+              height: 300,
+              child: GridView(
+                gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio:size.width / 100,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10
                 ),
-                Text('\n \n'),
-                Text(
-                  city,
-                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  description,
-                  style: TextStyle(fontSize: 24),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  temperature,
-                  style: TextStyle(fontSize: 48),
-                ),
-              ],
+                children: [
+                  ListTile(
+                    title: Text('FeelLike'),
+                    subtitle: Text('$feelslike',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    leading: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Colors.green.shade700,
+                          shape: BoxShape.circle
+                      ),child:Text("C°",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.white),),),
+                  ),
+                  ListTile(
+                    title: Text('Pressure'),
+                    subtitle: Text('$pressure',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold)),
+                    leading: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Colors.green.shade700,
+                          shape: BoxShape.circle
+                      ),child:Icon(Icons.account_tree_outlined,color: Colors.white),),
+                  ),
+                  ListTile(
+                    title: Text('Wind'),
+                    subtitle: Text('$wind ',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    leading: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Colors.green.shade700,
+                          shape: BoxShape.circle
+                      ),child:Icon(Icons.waves_sharp,color: Colors.white),),
+                  ),
+                  ListTile(
+                    title: Text('Direction'),
+                    subtitle: Text('$winddegree ',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    leading: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Colors.green.shade700,
+                          shape: BoxShape.circle
+                      ),child:Icon(Icons.text_rotation_angledown_outlined,color: Colors.white),),
+                  ),
+                  ListTile(
+                    title: Text('Precipitation'),
+                    subtitle: Text('$precipitation',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    leading: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Colors.green.shade700,
+                          shape: BoxShape.circle
+                      ),child: Icon(Icons.umbrella,color: Colors.white),),
+                  ),
+                  ListTile(
+                    title: Text('Humidity'),
+                    subtitle: Text('$humidity',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    leading: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Colors.green.shade700,
+                          shape: BoxShape.circle
+                      ),child: Icon(Icons.wb_cloudy_outlined,color: Colors.white),),
+                  ),
+                  ListTile(
+                    title: Text('Rain chances'),
+                    subtitle: Text('$rainchances',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    leading: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Colors.green.shade700,
+                          shape: BoxShape.circle
+                      ),child: Icon(Icons.wb_cloudy,color: Colors.white),),
+                  ),
+                  ListTile(
+                    title: Text('Sunrise'),
+                    subtitle: Text(sunrise==null ? '':'$sunrise',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    leading: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Colors.green.shade700,
+                          shape: BoxShape.circle
+                      ),child: Icon(Icons.wb_sunny_outlined,color: Colors.white),),
+                  ),
+                  ListTile(
+                    title: Text('Sunset'),
+                    subtitle: Text(sunset==null ? '':'$sunset',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    leading: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Colors.green.shade700,
+                          shape: BoxShape.circle
+                      ),child: Icon(Icons.wb_sunny,color: Colors.white,),),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ) ,
+
+             ],
+           )
 
       
     );
@@ -326,7 +498,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
 
   Get_current_farmer_details() async {
-    var email;
+
     SharedPreferences pref =await SharedPreferences.getInstance();
     email=await pref.getString("email");
 
