@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "730243418927-euooanubh4q9mpg9rshqb5qj9qaenm9o.apps.googleusercontent.com",
+          "client_id": "730243418927-pcgjri5ajbiud236v95tslahavm2kdkd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.easyagro",
+            "certificate_hash": "30124037b330105b8d8b0107b690571f17443bd9"
+          }
+        },
+        {
+          "client_id": "730243418927-g33eibpdm51c5motq6hicoouqm0du7b3.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
