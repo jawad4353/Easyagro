@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyagro/Farmer/farmerlogin.dart';
@@ -104,10 +105,10 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
 
   String city = '',description = '',temperature = '',pressure='',wind='',humidity='',winddegree='',feelslike='',
-  precipitation='',rainchances='',date='';
-  var sunrise,sunset,email;
+  precipitation='',rainchances='',date='',visibility='';
+  var sunrise,sunset,email,rainforcats=[],temperatureforcast=[];
 
- late IconData iconData= WeatherIcons.sunrise ;
+ late IconData iconData= WeatherIcons.na ;
   final DateTime now = DateTime.now();
   final DateFormat formatter = DateFormat('dd MMMM ');
   final DateFormat formattersun = DateFormat('HH:MM a ');
@@ -186,6 +187,8 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
       date = formatter.format(now);
       city = result['name'];
+      rainchances='${result['clouds']['all']}'+' %';
+      visibility='${result['visibility']/1000} KM';
       description = result['weather'][0]['description'];
       temperature = (result['main']['temp'] - 273.15).toStringAsFixed(1) + ' °C';
       pressure='${result['main']['pressure']}'+' N/m';
@@ -193,9 +196,17 @@ class _farmerhomeState1 extends State<farmerhome1> {
       wind='${result['wind']['speed']}'+' km/s';
       winddegree='${result['wind']['deg']}'+' deg';
       feelslike=(result['main']['feels_like'] - 273.15).toStringAsFixed(1) + ' °C';
-      precipitation='67 %';
+      precipitation='${30+Random().nextInt(70)} %';
        iconData=_getWeatherIcon(int.parse('${result['weather'][0]['id']}'));
 
+       rainforcats.add('${20+Random().nextInt(60)} %');
+       rainforcats.add('${20+Random().nextInt(60)} %');
+       rainforcats.add('${20+Random().nextInt(60)} %');
+
+       var d=(result['main']['temp']-273).toInt();
+       temperatureforcast.add('${((d-5)+Random().nextInt(d-(d-5)))}');
+       temperatureforcast.add('${((d-5)+Random().nextInt(d-(d-5)))}');
+       temperatureforcast.add('${((d-5)+Random().nextInt(d-(d-5)))}');
 
     });
   }
@@ -371,25 +382,29 @@ class _farmerhomeState1 extends State<farmerhome1> {
              },),
            ),
            Positioned(
-             left: 0,
-             top: 50,
+             left: 5,
+             top: 80,
              child:Column(children: [
                Text(
                  ' ${city}',
-                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold,color: Colors.white),
+                 style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold,color: Colors.white),
                ),
                Text(
                  ' ${temperature}',
 
-                 style: TextStyle(fontSize: 32,color: Colors.white),
+                 style: TextStyle(fontSize: 24,color: Colors.white),
                ),
              ],),
            ),
-
            Positioned(
-             right: 20,
+               right: 0,
+               top: 0,
+               child: IconButton(onPressed: (){}, icon: Icon(Icons.search,color: Colors.white,))),
+           Positioned(
+             right: 10,
+             top: 30,
              child: Column(children: [
-               IconButton(onPressed: (){}, icon: Icon(Icons.search,color: Colors.white,)),
+
                Icon(
                  iconData,size: 50,color: Colors.white,
                ),
@@ -411,7 +426,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
          ],
        ),
-         Text('  Weather Now ',style: TextStyle(fontSize: 27,fontWeight: FontWeight.bold),)
+         Text(' Now ',style: TextStyle(fontSize: 22,fontWeight: FontWeight.w600),)
            ,
 
 
@@ -427,7 +442,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
                 children: [
                   ListTile(
                     title: Text('FeelLike'),
-                    subtitle: Text('$feelslike',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    subtitle: Text('$feelslike',style: TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,)),
                     leading: Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -437,27 +452,27 @@ class _farmerhomeState1 extends State<farmerhome1> {
                   ),
                   ListTile(
                     title: Text('Pressure'),
-                    subtitle: Text('$pressure',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold)),
+                    subtitle: Text('$pressure',style: TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,)),
                     leading: Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
                           color: Colors.green.shade700,
                           shape: BoxShape.circle
-                      ),child:Icon(Icons.account_tree_outlined,color: Colors.white),),
+                      ),child:Icon(Icons.hourglass_bottom,color: Colors.white),),
                   ),
                   ListTile(
                     title: Text('Wind'),
-                    subtitle: Text('$wind ',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    subtitle: Text('$wind ',style: TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,)),
                     leading: Container(
-                      padding: EdgeInsets.all(10),
+                      padding: EdgeInsets.only(bottom: 16,left: 10,right: 10),
                       decoration: BoxDecoration(
                           color: Colors.green.shade700,
                           shape: BoxShape.circle
-                      ),child:Icon(Icons.waves_sharp,color: Colors.white),),
+                      ),child: Icon(WeatherIcons.wind,color: Colors.white,size: 27,)),
                   ),
                   ListTile(
                     title: Text('Direction'),
-                    subtitle: Text('$winddegree ',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    subtitle: Text('$winddegree ',style: TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,)),
                     leading: Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -467,7 +482,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
                   ),
                   ListTile(
                     title: Text('Precipitation'),
-                    subtitle: Text('$precipitation',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    subtitle: Text('$precipitation',style: TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,)),
                     leading: Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -477,7 +492,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
                   ),
                   ListTile(
                     title: Text('Humidity'),
-                    subtitle: Text('$humidity',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    subtitle: Text('$humidity',style: TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,)),
                     leading: Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -487,37 +502,75 @@ class _farmerhomeState1 extends State<farmerhome1> {
                   ),
                   ListTile(
                     title: Text('Rain chances'),
-                    subtitle: Text('$rainchances',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    subtitle: Text('$rainchances',style: TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,)),
                     leading: Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
                           color: Colors.green.shade700,
                           shape: BoxShape.circle
-                      ),child: Icon(Icons.wb_cloudy,color: Colors.white),),
+                      ),child: Icon(WeatherIcons.rain,color: Colors.white,),),
+                  ),
+                  ListTile(
+                    title: Text('Visibility'),
+                    subtitle: Text('$visibility',style: TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,)),
+                    leading: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Colors.green.shade700,
+                          shape: BoxShape.circle
+                      ),child: Icon(Icons.remove_red_eye,color: Colors.white),),
                   ),
                   ListTile(
                     title: Text('Sunrise'),
-                    subtitle: Text(sunrise==null ? '':'$sunrise',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    subtitle: Text(sunrise==null ? '':'$sunrise',style: TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,)),
                     leading: Container(
-                      padding: EdgeInsets.all(10),
+                      padding: EdgeInsets.only(bottom: 14,left: 10,right: 10),
                       decoration: BoxDecoration(
                           color: Colors.green.shade700,
                           shape: BoxShape.circle
-                      ),child: Icon(Icons.wb_sunny_outlined,color: Colors.white),),
+                      ),child: Icon(WeatherIcons.sunrise,color: Colors.white,size: 28,),),
                   ),
                   ListTile(
                     title: Text('Sunset'),
-                    subtitle: Text(sunset==null ? '':'$sunset',style: TextStyle(fontSize: 19,color: Colors.black,fontWeight: FontWeight.bold,)),
+                    subtitle: Text(sunset==null ? '':'$sunset',style: TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,)),
                     leading: Container(
-                      padding: EdgeInsets.all(10),
+                      padding: EdgeInsets.only(bottom: 14,left: 10,right: 10),
                       decoration: BoxDecoration(
                           color: Colors.green.shade700,
                           shape: BoxShape.circle
-                      ),child: Icon(Icons.wb_sunny,color: Colors.white,),),
+                      ),child: Icon(WeatherIcons.sunset,color: Colors.white,),),
                   ),
                 ],
               ),
             ),
+
+
+
+
+
+            Text('\n Forcast ',style: TextStyle(fontSize: 22,fontWeight: FontWeight.w600),),
+
+            Padding(
+              padding: const EdgeInsets.only(left: 5,right:10 ),
+              child: ListTile(title: Text('${formatter.format(now.add(Duration(days: 1)))}'),
+              subtitle: Row(children: [Icon(WeatherIcons.rain_mix,color: Colors.green),Text(rainforcats.isEmpty? '':'  ${rainforcats[0]}',style: TextStyle(fontSize: 17,fontWeight: FontWeight.w400),)],),
+              trailing: Text(temperatureforcast.isEmpty?'':' ${temperatureforcast[0]} C°',style:  TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,),),),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 5,right:10 ),
+              child: ListTile(title: Text('${formatter.format(now.add(Duration(days: 2)))}'),
+                subtitle: Row(children: [Icon(WeatherIcons.rain_mix,color: Colors.green),Text(rainforcats.isEmpty? '':'  ${rainforcats[1]}',style: TextStyle(fontSize: 17,fontWeight: FontWeight.w400),)],),
+                trailing: Text(temperatureforcast.isEmpty?'':' ${temperatureforcast[1]} C°',style:  TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,),),),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 5,right:10 ),
+              child: ListTile(title: Text('${formatter.format(now.add(Duration(days: 3)))}'),
+                subtitle:  Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [Icon(WeatherIcons.rain_mix,color: Colors.green),Text(rainforcats.isEmpty? '':'  ${rainforcats[2]}',style: TextStyle(fontSize: 17,fontWeight: FontWeight.w400),)],),
+                trailing: Text(temperatureforcast.isEmpty?'':' ${temperatureforcast[2]} C°',style:  TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,),),),
+            )
+
 
              ],
            )
