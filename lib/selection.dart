@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Company/companylogin.dart';
 import 'Dealer/dealerlogin.dart';
 import 'Farmer/farmerlogin.dart';
+import 'Farmer/location.dart';
 
 
 
@@ -18,8 +19,6 @@ class Selection  extends StatefulWidget {
 }
 
 class _SelectionState extends State<Selection> {
-  TextEditingController liscense_no=new TextEditingController();
-  TextEditingController password=new TextEditingController();
 
   @override
   Widget build(BuildContext context) {

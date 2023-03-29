@@ -14,6 +14,9 @@ import 'package:proste_bezier_curve/utils/type/index.dart';
 import '../selection.dart';
 import '../sharedpref_validations.dart';
 import 'farmerregister.dart';
+import 'location.dart';
+
+
 
 class farmerlogin extends StatefulWidget{
   @override
@@ -25,6 +28,9 @@ class _farmerloginState extends State<farmerlogin> {
   TextEditingController password=new TextEditingController();
   GoogleSignInHelper _googleSignInHelper = GoogleSignInHelper();
   var  hidepassword=true,s,s1,Email_Error,Password_Error,Password_Error_color=Colors.grey,Email_Error_color=Colors.grey,is_valid_email;
+
+
+
   @override
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;

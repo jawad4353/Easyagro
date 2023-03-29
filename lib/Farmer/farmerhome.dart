@@ -10,13 +10,17 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 import 'package:image_picker/image_picker.dart';
+import 'package:location/location.dart';
 import 'package:proste_bezier_curve/proste_bezier_curve.dart';
 import 'package:proste_bezier_curve/utils/type/index.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather_icons/weather_icons.dart';
 
 import '../Database/database.dart';
+import '../selection.dart';
 import '../sharedpref_validations.dart';
 import 'package:http/http.dart' as http;
 
@@ -25,9 +29,7 @@ import 'calculator.dart';
 import 'diseases.dart';
 import 'package:intl/intl.dart';
 
-
-
-
+import 'location.dart';
 
 
 
@@ -44,6 +46,14 @@ class _farmerhomeState extends State<farmerhome> {
   final pages=[farmerhome1(),calculator(),watercalculator(),disease()];
 
   int myindex=0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +101,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final String apiKey = '9bf76e4fddf97812e3d9dae079b63770';
-  final String apiUrl = 'https://api.openweathermap.org/data/2.5/weather?q=Lahore&appid=';
+
 
   String city = '',description = '',temperature = '',pressure='',wind='',humidity='',winddegree='',feelslike='',
   precipitation='',rainchances='',date='';
@@ -106,6 +116,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
   File? _image;
   final picker = ImagePicker();
+  var s;
 
   Future getImageAndUploadToFirebase(photoname) async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -122,10 +133,6 @@ class _farmerhomeState1 extends State<farmerhome1> {
        print('here');
        await FirebaseFirestore.instance
            .collection('farmers').doc(photoname).update({'image': Url_profile_photo});
-
-
-
-
      } else {
        print('No image selected.');
      }
@@ -135,10 +142,40 @@ class _farmerhomeState1 extends State<farmerhome1> {
    }
   }
 
-  Future<void> getWeather() async {
-    var response = await http.get(Uri.parse(apiUrl + apiKey));
-    var result = jsonDecode(response.body);
+
+  Future<void> getWeather(cityi) async {
+
+    s=await fetchLocation();
+    if(s==''){
+      cityi='Lahore';
+    }
+    s=s.split(',');
+    print(s);
+    final String apiUrl_city = 'https://api.openweathermap.org/data/2.5/weather?q=Lahore&appid=';
+    var response,result;
+    if(cityi=='no'){
+       try{
+         final url_long_lat = 'https://api.openweathermap.org/data/2.5/weather?lat=${s[0]}&lon=${s[1]}&units=metric&appid=';
+         response = await http.get(Uri.parse(url_long_lat + apiKey));
+         result = jsonDecode(response.body);
+       }
+       catch(e){
+         print(e);
+       }
+    }
+    else{
+       try{
+         response = await http.get(Uri.parse(apiUrl_city+ apiKey));
+         result = jsonDecode(response.body);
+       }
+       catch(e){
+         print(e);
+       }
+    }
+
+
     print(result);
+
     setState(() {
        sunrise = DateTime.fromMillisecondsSinceEpoch(
           result['sys']['sunrise'] * 1000);
@@ -194,17 +231,17 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
   @override
   void initState() {
-
     Get_current_farmer_details();
-    getWeather();
+    getWeather('no');
     super.initState();
-
   }
+
 
 
   @override
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
+
     return Scaffold(
         key: _scaffoldKey,
 
@@ -374,7 +411,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
          ],
        ),
-         Text('  Weather Now',style: TextStyle(fontSize: 27,fontWeight: FontWeight.bold),)
+         Text('  Weather Now ',style: TextStyle(fontSize: 27,fontWeight: FontWeight.bold),)
            ,
 
 
