@@ -10,6 +10,7 @@ import 'package:easyagro/splash.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:image_picker/image_picker.dart';
@@ -106,7 +107,9 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
   String city = '',description = '',temperature = '',pressure='',wind='',humidity='',winddegree='',feelslike='',
   precipitation='',rainchances='',date='',visibility='';
-  var sunrise,sunset,email,rainforcats=[],temperatureforcast=[];
+  var sunrise,sunset,email,rainforcats=[],temperatureforcast=[],Show_search=false;
+
+  TextEditingController Search_city_controller = new TextEditingController();
 
  late IconData iconData= WeatherIcons.na ;
   final DateTime now = DateTime.now();
@@ -152,7 +155,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
     }
     s=s.split(',');
     print(s);
-    final String apiUrl_city = 'https://api.openweathermap.org/data/2.5/weather?q=Lahore&appid=';
+    final String apiUrl_city = 'https://api.openweathermap.org/data/2.5/weather?q=${Search_city_controller.text}&appid=';
     var response,result;
     if(cityi=='no'){
        try{
@@ -190,25 +193,33 @@ class _farmerhomeState1 extends State<farmerhome1> {
       rainchances='${result['clouds']['all']}'+' %';
       visibility='${result['visibility']/1000} KM';
       description = result['weather'][0]['description'];
-      temperature = (result['main']['temp'] ).toStringAsFixed(1) + ' °C';
+      temperature = ((result['main']['temp'] )-273.15).toStringAsFixed(1) + ' °C';
       pressure='${result['main']['pressure']}'+' N/m';
       humidity='${result['main']['humidity']}'+' %';
       wind='${result['wind']['speed']}'+' km/s';
       winddegree='${result['wind']['deg']}'+' deg';
-      feelslike=(result['main']['feels_like'] ).toStringAsFixed(1) + ' °C';
+      feelslike=((result['main']['feels_like'] )-273.15).toStringAsFixed(1) + ' °C';
       precipitation='${30+Random().nextInt(70)} %';
        iconData=_getWeatherIcon(int.parse('${result['weather'][0]['id']}'));
 
-       rainforcats.add('${20+Random().nextInt(60)} %');
-       rainforcats.add('${20+Random().nextInt(60)} %');
-       rainforcats.add('${20+Random().nextInt(60)} %');
-       rainforcats.add('${20+Random().nextInt(60)} %');
+       var rainf=int.parse('${result['clouds']['all']}');
+       rainf==0 ? rainf=7:rainf=rainf;
+       rainf>90 ? rainf=89:rainf=rainf;
 
-       var d=(result['main']['temp']).toInt();
-       temperatureforcast.add('${((d-5)+Random().nextInt(d-(d-5)))}');
-       temperatureforcast.add('${((d-5)+Random().nextInt(d-(d-5)))}');
-       temperatureforcast.add('${((d-5)+Random().nextInt(d-(d-5)))}');
-       temperatureforcast.add('${((d-5)+Random().nextInt(d-(d-5)))}');
+       rainforcats.clear();
+       rainforcats.add('${(rainf-3)+Random().nextInt(rainf)} %');
+       rainforcats.add('${(rainf-3)+Random().nextInt(rainf)} %');
+       rainforcats.add('${(rainf-2)+Random().nextInt(rainf)} %');
+       rainforcats.add('${(rainf-4)+Random().nextInt(rainf)} %');
+
+       var d=((result['main']['feels_like'] )-273.15).toInt();
+       d<5 ? d=7 :d=d;
+       temperatureforcast.clear();
+       temperatureforcast.add('${((d-3)+Random().nextInt(d-(d-5)))}');
+       temperatureforcast.add('${((d+3)+Random().nextInt(d-(d-5)))}');
+       temperatureforcast.add('${((d-3)+Random().nextInt(d-(d-5)))}');
+       temperatureforcast.add('${((d+3)+Random().nextInt(d-(d-5)))}');
+
 
     });
   }
@@ -398,10 +409,44 @@ class _farmerhomeState1 extends State<farmerhome1> {
                ),
              ],),
            ),
+
+
+           if(!Show_search)
            Positioned(
                right: 0,
                top: 0,
-               child: IconButton(onPressed: (){}, icon: Icon(Icons.search,color: Colors.white,))),
+               child: IconButton(onPressed: (){
+                 setState(() {
+                   Show_search=true;
+                 });
+               }, icon: Icon(Icons.search,color: Colors.white,))),
+           if(Show_search)
+           Positioned(
+               right: 50,
+               left: 50,
+               top: 0,
+               child: Container(
+                   width: size.width*0.4,
+                   height: 30,
+                   child: TextField(
+                     controller: Search_city_controller,
+                     inputFormatters: [  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),],
+                     style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.w500),
+
+                     decoration: InputDecoration(
+                      suffixIcon: IconButton(onPressed: (){
+                        getWeather('');
+                        setState(() {
+                          Show_search=false;
+                        });
+                      },icon: Icon(Icons.search,color: Colors.white,size: 27,),),
+                       hintText: 'Search City',
+                       hintStyle:TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.w500)
+                     ),
+                   ))),
+
+
+
            Positioned(
              right: 10,
              top: 30,
