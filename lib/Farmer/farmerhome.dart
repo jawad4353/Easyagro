@@ -190,20 +190,22 @@ class _farmerhomeState1 extends State<farmerhome1> {
       rainchances='${result['clouds']['all']}'+' %';
       visibility='${result['visibility']/1000} KM';
       description = result['weather'][0]['description'];
-      temperature = (result['main']['temp'] - 273.15).toStringAsFixed(1) + ' °C';
+      temperature = (result['main']['temp'] ).toStringAsFixed(1) + ' °C';
       pressure='${result['main']['pressure']}'+' N/m';
       humidity='${result['main']['humidity']}'+' %';
       wind='${result['wind']['speed']}'+' km/s';
       winddegree='${result['wind']['deg']}'+' deg';
-      feelslike=(result['main']['feels_like'] - 273.15).toStringAsFixed(1) + ' °C';
+      feelslike=(result['main']['feels_like'] ).toStringAsFixed(1) + ' °C';
       precipitation='${30+Random().nextInt(70)} %';
        iconData=_getWeatherIcon(int.parse('${result['weather'][0]['id']}'));
 
        rainforcats.add('${20+Random().nextInt(60)} %');
        rainforcats.add('${20+Random().nextInt(60)} %');
        rainforcats.add('${20+Random().nextInt(60)} %');
+       rainforcats.add('${20+Random().nextInt(60)} %');
 
-       var d=(result['main']['temp']-273).toInt();
+       var d=(result['main']['temp']).toInt();
+       temperatureforcast.add('${((d-5)+Random().nextInt(d-(d-5)))}');
        temperatureforcast.add('${((d-5)+Random().nextInt(d-(d-5)))}');
        temperatureforcast.add('${((d-5)+Random().nextInt(d-(d-5)))}');
        temperatureforcast.add('${((d-5)+Random().nextInt(d-(d-5)))}');
@@ -569,7 +571,15 @@ class _farmerhomeState1 extends State<farmerhome1> {
                   mainAxisSize: MainAxisSize.min,
                   children: [Icon(WeatherIcons.rain_mix,color: Colors.green),Text(rainforcats.isEmpty? '':'  ${rainforcats[2]}',style: TextStyle(fontSize: 17,fontWeight: FontWeight.w400),)],),
                 trailing: Text(temperatureforcast.isEmpty?'':' ${temperatureforcast[2]} C°',style:  TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,),),),
-            )
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 5,right:10 ),
+              child: ListTile(title: Text('${formatter.format(now.add(Duration(days: 4)))}'),
+                subtitle:  Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [Icon(WeatherIcons.rain_mix,color: Colors.green),Text(rainforcats.isEmpty? '':'  ${rainforcats[3]}',style: TextStyle(fontSize: 17,fontWeight: FontWeight.w400),)],),
+                trailing: Text(temperatureforcast.isEmpty?'':' ${temperatureforcast[3]} C°',style:  TextStyle(fontSize: 18,color: Colors.black,fontWeight: FontWeight.w600,),),),
+            ),
 
 
              ],
