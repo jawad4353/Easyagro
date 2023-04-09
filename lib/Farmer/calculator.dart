@@ -336,16 +336,6 @@ class _calculatorState extends State<calculator> {
 
 
 
-class watercalculator extends StatelessWidget{
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('wat'
-          'er calculator')),
-    );
-  }
-
-}
 
 
 

@@ -45,7 +45,7 @@ class farmerhome extends StatefulWidget{
 }
 
 class _farmerhomeState extends State<farmerhome> {
-  final pages=[farmerhome1(),calculator(),watercalculator(),disease()];
+  final pages=[farmerhome1(),calculator(),diseases()];
 
   int myindex=0;
 
@@ -80,7 +80,6 @@ class _farmerhomeState extends State<farmerhome> {
    items: [
        BottomNavigationBarItem(icon: Icon(Icons.home),label: 'Home'),
        BottomNavigationBarItem(icon: Icon(Icons.calculate),label: 'Fertilizers Calculator'),
-       BottomNavigationBarItem(icon: Icon(Icons.calculate),label: 'Water Calculator'),
        BottomNavigationBarItem(icon: Icon(Icons.coronavirus),label: 'Diseases'),
    ],
  ),
@@ -148,7 +147,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
 
 
   Future<void> getWeather(cityi) async {
-
+    var d,rainf;
     s=await fetchLocation();
     if(s==''){
       cityi='Lahore';
@@ -193,16 +192,25 @@ class _farmerhomeState1 extends State<farmerhome1> {
       rainchances='${result['clouds']['all']}'+' %';
       visibility='${result['visibility']/1000} KM';
       description = result['weather'][0]['description'];
-      temperature = ((result['main']['temp'] )-273.15).toStringAsFixed(1) + ' °C';
+
+
       pressure='${result['main']['pressure']}'+' N/m';
       humidity='${result['main']['humidity']}'+' %';
       wind='${result['wind']['speed']}'+' km/s';
       winddegree='${result['wind']['deg']}'+' deg';
-      feelslike=((result['main']['feels_like'] )-273.15).toStringAsFixed(1) + ' °C';
+       temperature = ((result['main']['temp'] )).toStringAsFixed(1) + ' °C';
+      feelslike=((result['main']['feels_like'] )).toStringAsFixed(1) + ' °C';
       precipitation='${30+Random().nextInt(70)} %';
        iconData=_getWeatherIcon(int.parse('${result['weather'][0]['id']}'));
+       d=(result['main']['feels_like']).toInt();
 
-       var rainf=int.parse('${result['clouds']['all']}');
+       if((result['main']['feels_like'] ).toInt()>100){
+         temperature = ((result['main']['temp'] )-273.15).toStringAsFixed(1) + ' °C';
+         feelslike=((result['main']['feels_like']-273.15 )).toStringAsFixed(1) + ' °C';
+         d=(result['main']['feels_like']-273.15 ).toInt();
+       }
+
+       rainf=int.parse('${result['clouds']['all']}');
        rainf==0 ? rainf=7:rainf=rainf;
        rainf>90 ? rainf=89:rainf=rainf;
 
@@ -212,7 +220,7 @@ class _farmerhomeState1 extends State<farmerhome1> {
        rainforcats.add('${(rainf-2)+Random().nextInt(rainf)} %');
        rainforcats.add('${(rainf-4)+Random().nextInt(rainf)} %');
 
-       var d=((result['main']['feels_like'] )-273.15).toInt();
+
        d<5 ? d=7 :d=d;
        temperatureforcast.clear();
        temperatureforcast.add('${((d-3)+Random().nextInt(d-(d-5)))}');

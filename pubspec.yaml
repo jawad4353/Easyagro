@@ -59,6 +59,7 @@ dependencies:
   weather_icons: ^3.0.0
   google_sign_in: ^6.0.2
   location: ^4.4.0
+  youtube_player_flutter: ^8.1.2
 
 
 
