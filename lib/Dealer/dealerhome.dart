@@ -26,7 +26,7 @@ class dealerhome extends StatefulWidget{
 }
 
 class _dealerhomeState extends State<dealerhome> {
-  var user_data=[], index_current=0;
+  var user_data=[], index_current=0,license;
   TextEditingController search_controller=new TextEditingController();
   final CollectionReference companyCollection =
   FirebaseFirestore.instance.collection('company');
@@ -102,7 +102,41 @@ class _dealerhomeState extends State<dealerhome> {
                 UserAccountsDrawerHeader(decoration: BoxDecoration(
                     color: Colors.green.shade700
                 ),accountName: user_data.isEmpty ?Text(''):Text('${user_data[0]}'), accountEmail: user_data.isEmpty ?Text(''):Text('${user_data[1]}'),
-                  currentAccountPicture: Icon(Icons.face,color: Colors.white,size: 65,),
+                  currentAccountPicture: StreamBuilder(
+                    stream: FirebaseFirestore.instance.collection('dealer').where('license',isEqualTo: '$license').snapshots(),
+                    builder: (context,snap){
+                      if(!snap.hasData){
+                        show_progress_indicator();
+                      }
+                      if(snap.hasError || snap.data==null){
+                        show_progress_indicator();
+                      }
+
+                      var data;
+
+                      try{
+                        data=snap.data!.docs.single;
+                      }
+                      catch(e){}
+
+                      return InkWell(
+                        onTap: (){
+                          Navigator.push(context, Myroute(ImageScreen(imageUrl:data.data()['profileimage'],)));
+                        },
+                        child: Container(
+                          height: 70,
+                          clipBehavior: Clip.antiAlias,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                          ),
+                          child:snap.data==null? Icon(Icons.face,color: Colors.white,size: 65,):
+                          Image.network(data.data()['profileimage'],fit: BoxFit.fill,),
+                        ),
+                      );
+
+                    },
+                  )
+
                 ),
 
 
@@ -264,7 +298,7 @@ class _dealerhomeState extends State<dealerhome> {
   }
 
   Get_current_dealer_details() async {
-    var license,a;
+    var a;
     SharedPreferences pref =await SharedPreferences.getInstance();
     license=await pref.getString("email");
 

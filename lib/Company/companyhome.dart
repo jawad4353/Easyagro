@@ -10,6 +10,7 @@ import 'package:easyagro/Company/updateaccount.dart';
 import 'package:easyagro/Database/database.dart';
 import 'package:easyagro/Farmer/diseases.dart';
 import 'package:easyagro/splash.dart';
+import 'package:easyagro/supportingwidgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,7 +40,7 @@ class _companyhomeState extends State<companyhome> {
       images_list=['images/products.png','images/dealer.png','images/orders.png','images/add.png',
         'images/delivery.png','images/policy.png','images/revenue.png','images/disease.png','images/complain.png','images/logout.png'];
 
-   var index_curent=0,searched_section=[],searched_images=[];
+   var index_curent=0,searched_section=[],searched_images=[],license;
 
    TextEditingController search_controller=new TextEditingController();
 
@@ -76,7 +77,40 @@ class _companyhomeState extends State<companyhome> {
                  UserAccountsDrawerHeader(decoration: BoxDecoration(
                      color: Colors.green.shade700
                  ),accountName: user_data.isEmpty ? Text(''):Text('${user_data[0]}'.toUpperCase()), accountEmail:user_data.isEmpty ? Text(''):Text('${user_data[1]}'),
-                   currentAccountPicture:Icon(Icons.supervised_user_circle,size: 76,color: Colors.white,)
+                   currentAccountPicture:  StreamBuilder(
+                     stream: FirebaseFirestore.instance.collection('company').where('license',isEqualTo: '$license').snapshots(),
+                     builder: (context,snap){
+                       if(!snap.hasData){
+                         show_progress_indicator();
+                       }
+                       if(snap.hasError || snap.data==null){
+                         show_progress_indicator();
+                       }
+
+                       var data;
+
+                       try{
+                         data=snap.data!.docs.single;
+                       }
+                       catch(e){}
+
+                       return InkWell(
+                         onTap: (){
+                             Navigator.push(context, Myroute(ImageScreen(imageUrl:data.data()['profileimage'],)));
+                         },
+                         child: Container(
+                           height: 70,
+                           clipBehavior: Clip.antiAlias,
+                           decoration: BoxDecoration(
+                             shape: BoxShape.circle,
+                           ),
+                           child:snap.data==null? Icon(Icons.face,color: Colors.white,size: 65,):
+                           Image.network(data.data()['profileimage'],fit: BoxFit.fill,),
+                         ),
+                       );
+
+                     },
+                   )
 
                  ),
 
@@ -235,7 +269,7 @@ class _companyhomeState extends State<companyhome> {
                      return;
                    }
                    if(sections_list[index]=='Complaints'){
-                     Navigator.push(context, Myroute(Company_complaints()));
+                     Navigator.push(context, Myroute(Company_complaints(data: user_data,)));
                      return;
                    }
                    if(sections_list[index]=='Bulk Deals'){
@@ -339,7 +373,7 @@ class _companyhomeState extends State<companyhome> {
   }
 
   Get_current_company_details() async {
-    var license,a;
+    var a;
     SharedPreferences pref =await SharedPreferences.getInstance();
     license=await pref.getString("email");
 

@@ -2,12 +2,16 @@
 
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:select_form_field/select_form_field.dart';
 
 
 class Company_complaints extends StatefulWidget {
+  var data;
+  Company_complaints({required this.data});
   @override
   State<Company_complaints> createState() => _Company_complaintsState();
 }
@@ -47,9 +51,10 @@ class _Company_complaintsState extends State<Company_complaints> {
      padding:  EdgeInsets.only(left: 10,right: 10),
      child: ListView(
        children: [
-         SizedBox(height: 10.0),
+         SizedBox(height: 20.0),
          TextFormField(
            controller: _subjectController,
+           keyboardType: TextInputType.name,
            decoration: InputDecoration(
              labelText: 'Subject',
              border: OutlineInputBorder(),
@@ -79,13 +84,45 @@ class _Company_complaintsState extends State<Company_complaints> {
          SizedBox(height: 10.0),
          TextFormField(
            controller: _complainController,
+           keyboardType: TextInputType.name,
            maxLines: 17,
            decoration: InputDecoration(
              labelText: 'Complain',
              border: OutlineInputBorder(),
            ),
          ),
-         ElevatedButton(onPressed: (){}, child: Text('Submit'))
+         ElevatedButton(onPressed: () async {
+           if(_subjectController.text.isEmpty){
+             EasyLoading.showInfo('Subject required !');
+             return;
+           }
+           if(Complain_type_control.text.isEmpty){
+             EasyLoading.showInfo('Select Complain about');
+             return;
+           }
+           if(_complainController.text.replaceAll(' ', '').length<30){
+             EasyLoading.showInfo('Write atleast 20 Words');
+             return;
+           }
+          try{
+             EasyLoading.show(status: 'Submitting');
+            await FirebaseFirestore.instance.collection('complains').add({
+              'subject':_subjectController.text,
+              'about':Complain_type_control.text,
+              'complain':_complainController.text,
+              'from':'Company',
+              'license':widget.data[4],
+              'date':DateTime.now()
+            });
+            EasyLoading.showSuccess('Submitted');
+          }
+           catch(e){
+             EasyLoading.showError('Not Submitted');
+           }
+           _subjectController.text='';
+           Complain_type_control.text='';
+
+         }, child: Text('Submit'))
      ],
      ),
    ) ,
