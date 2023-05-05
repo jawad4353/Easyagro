@@ -22,7 +22,7 @@ class database {
   Future<bool> Register_Farmer(email,password,name) async {
     try{
       var s= FirebaseFirestore.instance.collection('farmers').doc(email);
-      s.set({'email':"${email}",'password':'${password}','name':'${name}','image':''});
+      s.set({'email':"${email}",'password':'${password}','name':'${name}','image':'','date':'${DateTime.now()}'});
       EasyLoading.showSuccess('Account created Sucessfully  ');
       return true;
     }
@@ -59,9 +59,9 @@ class database {
       FirebaseFirestore.instance.collection('company').add({'email':"${email}",'password':'${password}','name':'${name}',
         'license':'${license_no}', 'address':'${address}','phone':'${phone}',
         'profileimage':"${profile_url}",
-        'licenseimage':'${license_url}','accountstatus':'unverified'
+        'licenseimage':'${license_url}','accountstatus':'unverified','date':'${DateTime.now()}'
       });
-      EasyLoading.showSuccess('Account created Sucessfully  ');
+      EasyLoading.showSuccess('We have recieved your request . We will review it and will let you know via Email within 3 days . ');
       return true;
     }
     catch(e){
@@ -78,9 +78,9 @@ class database {
 
       FirebaseFirestore.instance.collection('dealer').add({'email':"${email}",'password':'${password}','name':'${name}',
         'license':'${license_no}', 'address':'${address}','phone':'${phone}','profileimage':"${profile_url}",
-      'licenseimage':'${license_url}','accountstatus':'unverified'
+      'licenseimage':'${license_url}','accountstatus':'unverified','date':'${DateTime.now()}'
       });
-      EasyLoading.showSuccess('Account created Sucessfully  ');
+      EasyLoading.showSuccess('We have recieved your request . We will review it and will let you know via Email within 3 days . ');
       return true;
     }
     catch(e){
@@ -109,7 +109,7 @@ class database {
 
   Login_company(license,password) async {
     var s=false;
-    await FirebaseFirestore.instance.collection("company").get().then((querySnapshot) {
+    await FirebaseFirestore.instance.collection("company").where('accountstatus',isEqualTo: 'verified').get().then((querySnapshot) {
       querySnapshot.docs.forEach((result) {
         if(result.data()['license']==license && result.data()['password']==password ){
           s=true;
@@ -121,7 +121,7 @@ class database {
 
   Login_dealer(license,password) async {
     var s=false;
-    await FirebaseFirestore.instance.collection("dealer").get().then((querySnapshot) {
+    await FirebaseFirestore.instance.collection("dealer").where('accountstatus',isEqualTo: 'verified').get().then((querySnapshot) {
       querySnapshot.docs.forEach((result) {
         if(result.data()['license']==license && result.data()['password']==password ){
           s=true;

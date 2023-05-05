@@ -8,6 +8,7 @@ import 'package:easyagro/Company/complains.dart';
 import 'package:easyagro/Company/products.dart';
 import 'package:easyagro/Company/updateaccount.dart';
 import 'package:easyagro/Database/database.dart';
+import 'package:easyagro/Farmer/diseases.dart';
 import 'package:easyagro/splash.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ class companyhome extends StatefulWidget{
 
 class _companyhomeState extends State<companyhome> {
   var user_data=[],sections_list=['Products','Dealers','Orders','Add new','Delivered','Bulk Deals',
-    'Revenues','New Disease','Complaints','Logout'],
+    'Revenues','Diseases','Complaints','Logout'],
       images_list=['images/products.png','images/dealer.png','images/orders.png','images/add.png',
         'images/delivery.png','images/policy.png','images/revenue.png','images/disease.png','images/complain.png','images/logout.png'];
 
@@ -249,6 +250,11 @@ class _companyhomeState extends State<companyhome> {
                    }
                    if(sections_list[index]=='Dealers'){
                      Navigator.push(context, Myroute(Dealerscompanyside (companylicense: user_data[4],)));
+                     return;
+
+                   }
+                   if(sections_list[index]=='Diseases'){
+                     Navigator.push(context, Myroute(diseases()));
                      return;
 
                    }
