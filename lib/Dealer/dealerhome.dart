@@ -18,6 +18,7 @@ import '../Database/database.dart';
 import '../sharedpref_validations.dart';
 import '../splash.dart';
 import './Productsdealer.dart';
+import 'complaintsdealer.dart';
 import 'dealerorders.dart';
 
 class dealerhome extends StatefulWidget{
@@ -40,10 +41,7 @@ class _dealerhomeState extends State<dealerhome> {
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
     return Scaffold(
-
       backgroundColor: Colors.black12,
-
-
       appBar: AppBar(
         elevation: 0,
         title: Container(
@@ -140,29 +138,30 @@ class _dealerhomeState extends State<dealerhome> {
                 ),
 
 
-                Row(children: [
-                  TextButton.icon(style: ButtonStyle(
-                      overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
-                  ),onPressed: (){
 
-                  },icon: Icon(Icons.supervised_user_circle,color: Colors.green.shade700,),label: Text('About Us',style: TextStyle(color: Colors.black,fontSize: 16),),),
 
-                ],),
-
-                Row(children: [
-                  TextButton.icon(style: ButtonStyle(
-                      overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
-                  ),onPressed: (){
-
-                  },icon: Icon(Icons.contact_page,color: Colors.green.shade700,),label: Text('Contact Us',style: TextStyle(color: Colors.black,fontSize: 16),),),
-
-                ],),
                 Row(children: [
                   TextButton.icon(style: ButtonStyle(
                       overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
                   ),onPressed: (){
                   Navigator.push(context, Myroute(OrdersScreen(dealerlicense:user_data[4])));
                   },icon: Icon(Icons.favorite_border,color: Colors.green.shade700,),label: Text('Orders',style: TextStyle(color: Colors.black,fontSize: 16),),),
+
+                ],),
+                Row(children: [
+                  TextButton.icon(style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
+                  ),onPressed: (){
+                   Navigator.push(context, Myroute( Dealer_Complains(data:user_data)));
+                  },icon: Icon(Icons.report,color: Colors.green.shade700,),label: Text('Complains',style: TextStyle(color: Colors.black,fontSize: 16),),),
+
+                ],),
+                Row(children: [
+                  TextButton.icon(style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.resolveWith((states) => Colors.transparent)
+                  ),onPressed: (){
+
+                  },icon: Icon(Icons.approval,color: Colors.green.shade700,),label: Text('About Us',style: TextStyle(color: Colors.black,fontSize: 16),),),
 
                 ],),
 

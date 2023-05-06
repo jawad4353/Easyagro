@@ -343,3 +343,11 @@ String getUniqueorderID() {
   int randomInt = random.nextInt(100000);
   return "ORDER-$uniqueID-$randomInt";
 }
+
+String getUnique_ComplainID() {
+  var uuid = Uuid();
+  var random = Random();
+  String uniqueID = uuid.v4();
+  int randomInt = random.nextInt(100000);
+  return "Complain-$uniqueID-$randomInt";
+}
