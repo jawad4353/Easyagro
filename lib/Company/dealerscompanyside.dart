@@ -172,6 +172,7 @@ class _ViewdealerState extends State<Viewdealer> {
      actions: [
        IconButton(onPressed: (){
          Navigator.push(context, Myroute(ChatScreen(companylicense: widget.companylicense,dealerlicense: widget.dealer_license,name: widget.name,)));
+
        }, icon: Icon(Icons.chat))
      ],),
      body: StreamBuilder(
