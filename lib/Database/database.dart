@@ -53,13 +53,14 @@ class database {
 
 
 
-  Future<bool> Register_company(name,license_no,address,email,phone,password,profile_url,license_url) async {
+  Future<bool> Register_company(name,license_no,address,email,phone,password,code,profile_url,license_url) async {
     try{
 
       FirebaseFirestore.instance.collection('company').add({'email':"${email}",'password':'${password}','name':'${name}',
         'license':'${license_no}', 'address':'${address}','phone':'${phone}',
         'profileimage':"${profile_url}",
-        'licenseimage':'${license_url}','accountstatus':'unverified','date':'${DateTime.now()}'
+        'licenseimage':'${license_url}','accountstatus':'unverified','date':'${DateTime.now()}',
+        'countrycode':code,
       });
       EasyLoading.showSuccess('We have recieved your request . We will review it and will let you know via Email within 3 days . ');
       return true;

@@ -30,11 +30,6 @@ class _OTP_screenState extends State<OTP_screen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 30),(){
-      setState(() {
-        OTP_button_disabled=true;
-      });
-    });
   }
   @override
   Widget build(BuildContext context) {
@@ -148,7 +143,7 @@ class _OTP_screenState extends State<OTP_screen> {
                               return;
                             }
                             if(widget.OTP==otp_controller.text){
-                              bool isregistered= await new database().Register_company(widget.Data[0],widget.Data[1],widget.Data[2], widget.Data[3], widget.Data[4], widget.Data[5],widget.Data[6],widget.Data[7]);
+                              bool isregistered= await new database().Register_company(widget.Data[0],widget.Data[1],widget.Data[2], widget.Data[3], widget.Data[4], widget.Data[5],widget.Data[6],widget.Data[7],widget.Data[8]);
                               if(isregistered){
                                 Navigator.pushReplacement(context, Myroute(companylogin()));
                               }
@@ -193,22 +188,21 @@ class _OTP_screenState extends State<OTP_screen> {
                               querySnapshot.docs.forEach((result) {
                                 if(result.data()['license']== widget.Data[0] ){
                                   FirebaseFirestore.instance.collection('company').doc(result.id).update(
-                                      {'email':"${widget.Data[2]}",'password':'${widget.Data[4]}','name':'${widget.Data[1]}',
-                                        'address':'${widget.Data[5]}','phone':'${widget.Data[3]}'
+                                      {'password':'${widget.Data[4]}','name':'${widget.Data[1]}',
+                                        'address':'${widget.Data[5]}','phone':'${widget.Data[3]}','countrycode':'${widget.Data[6]}'
                                       });
                                 }
 
                               });
                             });
-                           print(widget.Data[6]);
-                            print(widget.Data[2]);
-                            if(widget.Data[6]!=widget.Data[2]){
-                              new database().updateImageName('company_licenses/${widget.Data[6]}','company_licenses/${widget.Data[2]}');
-                            }
-
+                           // print(widget.Data[6]);
+                           //  print(widget.Data[2]);
+                           //  if(widget.Data[6]!=widget.Data[2]){
+                           //    new database().updateImageName('company_licenses/${widget.Data[6]}','company_licenses/${widget.Data[2]}');
+                           //  }
                             EasyLoading.showSuccess('Updated');
-                            Set_Shared_Preference('company',widget.Data[2],widget.Data[4]);
-                            Navigator.pushReplacement(context, Myroute(companyhome()));
+                            Set_Shared_Preference('company',widget.Data[0],widget.Data[4]);
+                            Navigator.pushReplacement(context, Myroute(companyhome1()));
                             return;
                           }
                           else{

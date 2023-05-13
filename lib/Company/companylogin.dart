@@ -198,7 +198,7 @@ class _companyloginState extends State<companylogin> {
 
                            Set_Shared_Preference('company', license_controller.text, password_controller.text);
                            EasyLoading.showSuccess('Login Successful');
-                           Navigator.pushReplacement(context, Myroute(companyhome()));
+                           Navigator.pushReplacement(context, Myroute(companyhome1()));
 
                           }, child: Text('Login'),
                               style:ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green.shade700),

@@ -392,8 +392,9 @@ class _companyresgisterState extends State<companyresgister> {
                               data.add(license_controller.text);
                               data.add(address_controller.text);
                               data.add(email_controller.text);
-                              data.add(countrycode+phone_controller.text);
+                              data.add(phone_controller.text);
                               data.add(password_controller.text);
+                              data.add(countrycode);
                               OTP=Generate_OTP();
                               f1=Name_Validation(company_controller.text.replaceAll(' ', ''));
                               f2=Liscense_Validate(license_controller.text);

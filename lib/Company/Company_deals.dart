@@ -8,7 +8,7 @@ class Company_deals extends StatelessWidget{
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
    return Scaffold(
-     appBar: AppBar(backgroundColor: Colors.green.shade700,),
+     appBar: AppBar(title:Text('Deals'),backgroundColor: Colors.green.shade700,),
    );
   }
   

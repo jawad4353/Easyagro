@@ -32,7 +32,7 @@ class _SplashscreenState extends State<Splashscreen> {
       return;
     }
     if(usertype=='company'){
-      Timer(Duration(seconds: 1),()=>Navigator.pushReplacement(context, Myroute(companyhome())));
+      Timer(Duration(seconds: 1),()=>Navigator.pushReplacement(context, Myroute(companyhome1())));
       return;
     }
     if(usertype=='dealer'){

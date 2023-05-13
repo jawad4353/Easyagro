@@ -28,6 +28,46 @@ import 'addproducts.dart';
 import 'companyorders.dart';
 import 'dealerscompanyside.dart';
 import 'chatscreen.dart';
+import 'displaychats_company.dart';
+
+
+class companyhome1 extends StatefulWidget{
+  @override
+  State<companyhome1> createState() => _companyhome1State();
+}
+
+class _companyhome1State extends State<companyhome1> {
+  int  index_curent=0;
+  var pages=[companyhome(),update_company_account(),displaychats_company()];
+  @override
+  Widget build(BuildContext context) {
+   return Scaffold(
+     body:pages[index_curent] ,
+     bottomNavigationBar: BottomNavigationBar(
+       backgroundColor: Colors.white,
+       currentIndex: index_curent,
+       onTap: (a){
+         setState(() {
+           index_curent=a;
+         });
+
+       },
+       selectedItemColor: Colors.green.shade700,
+       elevation: 0,
+       unselectedItemColor:Colors.black ,
+       items: [
+         BottomNavigationBarItem(icon:Icon(Icons.home,) ,label: 'Home'),
+         BottomNavigationBarItem(icon:Icon(Icons.supervised_user_circle),label: 'Account' ),
+         BottomNavigationBarItem(icon:Icon(Icons.sms,),label: 'Chat' ),
+       ],
+     ),
+
+   );
+  }
+}
+
+
+
 
 class companyhome extends StatefulWidget{
   @override
@@ -46,9 +86,16 @@ class _companyhomeState extends State<companyhome> {
 
   @override
   void initState() {
-    super.initState();
+
     Get_current_company_details();
+    super.initState();
   }
+  // @override
+  // void didChangeDependencies() {
+  //   // TODO: implement didChangeDependencies
+  //   super.didChangeDependencies();
+  //   Get_current_company_details();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -157,31 +204,6 @@ class _companyhomeState extends State<companyhome> {
              ),
 
        ),
-     ),
-
-     bottomNavigationBar: BottomNavigationBar(
-       backgroundColor: Colors.white,
-       currentIndex: index_curent,
-       onTap: (a){
-         setState(() {
-           index_curent=a;
-         });
-         if(a==1){
-           Navigator.push(context, Myroute(update_company_account(user_data: user_data,)));
-         }
-         if(a==2){
-           // Navigator.push(context, Myroute(ChatScreen()));
-         }
-
-       },
-       selectedItemColor: Colors.green.shade700,
-       elevation: 0,
-       unselectedItemColor:Colors.black ,
-       items: [
-         BottomNavigationBarItem(icon:Icon(Icons.home,) ,label: 'Home'),
-         BottomNavigationBarItem(icon:Icon(Icons.supervised_user_circle),label: 'Account' ),
-         BottomNavigationBarItem(icon:Icon(Icons.sms,),label: 'Chat' ),
-       ],
      ),
 
 
@@ -376,7 +398,8 @@ class _companyhomeState extends State<companyhome> {
     var a;
     SharedPreferences pref =await SharedPreferences.getInstance();
     license=await pref.getString("email");
-
+    print(license);
+     
     await FirebaseFirestore.instance.collection("company").get().then((querySnapshot) {
       querySnapshot.docs.forEach((result) {
         if(result.data()['license']==license){
@@ -387,6 +410,7 @@ class _companyhomeState extends State<companyhome> {
             user_data.add(result.data()['phone']);
             user_data.add(result.data()['license']);
             user_data.add(result.data()['address']);
+            user_data.add(result.data()['profileimage']);
 
           });
         }
@@ -394,8 +418,7 @@ class _companyhomeState extends State<companyhome> {
       });
     });
 
-    a=await new database().GetImage_Firebase('company_licenses',user_data[1]);
-    user_data.add(a);
+
 
 
   }
