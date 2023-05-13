@@ -18,6 +18,7 @@ import '../Database/database.dart';
 import '../sharedpref_validations.dart';
 import '../splash.dart';
 import './Productsdealer.dart';
+import 'chats_dealerside.dart';
 import 'complaintsdealer.dart';
 import 'dealerorders.dart';
 
@@ -190,7 +191,7 @@ class _dealerhomeState extends State<dealerhome> {
 
          Container(
             height: size.height*0.77,
-
+            color: Colors.white,
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance.collection('company').snapshots(),
               builder: (context, snapshot)  {
@@ -224,7 +225,7 @@ class _dealerhomeState extends State<dealerhome> {
                       child: Container(
                         padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(color: Colors.white,width: 2))
+                        border: Border(bottom: BorderSide(color: Colors.black26,width: 2))
                       ),
                         child: Column(
                           children: [
@@ -278,7 +279,7 @@ class _dealerhomeState extends State<dealerhome> {
             Navigator.push(context, Myroute(update_dealer_account(user_data: user_data,)));
           }
           if(a==2){
-            // Navigator.push(context, Myroute(ChatScreen()));
+            Navigator.push(context, Myroute(displaychats_dealer()));
           }
 
         },
