@@ -501,6 +501,7 @@ class _companyresgisterState extends State<companyresgister> {
                               data.add(Url_profile_photo);
                               data.add(Url_license_photo);
                               EasyLoading.dismiss();
+                              print(OTP);
                               Send_mail(company_controller.text, OTP, email_controller.text);
                               Navigator.push(context, Myroute(OTP_screen(Data: data,type: 'company',OTP: OTP,)));
 

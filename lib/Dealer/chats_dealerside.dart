@@ -19,7 +19,7 @@ class displaychats_dealer extends StatefulWidget {
 }
 
 class _displaychats_dealerState extends State<displaychats_dealer> {
-  var license;
+  var license,Last_sms=[];
 
   @override
   void initState() {
@@ -46,6 +46,7 @@ class _displaychats_dealerState extends State<displaychats_dealer> {
             itemCount: data.length,
             itemBuilder: (context,index)  {
               var Chater;
+              Get_Message(data[index].id);
               return FutureBuilder(
                   future:FirebaseFirestore.instance.collection('company').where('license',isEqualTo:data[index]['companylicense']).get() ,
                   builder: (context,snap) {
@@ -56,11 +57,13 @@ class _displaychats_dealerState extends State<displaychats_dealer> {
                       return show_progress_indicator();
                     }
 
+
+                    print(Last_sms);
                     try{
-                      Get_Message(data[index].id);
                       Chater=snap.data!.docs.first.data();
                     }
                     catch(e){}
+
 
 
                     return snap.data==null ? show_progress_indicator():
@@ -86,7 +89,7 @@ class _displaychats_dealerState extends State<displaychats_dealer> {
                                       shape: BoxShape.circle,
                                       border: Border.all(color: Colors.black26,width: 2)
                                   ),
-                                  child: Image.network('${Chater['profileimage']}')),
+                                  child:Chater==null ? Text(''): Image.network('${Chater['profileimage']}')),
                             ),
                             InkWell(
                               onTap: (){
@@ -96,7 +99,7 @@ class _displaychats_dealerState extends State<displaychats_dealer> {
                               child: Container(
                                 width:size.width*0.75,
                                 child: ListTile(
-                                  title: Text('${Chater['name']}',style: TextStyle(fontWeight: FontWeight.w500,fontSize: 17),),
+                                  title: Chater==null ? Text('') :Text('${Chater['name']}',style: TextStyle(fontWeight: FontWeight.w500,fontSize: 17),),
                                   subtitle: Text(''),
 
 
@@ -132,16 +135,15 @@ class _displaychats_dealerState extends State<displaychats_dealer> {
       var ss=await  FirebaseFirestore.instance.collection('chats').doc(docid).collection('messages').limit(1).get();
       if(ss.docs.first['image']=='noimage'){
         message=ss.docs.first['message'];
+     Last_sms.add(message);
       }
       else{
         message='Image';
       }
-
     }
     catch(e){
       EasyLoading.showInfo('$e');
     }
-
     return message;
   }
 }

@@ -18,7 +18,7 @@ class displaychats_company extends StatefulWidget{
 }
 
 class _displaychats_companyState extends State<displaychats_company> {
-  var license;
+  var license,Last_sms=[];
  @override
   void initState() {
    super.initState();
@@ -39,11 +39,13 @@ class _displaychats_companyState extends State<displaychats_company> {
            return show_progress_indicator();
          }
  var data=snapshot.data!.docs;
+         Last_sms.clear();
 
   return ListView.builder(
     itemCount: data.length,
      itemBuilder: (context,index)  {
        var Chater;
+       Get_Message(data[index].id);
        return FutureBuilder(
            future:FirebaseFirestore.instance.collection('dealer').where('license',isEqualTo:data[index]['dealerlicense']).get() ,
          builder: (context,snap) {
@@ -53,9 +55,9 @@ class _displaychats_companyState extends State<displaychats_company> {
            if (snap.connectionState==ConnectionState.waiting) {
              return show_progress_indicator();
            }
-
+           print(Last_sms);
            try{
-             Get_Message(data[index].id);
+
               Chater=snap.data!.docs.first.data();
            }
            catch(e){}
@@ -95,7 +97,15 @@ class _displaychats_companyState extends State<displaychats_company> {
                      width:size.width*0.75,
                      child: ListTile(
                      title: Text('${Chater['name']}',style: TextStyle(fontWeight: FontWeight.w500,fontSize: 17),),
-                     subtitle: Text(''),
+                     subtitle: Container(
+                       height: 20,
+                       child: ListView.builder(
+                         itemCount: Last_sms.length,
+                           itemBuilder: (context,i){
+                           print(Last_sms[i]);
+                         return Text('${Last_sms[i]}');
+                       }),
+                     ),
 
 
                ),
@@ -130,6 +140,7 @@ class _displaychats_companyState extends State<displaychats_company> {
       var ss=await  FirebaseFirestore.instance.collection('chats').doc(docid).collection('messages').limit(1).get();
       if(ss.docs.first['image']=='noimage'){
         message=ss.docs.first['message'];
+        Last_sms.add(message);
       }
       else{
         message='Image';
@@ -142,5 +153,7 @@ class _displaychats_companyState extends State<displaychats_company> {
 
     return message;
 }
+
+
 
 }
